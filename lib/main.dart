@@ -1,17 +1,35 @@
-import 'package:erdm/screens/home_page.dart';
-import 'package:flutter/material.dart';
+import 'package:erdm/app/landing_page.dart';
+import 'package:erdm/services/auth.dart';
+import 'package:erdm/services/database.dart';
+import 'package:erdm/themes/custom_themes.dart';
 
-void main() => runApp(MyApp());
+import 'package:provider/provider.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await HiveDatabase.initDatabase();
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Time Tracker',
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
+    return Provider<AuthBase>(
+      create: (context) => Auth(),
+      child: MaterialApp(
+        title: 'eRDM',
+        theme: CustomThemes.light,
+        home: LandingPage(),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
+        supportedLocales: [const Locale('pt', 'BR')],
       ),
-      home: HomePage(),
     );
   }
 }
