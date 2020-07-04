@@ -1,134 +1,89 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+
+import 'package:erdm/controller/session.dart';
+import 'package:erdm/models/user.dart';
+import 'package:erdm/services/connection_state.dart';
+import 'package:erdm/services/database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
-class User {
-  final String uid;
-
-  User({@required this.uid});
-}
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class AuthBase {
-  Stream<User> get onAuthStateChanged;
+  ValueListenable<Box> get onAuthStateChanged;
+
+  Future<User> signInWithUserAndPassword(String user, String password);
 
   Future<User> currentUser();
-
-  Future<User> signInAnonymously();
-
-  Future<User> signInWithEmailAndPassword(String email, String password);
-
-  Future<User> createUserWithEmailAndPassword(String email, String password);
-
-  Future<User> signInWithGoogle();
-
-  Future<User> signInWithFacebook();
 
   Future<void> signOut();
 }
 
 class Auth implements AuthBase {
-  final _firebaseAuth = FirebaseAuth.instance;
-
-  User _userFromFirebase(FirebaseUser user) {
-    return user == null ? null : User(uid: user.uid);
-  }
-
   @override
-  Stream<User> get onAuthStateChanged {
-    return _firebaseAuth.onAuthStateChanged.map(_userFromFirebase);
-  }
-
-  @override
-  Future<User> currentUser() async {
-    final user = await _firebaseAuth.currentUser();
-    return _userFromFirebase(user);
-  }
-
-  @override
-  Future<User> signInAnonymously() async {
-    final authResult = await _firebaseAuth.signInAnonymously();
-    return _userFromFirebase(authResult.user);
-  }
-
-  @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
-    final authResult = await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    return _userFromFirebase(authResult.user);
-  }
-
-  @override
-  Future<User> createUserWithEmailAndPassword(
-      String email, String password) async {
-    final authResult = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return _userFromFirebase(authResult.user);
-  }
-
-  @override
-  Future<User> signInWithGoogle() async {
-    final googleSignIn = GoogleSignIn();
-    final googleAccount = await googleSignIn.signIn();
-
-    if (googleAccount != null) {
-      final googleAuth = await googleAccount.authentication;
-
-      if (googleAuth.accessToken != null && googleAuth.idToken != null) {
-        final authResult = await _firebaseAuth.signInWithCredential(
-          GoogleAuthProvider.getCredential(
-            idToken: googleAuth.idToken,
-            accessToken: googleAuth.accessToken,
-          ),
-        );
-
-        return _userFromFirebase(authResult.user);
-      } else {
+  Future<User> signInWithUserAndPassword(String user, String password) async {
+    try {
+      if (!await CheckConnection.checkCoonection()) {
         throw PlatformException(
-          code: 'ERROR_MISSING_AUTH_TOKEN',
-          message: 'Missing Google Auth Token',
-        );
+            message: 'Sem conexão com a internet', code: 'error_connection');
       }
-    } else {
-      throw PlatformException(
-        code: 'ERROR_ABORTED_BY_USER',
-        message: 'Sign in aborted by user',
-      );
+    } catch (e) {
+      rethrow;
     }
-  }
 
-  @override
-  Future<User> signInWithFacebook() async {
-    final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn(['public_profile']);
+    final session = Session();
 
-    if (result.accessToken != null) {
-      final authResult = await _firebaseAuth.signInWithCredential(
-        FacebookAuthProvider.getCredential(
-            accessToken: result.accessToken.token),
-      );
+    final String loginURL =
+        "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
 
-      return _userFromFirebase(authResult.user);
-    } else {
-      throw PlatformException(
-        code: 'ERROR_ABORTED_BY_USER',
-        message: 'Sign in aborted by user',
-      );
+    Map<String, String> formData = {
+      'nome_usuario': user,
+      'senha_usuario': password
+    };
+
+    try {
+      await session.signIn(loginURL, formData);
+    } catch (e) {
+      rethrow;
     }
+
+    Hive.box(BoxesName.LOGIN_BOX).put('user', {
+      'user': user,
+      'password': password,
+    });
+
+    return currentUser();
   }
 
   @override
   Future<void> signOut() async {
-    final googleSignIn = GoogleSignIn();
-    await googleSignIn.signOut();
-    final facebookLogin = FacebookLogin();
-    await facebookLogin.logOut();
-    await _firebaseAuth.signOut();
+    await Hive.box(BoxesName.LOGIN_BOX).clear();
+    await Hive.box(BoxesName.COURSES_BOX).clear();
+  }
+
+  @override
+  ValueListenable<Box> get onAuthStateChanged {
+    HiveDatabase.initDatabase();
+    final isOpen = Hive.isBoxOpen(BoxesName.LOGIN_BOX);
+    if (!isOpen) {
+      Hive.openBox(BoxesName.LOGIN_BOX);
+    }
+    return Hive.box(BoxesName.LOGIN_BOX).listenable();
+  }
+
+  User _userFromDatabase(Map user) {
+    return user == null
+        ? null
+        : User.fromMap({
+            'user': user['user'],
+            'password': user['password'],
+          });
+  }
+
+  @override
+  Future<User> currentUser() async {
+    final user = await Hive.box(BoxesName.LOGIN_BOX).get('user');
+    return _userFromDatabase(user);
   }
 }
