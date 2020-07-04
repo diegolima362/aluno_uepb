@@ -50,7 +50,7 @@ class _SingInFormChangeNotifierState extends State<SingInFormChangeNotifier> {
     try {
       await model.submit();
       Navigator.of(context).pop();
-    } on PlatformException catch (e) {
+    } catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Erro ao tentar entrar',
         exception: e,
@@ -63,19 +63,6 @@ class _SingInFormChangeNotifierState extends State<SingInFormChangeNotifier> {
         ? _passwordFocusNode
         : _registerFocusNode;
     FocusScope.of(context).requestFocus(newFocus);
-  }
-
-  void _passwordEditingComplete() {
-    if (model.registerValidator.isValid(model.register) &&
-        model.passwordValidator.isValid(model.password)) {
-      print('valid');
-      _submit();
-    } else {
-      final newFocus = model.passwordValidator.isValid(model.password)
-          ? _registerFocusNode
-          : _passwordFocusNode;
-      FocusScope.of(context).requestFocus(newFocus);
-    }
   }
 
   List<Widget> _buildChildren() {

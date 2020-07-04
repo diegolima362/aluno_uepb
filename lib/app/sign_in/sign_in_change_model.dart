@@ -28,7 +28,7 @@ class SignInChangeModel with Validator, ChangeNotifier {
       isLoading: true,
     );
     try {
-      await auth.signInWithRegisterAndPassword(
+      await auth.signInWithUserAndPassword(
           this.register.trim(), this.password.trim());
     } catch (e) {
       updateWith(isLoading: false);

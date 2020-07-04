@@ -1,6 +1,5 @@
+import 'package:erdm/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
-
-import '../../constants.dart';
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;
@@ -16,7 +15,7 @@ class TextFieldContainer extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 10),
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: BoxDecoration(
-        color: kPrimaryLightColor,
+        color: CustomThemes.PRIMARY_COLOR,
         borderRadius: BorderRadius.circular(25.0),
       ),
       child: child,
