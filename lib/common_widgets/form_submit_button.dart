@@ -1,5 +1,5 @@
+import 'package:erdm/common_widgets/custom_raised_button.dart';
 import 'package:flutter/material.dart';
-import 'package:time_tracker_app/common_widgets/custom_raised_button.dart';
 
 class FormSubmitButton extends CustomRaisedButton {
   FormSubmitButton({
@@ -8,11 +8,15 @@ class FormSubmitButton extends CustomRaisedButton {
   }) : super(
           child: Text(
             text,
-            style: TextStyle(color: Colors.white, fontSize: 20.0),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20.0,
+            ),
           ),
-          height: 44.0,
-          color: Colors.indigo,
-          borderRadius: 4.0,
+          height: 50.0,
+          color: Color(0xFF3E206D),
+          disabledColor: Color(0xFFf0E3FF),
+          borderRadius: 25.0,
           onPressed: onPressed,
         );
 }
