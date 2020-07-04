@@ -1,3 +1,13 @@
+final _weekDays = {
+  'seg': 1,
+  'ter': 2,
+  'qua': 3,
+  'qui': 4,
+  'sex': 5,
+  'sab': 6,
+  'dom': 7,
+};
+
 class Schedule {
   final String day;
   final String time;
@@ -5,17 +15,19 @@ class Schedule {
 
   Schedule({this.day, this.time, this.local});
 
-  Map<String, dynamic> toJson() => {
+  int get weekDay => _weekDays[this.day.substring(0, 3).toLowerCase()];
+
+  Map<String, dynamic> toMap() => {
         'day': this.day,
         'time': this.time,
         'local': this.local,
       };
 
-  factory Schedule.fromJson(dynamic json) {
+  factory Schedule.fromMap(Map<dynamic, dynamic> map) {
     return Schedule(
-      day: json['day'] as String,
-      time: json['time'] as String,
-      local: json['local'] as String,
+      day: map['day'] as String,
+      time: map['time'] as String,
+      local: map['local'] as String,
     );
   }
 

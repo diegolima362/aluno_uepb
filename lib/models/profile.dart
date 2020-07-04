@@ -4,7 +4,7 @@ class Profile {
   final String name;
   final String register;
   String cra;
-  String cumulative_ch;
+  String cumulativeCh;
 
   String viewName;
   final DateTime birthDate;
@@ -19,7 +19,7 @@ class Profile {
   Profile(this.name, this.register,
       {this.courses,
       this.cra = '-',
-      this.cumulative_ch = '-',
+      this.cumulativeCh = '-',
       this.viewName,
       this.birthDate,
       this.campus,
@@ -46,28 +46,32 @@ class Profile {
 
   String get fBirthDate => birthDate.toString().split(' ')[0];
 
-  Map<String, dynamic> toJson() => {
-        'name': this.name,
-        'register': this.register,
-        'cra': this.cra,
-        'age': this.cumulative_ch,
-        'cumulative_ch': this.cumulative_ch,
-        'viewName': this.viewName,
-        'birthDate': this.fBirthDate,
-        'campus': this.campus,
-        'gender': this.gender,
-        'program': this.program,
-        'courses': this.courses
-      };
+  Map<String, dynamic> toMap() {
+    final mapCourses = List<Map<dynamic, dynamic>>();
+    this.courses.forEach((element) => mapCourses.add(element.toMap()));
+    return {
+      'name': this.name,
+      'register': this.register,
+      'cra': this.cra,
+      'age': this.cumulativeCh,
+      'cumulative_ch': this.cumulativeCh,
+      'viewName': this.viewName,
+      'birthDate': this.fBirthDate,
+      'campus': this.campus,
+      'gender': this.gender,
+      'program': this.program,
+      'courses': mapCourses,
+    };
+  }
 
-  factory Profile.fromJson(dynamic json) {
-    var coursesObjsJson = json['courses'] as List;
+  factory Profile.fromMap(Map<String, dynamic> map) {
+    var coursesObjsJson = map['courses'] as List;
 
     List<Course> courses = coursesObjsJson
-        .map((courseJson) => Course.fromJson(courseJson))
+        .map((courseJson) => Course.fromMap(courseJson))
         .toList();
 
-    List<String> date = (json['birthDate'] as String).split('-');
+    List<String> date = (map['birthDate'] as String).split('-');
     DateTime birthDate = DateTime(
       int.parse(date[2]),
       int.parse(date[1]),
@@ -75,16 +79,16 @@ class Profile {
     );
 
     return Profile(
-      json['name'] as String,
-      json['register'] as String,
+      map['name'] as String,
+      map['register'] as String,
       courses: courses,
-      cra: json['cra'] as String,
-      cumulative_ch: json['cumulative_ch'] as String,
-      viewName: json['viewName'] as String,
+      cra: map['cra'] as String,
+      cumulativeCh: map['cumulative_ch'] as String,
+      viewName: map['viewName'] as String,
       birthDate: birthDate,
-      campus: json['campus'] as String,
-      gender: json['gender'] as String,
-      program: json['program'] as String,
+      campus: map['campus'] as String,
+      gender: map['gender'] as String,
+      program: map['program'] as String,
     );
   }
 
