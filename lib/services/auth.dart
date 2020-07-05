@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:erdm/controller/session.dart';
 import 'package:erdm/models/user.dart';
 import 'package:erdm/services/connection_state.dart';
 import 'package:erdm/services/database.dart';
+import 'package:erdm/services/scraper/session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -64,11 +63,6 @@ class Auth implements AuthBase {
 
   @override
   ValueListenable<Box> get onAuthStateChanged {
-    HiveDatabase.initDatabase();
-    final isOpen = Hive.isBoxOpen(BoxesName.LOGIN_BOX);
-    if (!isOpen) {
-      Hive.openBox(BoxesName.LOGIN_BOX);
-    }
     return Hive.box(BoxesName.LOGIN_BOX).listenable();
   }
 

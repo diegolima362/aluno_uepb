@@ -6,24 +6,17 @@ import 'package:http/http.dart' as http;
 class Session {
   static final Session _singleton = Session._internal();
 
-  factory Session() {
-    return _singleton;
-  }
+  factory Session() => _singleton;
 
   Session._internal();
 
   Map<String, String> _headers = {};
 
   Future<Document> get(String url) async {
-    print('url: $url');
     http.Response response = await http.get(url, headers: _headers);
     if (_headers.isEmpty) {
       updateCookie(response);
     }
-    final doc = parse(response.body);
-    print(doc.body.outerHtml);
-    print('hey');
-    print(doc.outerHtml);
 
     return parse(response.body);
   }
