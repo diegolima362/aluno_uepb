@@ -2,11 +2,9 @@ import 'package:erdm/app/landing_page.dart';
 import 'package:erdm/services/auth.dart';
 import 'package:erdm/services/database.dart';
 import 'package:erdm/themes/custom_themes.dart';
-
-import 'package:provider/provider.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -16,6 +16,7 @@ class LandingPage extends StatelessWidget {
       builder: (context, box, widget) {
         if (box.isEmpty) {
           return SignInPage.create(context);
+//          return HomePage();
         } else {
           return Provider<Database>(
             create: (_) => HiveDatabase(),

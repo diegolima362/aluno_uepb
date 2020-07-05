@@ -1,5 +1,4 @@
 import 'package:erdm/models/course.dart';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -16,39 +15,41 @@ class CourseListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final currentHour = DateFormat('Hm').format(now);
+    final currentHour = DateFormat('H').format(now);
     final courseSchedule = course.scheduleAtDay(now.weekday);
 
-    final _bgColor = currentHour.compareTo(courseSchedule.time) < 0
-        ? Color(0xFFEEEEEEEE)
-        : Colors.amberAccent;
+    final _bgColor =
+        currentHour.compareTo(courseSchedule.time.split(':')[0]) == 0;
 
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        color: _bgColor,
+        color: Color(0xFFEEEEEE),
         elevation: 0,
         child: Container(
-          height: MediaQuery.of(context).size.width / 4.0,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  course.title.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF3E206D),
+                ListTile(
+                  contentPadding: EdgeInsets.all(0),
+                  title: Text(
+                    course.title.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      color: Color(0xFF3E206D),
+                    ),
                   ),
-                ),
-                Text(
-                  course.instructor.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: Color(0xFF000000),
+                  subtitle: Text(
+                    course.instructor.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: Color(0xFF000000),
+                    ),
                   ),
+                  trailing: _bgColor ? Icon(Icons.timer) : null,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
