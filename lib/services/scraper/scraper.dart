@@ -1,7 +1,4 @@
-import 'package:erdm/models/course.dart';
-import 'package:erdm/models/profile.dart';
-import 'package:erdm/models/schedule.dart';
-import 'package:erdm/services/scraper/session.dart';
+import 'package:cau3pb/services/scraper/session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 
@@ -11,7 +8,7 @@ class Scraper {
 
   Scraper({@required this.user, @required this.password});
 
-  Future<List<Document>> _requestDOM() async {
+  Future<Map<String, Document>> _requestDOM() async {
     final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
     final String loginURL =
         "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
@@ -21,37 +18,143 @@ class Scraper {
       'senha_usuario': this.password
     };
 
-    List<Document> data = List<Document>();
     Session client = Session();
 
+    Document inicio;
+    Document cadastro;
+    Document rdm;
+
     // Start cookies
-    await client.get(baseURL);
+    inicio = await client.get(baseURL + '/index');
+
     try {
       await client.post(loginURL, formData);
+      cadastro = await client.get(baseURL + '/cadastro');
+      inicio = await client.get(baseURL + '/index');
+      rdm = await client.get(baseURL + '/rdm');
     } catch (e) {
       rethrow;
     }
 
-    data.add(await client.get(baseURL));
-    data.add(await client.get(baseURL + '/rdm'));
-    data.add(await client.get(baseURL + '/cadastro'));
+    final data = {
+      'inicio': inicio,
+      'cadastro': cadastro,
+      'rdm': rdm,
+    };
 
     return data;
   }
 
-  Future<List<Document>> _requestDOMFake({@required String baseURL}) async {
-    List<Document> data = List<Document>();
+  Future<Map<String, Document>> _requestDOMFake() async {
+    final String baseURL = "https://192.168.0.109:8000";
+
     Session client = Session();
 
-    data.add(await client.get(baseURL + '/inicio/'));
-    data.add(await client.get(baseURL + '/rdm/'));
-    data.add(await client.get(baseURL + '/cadastro/'));
+    Document inicio;
+    Document cadastro;
+    Document rdm;
+
+    try {
+      cadastro = await client.get(baseURL + '/cadastro');
+      inicio = await client.get(baseURL + '/inicio');
+      rdm = await client.get(baseURL + '/rdm');
+    } catch (e) {
+      rethrow;
+    }
+
+    final data = {
+      'inicio': inicio,
+      'cadastro': cadastro,
+      'rdm': rdm,
+    };
 
     return data;
   }
 
+  Future<Map<String, Document>> _requestDOMProfile() async {
+    final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
+    final String loginURL =
+        "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
+
+    Map<String, String> formData = {
+      'nome_usuario': this.user,
+      'senha_usuario': this.password
+    };
+
+    Session client = Session();
+
+    Document inicio;
+    Document cadastro;
+
+    // Start cookies
+    inicio = await client.get(baseURL + '/index');
+
+    try {
+      await client.post(loginURL, formData);
+      cadastro = await client.get(baseURL + '/cadastro');
+      inicio = await client.get(baseURL + '/index');
+    } catch (e) {
+      rethrow;
+    }
+
+    final data = {
+      'inicio': inicio,
+      'cadastro': cadastro,
+    };
+
+    return data;
+  }
+
+  Future<Document> _requestDOMCourses() async {
+    final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
+    final String loginURL =
+        "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
+
+    Map<String, String> formData = {
+      'nome_usuario': this.user,
+      'senha_usuario': this.password
+    };
+
+    Session client = Session();
+
+    Document rdm;
+
+    // Start cookies
+    await client.get(baseURL + '/rdm');
+
+    try {
+      await client.post(loginURL, formData);
+      rdm = await client.get(baseURL + '/rdm');
+    } catch (e) {
+      rethrow;
+    }
+
+    return rdm;
+  }
+
+//  Future<Map<String, Map<String, Document>>> _requestDOMFake(
+//      {@required String baseURL}) async {
+//    Session client = Session();
+//
+//    final inicio = await client.get(baseURL + '/inicio/');
+//    final cadastro = await client.get(baseURL + '/cadastro/');
+//    final rdm = await client.get(baseURL + '/rdm/');
+//
+//    final data = {
+//      'profile': {
+//        'inicio': inicio,
+//        'cadastro': cadastro,
+//      },
+//      'courses': {
+//        'rdm': rdm,
+//      },
+//    };
+//
+//    return data;
+//  }
+
   /// Extract absences for all courses at once.
-  List<int> _extractAbsences(Document dom) {
+  List<int> _sanitizeAbsences(Document dom) {
     List<int> absences = List<int>();
 
     RegExp regExp = new RegExp(r"\(\d\.\d\)");
@@ -69,8 +172,25 @@ class Scraper {
     return absences;
   }
 
-  List<Schedule> _extractSchedule(Element e) {
-    List<Schedule> schedule = List<Schedule>();
+  List<int> _sanitizeAbsencesLimit(Document dom) {
+    List<int> limits = List<int>();
+
+    RegExp regExp = new RegExp(r"maxValue = (\d*);");
+    RegExp regExp2 = new RegExp(r"\d{1,2}");
+
+    String scriptTag =
+        dom.querySelector('#main-content > section > script')?.text;
+
+    Iterable<RegExpMatch> values = regExp.allMatches(scriptTag);
+
+    values.forEach((e) =>
+        limits.add(int.tryParse(regExp2.firstMatch(e.group(0)).group(0))));
+
+    return limits;
+  }
+
+  List<Map<String, dynamic>> _sanitizeSchedule(Element e) {
+    final schedule = List<Map<String, dynamic>>();
 
     RegExp regExp = new RegExp(r"<i(.*?)</i>");
     RegExp regExp2 = new RegExp(r"[\n\t]");
@@ -90,65 +210,77 @@ class Scraper {
 
         String local = t[1].split(': ')[1];
 
-        schedule.add(Schedule(day: day, time: time, local: local));
+        schedule.add({'day': day, 'time': time, 'local': local});
       }
     });
 
     return schedule;
   }
 
-  Course _buildCourse(Element e) {
-    String title = e.getElementsByTagName('h2')[0].text.trim();
-    String id = e.getElementsByTagName('p')[0].text.trim();
+  Map<String, dynamic> _buildCourse(Element e) {
+    final String title = e.getElementsByTagName('h2')[0].text.trim();
+    final String id = e.getElementsByTagName('p')[0].text.trim();
 
-    List<Element> data = e.getElementsByTagName('li');
+    final List<Element> courseData = e.getElementsByTagName('li');
+    final List<Element> gradesData = e.getElementsByTagName('h5');
 
-    if (data.length < 5) {
-      data.insert(1, Element.html('<p>SEM PROFESSOR</p>'));
+    final List<String> grades = gradesData.map((e) => e.text).toList();
+
+    if (courseData.length < 5) {
+      courseData.insert(1, Element.html('<p>SEM PROFESSOR</p>'));
     }
 
-    int ch = int.tryParse(data[0].text.split(' ')[3]);
-    String instructor = data[1].text;
-    List<Schedule> schedule = _extractSchedule(data[2]);
+    int ch = int.tryParse(courseData[0].text.split(' ')[3]);
+    String professor = courseData[1].text;
+    List<Map<String, dynamic>> schedule = _sanitizeSchedule(courseData[2]);
 
-    Course c = Course(
-      id: id,
-      title: title,
-      instructor: instructor,
-      ch: ch,
-      schedule: schedule,
-    );
+    final course = {
+      'id': id,
+      'title': title,
+      'professor': professor,
+      'ch': ch,
+      'schedule': schedule,
+      'und1Grade': grades[0],
+      'und2Grade': grades[1],
+      'finalTest': grades[2],
+    };
 
-    return c;
+    return course;
   }
 
-  List<Course> _extractCourses(Document dom) {
-    List<Element> data = dom.getElementsByTagName('.profile-nav');
-    List<Course> courses = List<Course>();
+  List<Map<String, dynamic>> _sanitizeCourses(Document dom) {
+//    print(dom.outerHtml);
 
-    List<int> absences = _extractAbsences(dom);
+    List<Element> data = dom.getElementsByTagName('.profile-nav');
+    List<Map<String, dynamic>> courses = List<Map<String, dynamic>>();
+
+    List<int> absences = _sanitizeAbsences(dom);
+    List<int> absencesLimit = _sanitizeAbsencesLimit(dom);
 
     data.forEach((e) {
       courses.add(_buildCourse(e));
     });
 
     for (int i = 0; i < courses.length; i++) {
-      courses[i].absences = absences[i];
+      courses[i]['absences'] = absences[i];
+      courses[i]['absencesLimit'] = absencesLimit[i];
     }
 
     return courses;
   }
 
-  Map<String, String> _extractHomeInfo(Document dom) {
-    Map<String, String> homeInfo = Map<String, String>();
-    homeInfo['cra'] = dom.querySelector('.text-purple')?.text;
-    homeInfo['ch'] = dom.querySelector('.ch')?.text;
+  Map<String, String> _sanitizeHomeInfo(Document dom) {
+    final map = {
+      'cra': dom.querySelector('.text-purple')?.text,
+      'cumulativeCH': dom.querySelector('.ch')?.text,
+      'building': dom.querySelector('.nome-predio')?.text,
+    };
 
-    return homeInfo;
+    return map;
   }
 
-  Map<String, dynamic> _extractPersonalData(Document dom) {
-    List<Element> data = dom.querySelectorAll('p.form-control-static');
+  Map<String, dynamic> _sanitizePersonalData(Element dom) {
+    final data = dom.getElementsByClassName('form-control-static');
 
     if (data == null) return null;
 
@@ -157,7 +289,7 @@ class Scraper {
     personalData['register'] = data[0].text;
     personalData['name'] = data[1].text;
     personalData['viewName'] = personalData['name'].split(' ')[0];
-    personalData['program'] = data[3].text.split(' (')[0];
+    personalData['program'] = data[3].text.split(' (')[0].split('- ')[1];
     personalData['campus'] = data[3].text.split('(')[1].split(')')[0];
 
     List<String> date = data[12].text.split('/');
@@ -171,54 +303,80 @@ class Scraper {
     return personalData;
   }
 
-  Profile _buildProfile(
+  Map<String, dynamic> _buildProfile(
     Map<String, dynamic> personalData,
     Map<String, String> homeInfo,
-    List<Course> courses,
   ) {
-    return Profile(
-      personalData['name'],
-      personalData['register'],
-      courses: courses,
-      cra: homeInfo['cra'],
-      cumulativeCh: homeInfo['ch'],
-      viewName: personalData['viewName'],
-      birthDate: personalData['birthDate'],
-      campus: personalData['campus'],
-      gender: personalData['gender'],
-      program: personalData['program'],
-    );
+    return {
+      'name': personalData['name'],
+      'register': personalData['register'],
+      'cra': homeInfo['cra'],
+      'cumulativeCH': homeInfo['cumulativeCH'],
+      'building': homeInfo['building'],
+      'viewName': personalData['viewName'],
+      'birthDate': personalData['birthDate'],
+      'campus': personalData['campus'],
+      'gender': personalData['gender'],
+      'program': personalData['program'],
+    };
   }
 
-  Profile _extractProfile(List<Document> dom) {
-    Map<String, String> homeInfo = _extractHomeInfo(dom[0]);
-    List<Course> courses = _extractCourses(dom[1]);
-    Map<String, dynamic> personalData = _extractPersonalData(dom[2]);
+  Map<String, dynamic> _sanitizeProfile(Map<String, Document> dom) {
+    Map<String, String> homeInfo = _sanitizeHomeInfo(dom['inicio']);
+    Map<String, dynamic> personalData =
+        _sanitizePersonalData(dom['cadastro'].body);
 
-    return _buildProfile(personalData, homeInfo, courses);
+    return _buildProfile(personalData, homeInfo);
   }
 
   Future<List<Map<String, dynamic>>> getCourses() async {
-    final fakeURL = 'http://192.168.0.109:8000';
-    List<Document> dom;
+    Document _dom;
 
     try {
-//      dom = await _requestDOMFake(baseURL: fakeURL);
-      dom = await _requestDOM();
+      _dom = await _requestDOMCourses();
     } catch (e) {
       rethrow;
     }
 
-    if (dom == null) return null;
+    if (_dom == null) return null;
 
-    List<Course> courses = _extractProfile(dom).courses;
+    final courses = _sanitizeCourses(_dom);
 
-    final mapCourses = List<Map<String, dynamic>>();
+    return courses;
+  }
 
-    courses.forEach((element) {
-      mapCourses.add(element.toMap());
-    });
+  Future<Map<String, dynamic>> getProfile() async {
+    Map<String, Document> _dom;
 
-    return mapCourses;
+    try {
+      _dom = await _requestDOMProfile();
+    } catch (e) {
+      rethrow;
+    }
+
+    if (_dom == null) return null;
+
+    final profile = _sanitizeProfile(_dom);
+
+    return profile;
+  }
+
+  Future<Map<String, dynamic>> getAllData() async {
+    Map<String, Document> _dom;
+
+    try {
+      _dom = await _requestDOM();
+    } catch (e) {
+      rethrow;
+    }
+
+    if (_dom == null) return null;
+
+    final profile = {
+      'profile': _sanitizeProfile(_dom),
+      'courses': _sanitizeCourses(_dom['rdm']),
+    };
+
+    return profile;
   }
 }
