@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:erdm/models/user.dart';
-import 'package:erdm/services/connection_state.dart';
-import 'package:erdm/services/database.dart';
-import 'package:erdm/services/scraper/session.dart';
+import 'package:cau3pb/models/user.dart';
+import 'package:cau3pb/services/connection_state.dart';
+import 'package:cau3pb/services/database.dart';
+import 'package:cau3pb/services/firebase_analytics.dart';
+import 'package:cau3pb/services/scraper/session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -47,24 +48,26 @@ class Auth implements AuthBase {
       rethrow;
     }
 
-    Hive.box(BoxesName.LOGIN_BOX).put('user', {
+    final service = FirestoreAnalytics.instance;
+    await service.onLogin();
+
+    await Hive.box(BoxesName.LOGIN_BOX).put('user', {
       'user': user,
       'password': password,
     });
 
-    return currentUser();
+    return await currentUser();
   }
 
   @override
   Future<void> signOut() async {
+    HiveDatabase.clearBoxes();
     await Hive.box(BoxesName.LOGIN_BOX).clear();
-    await Hive.box(BoxesName.COURSES_BOX).clear();
   }
 
   @override
-  ValueListenable<Box> get onAuthStateChanged {
-    return Hive.box(BoxesName.LOGIN_BOX).listenable();
-  }
+  ValueListenable<Box> get onAuthStateChanged =>
+      Hive.box(BoxesName.LOGIN_BOX).listenable();
 
   User _userFromDatabase(Map user) {
     return user == null

@@ -23,4 +23,8 @@ class Format {
     }
     return '';
   }
+
+  static dateFirebase(DateTime date) {
+    return DateFormat('dMMMy').format(date).replaceAll('/', ' ');
+  }
 }
