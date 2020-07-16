@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 
 class CustomThemes {
-  static const PRIMARY_COLOR = Color(0xFF3E206D);
-  static const PRIMARY_LIGHT_COLOR = Color(0xFFF1E6FF);
-
   static ThemeData get light => ThemeData(
-        primaryColor: Color(0xFF3E206D),
-        accentColor: Color(0xFF3E206D),
-        backgroundColor: Color(0xFFFFFFFF),
-        primarySwatch: Colors.deepPurple,
+        cursorColor: Colors.black87,
+        textSelectionColor: Colors.blueGrey[200],
+        textSelectionHandleColor: Colors.black87,
+        primaryColor: Colors.black,
+        primaryColorDark: Colors.blueGrey,
+        primaryColorBrightness: Brightness.light,
+        appBarTheme: AppBarTheme(
+          brightness: Brightness.light,
+          color: Color(0xFFCCCCCC),
+        ),
+        backgroundColor: Color(0xFFCCCCCC),
+        canvasColor: Color(0xFFCCCCCC),
+        cardTheme: CardTheme(color: Color(0xFFEEEEEE)),
+        accentColor: Colors.black54,
+        brightness: Brightness.light,
+        primarySwatch: Colors.grey,
       );
 
   static ThemeData get dark => ThemeData(
-        primaryColor: Color(0xFF191919),
-        accentColor: Color(0xFFFFFFFF),
-        backgroundColor: Color(0xFF000000),
+        primaryColor: Colors.grey,
+        primaryColorBrightness: Brightness.dark,
+        primaryColorDark: Colors.blueGrey,
+        cursorColor: Colors.white70,
+        textSelectionColor: Colors.blueGrey[600],
+        textSelectionHandleColor: Colors.white70,
+        appBarTheme: AppBarTheme(
+          brightness: Brightness.dark,
+          color: Color(0xFF101010),
+        ),
+        toggleableActiveColor: Colors.grey,
+        backgroundColor: Colors.black87,
+        canvasColor: Color(0xFF101010),
+        cardTheme: CardTheme(color: Color(0xFF252525)),
+        accentColor: Colors.white70,
+        brightness: Brightness.dark,
+        primarySwatch: Colors.grey,
       );
 }
