@@ -1,5 +1,5 @@
-name: erdm
-description: A new Flutter project.
+name: cau3pb
+description: Aplicativo não oficial para alunos da UEPB.
 
 publish_to: "none"
 
@@ -11,15 +11,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http:
+  http: ^0.12.1
   html:
   hive_flutter: ^0.3.0+2
   hive: ^1.4.1+1
-  path: ^1.7.0
   path_provider:
   provider:
   cupertino_icons:
-  flutter_svg: ^0.18.0
+  firebase_analytics: ^5.0.16
+  cloud_firestore: ^0.13.7
+  diacritic: ^0.1.1
+  fl_chart: ^0.10.1
   flutter_localizations:
     sdk: flutter
 
