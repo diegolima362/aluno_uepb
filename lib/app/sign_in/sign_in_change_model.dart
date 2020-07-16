@@ -1,11 +1,11 @@
-import 'package:erdm/app/sign_in/validators.dart';
-import 'package:erdm/services/auth.dart';
+import 'package:cau3pb/app/sign_in/validators.dart';
+import 'package:cau3pb/services/auth.dart';
 import 'package:flutter/foundation.dart';
 
 class SignInChangeModel with Validator, ChangeNotifier {
   final AuthBase auth;
 
-  String register;
+  String user;
   String password;
   bool isLoading;
   bool submitted;
@@ -14,7 +14,7 @@ class SignInChangeModel with Validator, ChangeNotifier {
 
   SignInChangeModel({
     @required this.auth,
-    this.register = '',
+    this.user = '',
     this.password = '',
     this.isLoading = false,
     this.submitted = false,
@@ -29,7 +29,7 @@ class SignInChangeModel with Validator, ChangeNotifier {
     );
     try {
       await auth.signInWithUserAndPassword(
-          this.register.trim(), this.password.trim());
+          this.user.trim(), this.password.trim());
     } catch (e) {
       updateWith(isLoading: false);
       rethrow;
@@ -37,7 +37,7 @@ class SignInChangeModel with Validator, ChangeNotifier {
   }
 
   bool get canSubmit {
-    return registerValidator.isValid(register) &&
+    return userValidator.isValid(user) &&
         passwordValidator.isValid(password) &&
         !isLoading;
   }
@@ -47,12 +47,12 @@ class SignInChangeModel with Validator, ChangeNotifier {
     return showErrorText ? invalidPasswordErrorText : null;
   }
 
-  String get registerErrorText {
-    bool showErrorText = registerEdited && !registerValidator.isValid(register);
+  String get userErrorText {
+    bool showErrorText = registerEdited && !userValidator.isValid(user);
     return showErrorText ? invalidRegisterErrorText : null;
   }
 
-  void updateRegister(String register) =>
+  void updateUser(String register) =>
       updateWith(register: register, registerEdited: true);
 
   void updatePassword(String password) =>
@@ -66,7 +66,7 @@ class SignInChangeModel with Validator, ChangeNotifier {
     bool registerEdited,
     bool passwordEdited,
   }) {
-    this.register = register ?? this.register;
+    this.user = register ?? this.user;
     this.password = password ?? this.password;
     this.isLoading = isLoading ?? this.isLoading;
     this.submitted = submitted ?? this.submitted;

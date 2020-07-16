@@ -1,11 +1,8 @@
-import 'package:erdm/app/sign_in/sign_in_change_model.dart';
-import 'package:erdm/app/sign_in/text_field_container.dart';
-import 'package:erdm/common_widgets/form_submit_button.dart';
-import 'package:erdm/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:erdm/services/auth.dart';
+import 'package:cau3pb/app/sign_in/sign_in_change_model.dart';
+import 'package:cau3pb/common_widgets/form_submit_button.dart';
+import 'package:cau3pb/common_widgets/platform_exception_alert_dialog.dart';
+import 'package:cau3pb/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class SingInFormChangeNotifier extends StatefulWidget {
@@ -30,18 +27,18 @@ class SingInFormChangeNotifier extends StatefulWidget {
 }
 
 class _SingInFormChangeNotifierState extends State<SingInFormChangeNotifier> {
-  final TextEditingController _registerController = TextEditingController();
+  final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _registerFocusNode = FocusNode();
+  final FocusNode _userFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
   SignInChangeModel get model => widget.model;
 
   @override
   void dispose() {
-    _registerController.dispose();
+    _userController.dispose();
     _passwordController.dispose();
-    _registerFocusNode.dispose();
+    _userFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
   }
@@ -58,107 +55,91 @@ class _SingInFormChangeNotifierState extends State<SingInFormChangeNotifier> {
     }
   }
 
-  void _registerEditingComplete() {
-    final newFocus = model.registerValidator.isValid(model.register)
+  void _userEditingComplete() {
+    final newFocus = model.userValidator.isValid(model.user)
         ? _passwordFocusNode
-        : _registerFocusNode;
+        : _userFocusNode;
     FocusScope.of(context).requestFocus(newFocus);
   }
 
   List<Widget> _buildChildren() {
     final size = MediaQuery.of(context).size;
     return [
-      SizedBox(height: size.height * 0.03),
-      SvgPicture.asset(
-        "assets/icons/login.svg",
-        height: size.height * 0.25,
-      ),
-      SizedBox(height: size.height * 0.03),
-      Center(
+      SizedBox(height: size.height * 0.05),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Text(
-          "Login",
+          'Entre com os dados do controle acadêmico',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontSize: 24.0,
             fontWeight: FontWeight.w300,
+            fontSize: 24.0,
           ),
         ),
       ),
       SizedBox(height: size.height * 0.03),
-      _buildRegisterTextField(),
+      _buildUserTextField(),
       SizedBox(height: 8.0),
       _buildPasswordTextField(),
-      SizedBox(height: 8.0),
-      FormSubmitButton(
-        text: 'Entrar',
-        onPressed: model.canSubmit ? _submit : null,
+      SizedBox(height: size.height * 0.03),
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: FormSubmitButton(
+          text: 'Entrar',
+          onPressed: model.canSubmit ? _submit : null,
+        ),
       ),
     ];
   }
 
-  TextFieldContainer _buildPasswordTextField() {
-    final primaryColor = Theme.of(context).primaryColor;
-
-    return TextFieldContainer(
-      child: TextField(
-        controller: _passwordController,
-        focusNode: _passwordFocusNode,
-        cursorColor: primaryColor,
-        decoration: InputDecoration(
-          hintText: 'Senha',
-          errorText: model.passwordErrorText,
-          enabled: model.isLoading == false,
-          icon: Icon(
-            Icons.lock,
-            color: primaryColor,
-          ),
-          border: InputBorder.none,
-        ),
-        obscureText: true,
-        textInputAction: TextInputAction.done,
-        onChanged: model.updatePassword,
-        onEditingComplete: model.canSubmit ? _submit : null,
+  Widget _buildPasswordTextField() {
+    return TextField(
+      controller: _passwordController,
+      focusNode: _passwordFocusNode,
+      decoration: InputDecoration(
+        hintText: 'Senha',
+        errorText: model.passwordErrorText,
+        enabled: model.isLoading == false,
+        prefixIcon: Icon(Icons.lock),
+        border: InputBorder.none,
       ),
+      obscureText: true,
+      textInputAction: TextInputAction.done,
+      onChanged: model.updatePassword,
+      onEditingComplete: model.canSubmit ? _submit : null,
     );
   }
 
-  TextFieldContainer _buildRegisterTextField() {
-    final primaryColor = Theme.of(context).primaryColor;
-    return TextFieldContainer(
-      child: TextField(
-        controller: _registerController,
-        focusNode: _registerFocusNode,
-        cursorColor: primaryColor,
-        decoration: InputDecoration(
-          hintText: 'Matricula',
-          errorText: model.registerErrorText,
-          enabled: model.isLoading == false,
-          border: InputBorder.none,
-          icon: Icon(
-            Icons.person,
-            color: primaryColor,
-          ),
-        ),
-        autocorrect: false,
-        autofocus: false,
-        enableSuggestions: true,
-        keyboardType: TextInputType.number,
-        textInputAction: TextInputAction.next,
-        onChanged: model.updateRegister,
-        onEditingComplete: () => _registerEditingComplete(),
+  Widget _buildUserTextField() {
+    return TextField(
+      controller: _userController,
+      focusNode: _userFocusNode,
+      decoration: InputDecoration(
+        hintText: 'Matrícula',
+        errorText: model.userErrorText,
+        enabled: model.isLoading == false,
+        border: InputBorder.none,
+        prefixIcon: Icon(Icons.person),
       ),
+      autocorrect: false,
+      autofocus: false,
+      enableSuggestions: true,
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.next,
+      onChanged: model.updateUser,
+      onEditingComplete: () => _userEditingComplete(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: _buildChildren(),
         ),
       ),
