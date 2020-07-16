@@ -1,8 +1,9 @@
-import 'package:erdm/models/course.dart';
+import 'package:cau3pb/services/format.dart';
+import 'package:diacritic/diacritic.dart';
 
 class Profile {
-  final String name;
   final String register;
+  final String name;
   String cra;
   String cumulativeCh;
 
@@ -11,20 +12,22 @@ class Profile {
 
   String program;
   String campus;
+  String building;
 
-  String gender;
+  final String gender;
 
-  List<Course> courses;
-
-  Profile(this.name, this.register,
-      {this.courses,
-      this.cra = '-',
-      this.cumulativeCh = '-',
-      this.viewName,
-      this.birthDate,
-      this.campus,
-      this.gender,
-      this.program});
+  Profile(
+    this.name,
+    this.register, {
+    this.cra = '-',
+    this.cumulativeCh = '-',
+    this.viewName,
+    this.birthDate,
+    this.campus,
+    this.gender,
+    this.program,
+    this.building,
+  });
 
   int get age {
     DateTime currentDate = DateTime.now();
@@ -44,55 +47,63 @@ class Profile {
     return age;
   }
 
-  String get fBirthDate => birthDate.toString().split(' ')[0];
+  String get fBirthDate => Format.dateFirebase(birthDate).toString();
 
   Map<String, dynamic> toMap() {
-    final mapCourses = List<Map<dynamic, dynamic>>();
-    this.courses.forEach((element) => mapCourses.add(element.toMap()));
     return {
       'name': this.name,
       'register': this.register,
       'cra': this.cra,
-      'age': this.cumulativeCh,
-      'cumulative_ch': this.cumulativeCh,
+      'age': this.age,
+      'cumulativeCH': this.cumulativeCh,
       'viewName': this.viewName,
       'birthDate': this.fBirthDate,
       'campus': this.campus,
       'gender': this.gender,
       'program': this.program,
-      'courses': mapCourses,
+      'building': this.building,
     };
   }
 
-  factory Profile.fromMap(Map<String, dynamic> map) {
-    var coursesObjsJson = map['courses'] as List;
+  Map<String, String> toMapFirestore() {
+    final campus = this.campus.toLowerCase().replaceAll(' ', '');
+    final building = this.building.toLowerCase().split(' ');
+    final program =
+        removeDiacritics(this.program).toLowerCase().replaceAll(' ', '-');
 
-    List<Course> courses = coursesObjsJson
-        .map((courseJson) => Course.fromMap(courseJson))
-        .toList();
+    final buffer = new StringBuffer();
 
-    List<String> date = (map['birthDate'] as String).split('-');
-    DateTime birthDate = DateTime(
-      int.parse(date[2]),
-      int.parse(date[1]),
-      int.parse(date[0]),
-    );
+    building.forEach((e) {
+      if (e.length > 2) buffer.write(e[0]);
+    });
 
+    return {
+      'register': this.register,
+      'birthDate': this.fBirthDate,
+      'campus': campus,
+      'gender': this.gender.toLowerCase() == 'm' ? 'male' : 'female',
+      'age': '$age',
+      'program': program,
+      'building': buffer.toString(),
+    };
+  }
+
+  factory Profile.fromMap(Map<dynamic, dynamic> map) {
     return Profile(
       map['name'] as String,
       map['register'] as String,
-      courses: courses,
       cra: map['cra'] as String,
-      cumulativeCh: map['cumulative_ch'] as String,
+      cumulativeCh: map['cumulativeCH'] as String,
       viewName: map['viewName'] as String,
-      birthDate: birthDate,
+      birthDate: map['birthDate'],
       campus: map['campus'] as String,
       gender: map['gender'] as String,
       program: map['program'] as String,
+      building: map['building'] as String,
     );
   }
 
   @override
   String toString() =>
-      '{ ${this.name}, ${this.register}, ${this.cra}, ${this.program}, ${this.campus}, ${this.gender}, ${this.fBirthDate}, ${this.courses} }';
+      '{ ${this.register}, ${this.viewName}, ${this.name}, ${this.cra}, ${this.cumulativeCh}, ${this.program}, ${this.campus}, ${this.building}, ${this.gender}, ${this.fBirthDate} }';
 }

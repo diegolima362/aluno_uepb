@@ -1,4 +1,4 @@
-final _weekDays = {
+final _weekDaysMap = {
   'seg': 1,
   'ter': 2,
   'qua': 3,
@@ -15,7 +15,7 @@ class Schedule {
 
   Schedule({this.day, this.time, this.local});
 
-  int get weekDay => _weekDays[this.day.substring(0, 3).toLowerCase()];
+  int get weekDay => _weekDaysMap[this.day.substring(0, 3).toLowerCase()];
 
   Map<String, dynamic> toMap() => {
         'day': this.day,

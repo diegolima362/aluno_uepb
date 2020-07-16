@@ -1,19 +1,28 @@
-import 'package:erdm/models/schedule.dart';
+import 'package:cau3pb/models/schedule.dart';
+import 'package:intl/intl.dart';
 
 class Course {
   final String id;
   final String title;
-  final String instructor;
+  final String professor;
   final int ch;
   int absences;
+  int absencesLimit;
   final List<Schedule> schedule;
+  final String und1Grade;
+  final String und2Grade;
+  final String finalTest;
 
   Course({
     this.id,
     this.title,
-    this.instructor,
+    this.professor,
     this.ch,
     this.absences,
+    this.absencesLimit,
+    this.und1Grade,
+    this.und2Grade,
+    this.finalTest,
     this.schedule,
   });
 
@@ -23,9 +32,10 @@ class Course {
     return {
       'id': this.id,
       'title': this.title,
-      'instructor': this.instructor,
+      'professor': this.professor,
       'ch': this.ch,
       'absences': this.absences,
+      'absencesLimit': this.absencesLimit,
       'schedule': mapSchedules
     };
   }
@@ -40,16 +50,20 @@ class Course {
     return Course(
       id: map['id'] as String,
       title: map['title'] as String,
-      instructor: map['instructor'] as String,
+      professor: map['professor'] as String,
       ch: map['ch'] as int,
       absences: map['absences'] as int,
+      absencesLimit: map['absencesLimit'] as int,
       schedule: schedules,
+      finalTest: map['finalTest'] as String,
+      und1Grade: map['und1Grade'] as String,
+      und2Grade: map['und2Grade'] as String,
     );
   }
 
   @override
   String toString() =>
-      '{ ${this.title}, ${this.instructor}, ${this.ch}, ${this.absences}, ${this.schedule} }';
+      '{ ${this.title}, ${this.professor}, ${this.ch}, ${this.absences}/${this.absencesLimit}, ${this.schedule} }';
 
   String startTimeAtDay(int day) {
     final schedule = scheduleAtDay(day);
@@ -59,5 +73,20 @@ class Course {
   Schedule scheduleAtDay(int day) {
     final schedules = this.schedule.where((e) => e.weekDay == day).toList();
     return schedules.isNotEmpty ? schedules[0] : null;
+  }
+
+  bool get isCurrentClass {
+    final now = DateTime.now();
+    final _weekday = now.weekday;
+    var _isCurrentClass = false;
+
+    if (scheduleAtDay(_weekday) != null) {
+      final currentHour = int.tryParse(DateFormat('H').format(now));
+      final courseSchedule = scheduleAtDay(_weekday);
+      final classTime = int.tryParse(courseSchedule?.time?.split(':')[0]);
+      _isCurrentClass = _weekday == now.weekday &&
+          (currentHour == classTime || currentHour == classTime + 1);
+    }
+    return _isCurrentClass;
   }
 }
