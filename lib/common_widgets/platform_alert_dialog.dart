@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:erdm/common_widgets/platform_widget.dart';
+import 'package:cau3pb/common_widgets/platform_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
