@@ -105,6 +105,7 @@ class HiveDatabase implements Database {
 
     _courses = _buildCourses(data['courses']);
     _profile = _buildProfile(data['profile']);
+    _setProfile(_profile.toMapFirestore());
 
     await boxCourses.put('courses', data['courses']);
     await boxProfile.put('profile', data['profile']);
