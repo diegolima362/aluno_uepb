@@ -1,16 +1,27 @@
-# erdm
+# Aluno UEPB
 
-A new Flutter project.
+Aplicativo não oficial para alunos da UEPB.
 
-## Getting Started
+Features:
 
-This project is a starting point for a Flutter application.
+- Horário do dia e da semana completa
+- Informações das cadeiras: Professor, faltas, horários e notas
+- Dados Offline depois do primeiro login
 
-A few resources to get you started if this is your first Flutter project:
+# Avisos:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+O aplicativo necessita dos dados de autenticação no Controle Acadêmico do aluno.
+O aplicativo só realiza operações de leitura, nenhum dado é alterado na página do Controle Acadêmico.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#### Ainda em desenvolvimento
+
+#### Necessário acesso a internet para primeiro acesso e para futuras sincronizações com os dados remotos.
+
+### APKs
+
+build jul 17, 2020
+
+[**Apks v1.0.0**](https://drive.google.com/drive/folders/1RRPdX84snPGFUWBsbWo9YyGJwEQaml91?usp=sharing)
+
+
+
