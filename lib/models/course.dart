@@ -1,5 +1,6 @@
-import 'package:cau3pb/models/schedule.dart';
 import 'package:intl/intl.dart';
+
+import 'schedule.dart';
 
 class Course {
   final String id;

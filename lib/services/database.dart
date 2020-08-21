@@ -1,16 +1,14 @@
 import 'dart:async';
 
-import 'package:cau3pb/models/course.dart';
-import 'package:cau3pb/models/profile.dart';
-import 'package:cau3pb/models/user.dart';
-import 'package:cau3pb/services/connection_state.dart';
-import 'package:cau3pb/services/firebase_analytics.dart';
-import 'package:cau3pb/services/scraper/scraper.dart';
+import 'package:cau3pb/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+
+import 'connection_state.dart';
+import 'scraper/scraper.dart';
 
 class BoxesName {
   static const DARK_MODE_BOX = 'themePreference';
@@ -42,8 +40,6 @@ abstract class Database {
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
 
 class HiveDatabase implements Database {
-  final _serviceAnalytics = FirestoreAnalytics.instance;
-
   Profile _profile;
   List<Course> _courses;
 
@@ -75,7 +71,7 @@ class HiveDatabase implements Database {
     // get remote data
 
     try {
-      if (!await CheckConnection.checkCoonection()) {
+      if (!await CheckConnection.checkConnection()) {
         throw PlatformException(
           message: 'Sem conexão com a internet',
           code: 'error_connection',
@@ -105,7 +101,6 @@ class HiveDatabase implements Database {
 
     _courses = _buildCourses(data['courses']);
     _profile = _buildProfile(data['profile']);
-    _setProfile(_profile.toMapFirestore());
 
     await boxCourses.put('courses', data['courses']);
     await boxProfile.put('profile', data['profile']);
@@ -156,7 +151,7 @@ class HiveDatabase implements Database {
 
   Future<List<Course>> _getRemoteCoursesData() async {
     try {
-      if (!await CheckConnection.checkCoonection()) {
+      if (!await CheckConnection.checkConnection()) {
         throw PlatformException(
           message: 'Sem conexão com a internet',
           code: 'error_connection',
@@ -229,7 +224,7 @@ class HiveDatabase implements Database {
 
   Future<Profile> _getRemoteProfileData() async {
     try {
-      if (!await CheckConnection.checkCoonection()) {
+      if (!await CheckConnection.checkConnection()) {
         throw PlatformException(
           message: 'Sem conexão com a internet',
           code: 'error_connection',
@@ -255,17 +250,12 @@ class HiveDatabase implements Database {
 
     _profile = _buildProfile(data);
 
-    _setProfile(_profile.toMapFirestore());
-
     await boxProfile.put('profile', data);
 
     return _profile;
   }
 
   Profile _buildProfile(Map<dynamic, dynamic> map) => Profile.fromMap(map);
-
-  Future<void> _setProfile(Map profile) async =>
-      await _serviceAnalytics.setUserProperties(profile);
 
   static Future<void> clearBoxes() async {
     final coursesBox = await Hive.openBox(BoxesName.COURSES_BOX);
@@ -309,7 +299,6 @@ class HiveDatabase implements Database {
   @override
   Future<void> syncData() async {
     await getAllData(ignoreLocalData: true);
-    await _serviceAnalytics.setUserProperties(_profile.toMapFirestore());
   }
 
   static ValueListenable<Box> get onDarkModeStateChanged =>

@@ -1,4 +1,4 @@
-import 'package:cau3pb/models/course.dart';
+import 'course.dart';
 
 class WeekDaySchedule {
   final List<Course> courses;

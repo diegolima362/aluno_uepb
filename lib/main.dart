@@ -1,7 +1,6 @@
-import 'package:cau3pb/app/landing_page.dart';
-import 'package:cau3pb/services/auth.dart';
-import 'package:cau3pb/services/database.dart';
+import 'package:cau3pb/services/services.dart';
 import 'package:cau3pb/themes/custom_themes.dart';
+import 'package:cau3pb/views/landing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

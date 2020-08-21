@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:cau3pb/models/user.dart';
-import 'package:cau3pb/services/connection_state.dart';
-import 'package:cau3pb/services/database.dart';
-import 'package:cau3pb/services/firebase_analytics.dart';
-import 'package:cau3pb/services/scraper/session.dart';
+import 'package:cau3pb/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'connection_state.dart';
+import 'database.dart';
+import 'scraper/session.dart';
 
 abstract class AuthBase {
   ValueListenable<Box> get onAuthStateChanged;
@@ -24,7 +24,7 @@ class Auth implements AuthBase {
   @override
   Future<User> signInWithUserAndPassword(String user, String password) async {
     try {
-      if (!await CheckConnection.checkCoonection()) {
+      if (!await CheckConnection.checkConnection()) {
         throw PlatformException(
             message: 'Sem conexão com a internet', code: 'error_connection');
       }
@@ -47,9 +47,6 @@ class Auth implements AuthBase {
     } catch (e) {
       rethrow;
     }
-
-    final service = FirestoreAnalytics.instance;
-    await service.onLogin();
 
     await Hive.box(BoxesName.LOGIN_BOX).put('user', {
       'user': user,

@@ -1,6 +1,7 @@
-import 'package:cau3pb/services/scraper/session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
+
+import 'session.dart';
 
 class Scraper {
   final String user;

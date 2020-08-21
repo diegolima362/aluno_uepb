@@ -1,4 +1,4 @@
-import 'package:cau3pb/services/format.dart';
+import 'package:cau3pb/services/services.dart';
 import 'package:diacritic/diacritic.dart';
 
 class Profile {
