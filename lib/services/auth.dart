@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'analytics.dart';
 import 'connection_state.dart';
 import 'database.dart';
 import 'scraper/session.dart';
@@ -47,6 +48,9 @@ class Auth implements AuthBase {
     } catch (e) {
       rethrow;
     }
+
+    final service = Analytics.instance;
+    await service.onLogin();
 
     await Hive.box(BoxesName.LOGIN_BOX).put('user', {
       'user': user,

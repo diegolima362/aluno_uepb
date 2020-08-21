@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
+import 'analytics.dart';
 import 'connection_state.dart';
 import 'scraper/scraper.dart';
 
@@ -101,6 +102,9 @@ class HiveDatabase implements Database {
 
     _courses = _buildCourses(data['courses']);
     _profile = _buildProfile(data['profile']);
+
+    final service = Analytics.instance;
+    await service.setUserProperties(_profile.toMapFirestore());
 
     await boxCourses.put('courses', data['courses']);
     await boxProfile.put('profile', data['profile']);

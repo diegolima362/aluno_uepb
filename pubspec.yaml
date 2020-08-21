@@ -29,6 +29,7 @@ dependency_overrides:
   path: ^1.6.4
   dartx: ^0.3.0
   characters: 1.0.0
+  collection: 1.14.11
 
 dev_dependencies:
   flutter_test:
