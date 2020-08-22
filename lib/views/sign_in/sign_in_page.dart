@@ -1,3 +1,4 @@
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 
 import 'sign_in_button.dart';
@@ -42,16 +43,15 @@ class SignInPage extends StatelessWidget {
           SignInButton(
             text: 'Entrar',
             textColor: Colors.white,
-            color: Colors.black87,
             onPressed: () => _sigInWithRegister(context),
             borderRadius: 20.0,
           ),
           SizedBox(height: size.height * 0.2),
           Center(
             child: Text(
-              'Made with ❤ by @diegolima362',
+              'Made with ❤️ by @diegolima362',
               style: TextStyle(
-                fontSize: 10.0,
+                fontSize: 12.0,
                 fontWeight: FontWeight.w700,
               ),
             ),

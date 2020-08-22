@@ -1,5 +1,6 @@
 import 'package:cau3pb/models/models.dart';
 import 'package:cau3pb/services/services.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,7 +47,13 @@ class TodaySchedulePage extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.only(left: 10.0, top: 20.0),
-      title: Text('Aulas de Hoje', style: TextStyle(fontSize: 32.0)),
+      title: Text(
+        'Aulas de Hoje',
+        style: TextStyle(
+          fontSize: 32.0,
+          color: CustomThemes.accentColor,
+        ),
+      ),
       subtitle: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -65,10 +72,17 @@ class TodaySchedulePage extends StatelessWidget {
               children: [
                 Text(
                   'Horário completo',
-                  style: TextStyle(fontSize: 14.0),
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: CustomThemes.accentColor,
+                  ),
                   textAlign: TextAlign.end,
                 ),
-                Icon(Icons.arrow_forward_ios, size: 14.0),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14.0,
+                  color: CustomThemes.accentColor,
+                ),
               ],
             ),
           ),

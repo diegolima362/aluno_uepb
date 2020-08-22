@@ -1,4 +1,5 @@
 import 'package:cau3pb/models/models.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -27,20 +28,34 @@ class CourseFullInfoCard extends StatelessWidget {
         title: Text(
           course.title.toUpperCase(),
           style: TextStyle(
+            color: CustomThemes.accentColor,
+            fontWeight: FontWeight.w500,
             fontSize: 18.0,
           ),
         ),
         subtitle: Text(
           course.professor.toUpperCase(),
-          style: TextStyle(fontSize: 16.0),
+          style: TextStyle(
+            fontSize: 16.0,
+          ),
         ),
         trailing: course.isCurrentClass ? Icon(Icons.timer) : null,
       ),
-      Text(
-        'Carga Horária: ${course.ch}',
-        style: TextStyle(
-          fontSize: 12.0,
-        ),
+      Row(
+        children: [
+          Text(
+            'Carga Horária: ',
+            style: TextStyle(
+              fontSize: 12.0,
+            ),
+          ),
+          Text(
+            '${course.ch}',
+            style: TextStyle(
+              fontSize: 12.0,
+            ),
+          ),
+        ],
       ),
     ];
   }
@@ -56,7 +71,7 @@ class CourseFullInfoCard extends StatelessWidget {
         case 0:
           return PieChartSectionData(
             showTitle: false,
-            color: limit < current ? Colors.red : Theme.of(context).accentColor,
+            color: limit < current ? Colors.red : CustomThemes.accentColor,
             value: current,
             radius: radius,
           );
@@ -113,7 +128,11 @@ class CourseFullInfoCard extends StatelessWidget {
                 children: [
                   Text(
                     '${_days[s.weekDay]} ${s.time}',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: CustomThemes.accentColor,
+                    ),
                   ),
                   Text('${s.local}', style: TextStyle(fontSize: 12)),
                 ],
@@ -132,19 +151,28 @@ class CourseFullInfoCard extends StatelessWidget {
         Column(
           children: [
             Text('${course.und1Grade}', style: TextStyle(fontSize: 16)),
-            Text('Und. I', style: TextStyle(fontSize: 12))
+            Text(
+              'Und. I',
+              style: TextStyle(fontSize: 12),
+            )
           ],
         ),
         Column(
           children: [
             Text('${course.und2Grade}', style: TextStyle(fontSize: 16)),
-            Text('Und. II', style: TextStyle(fontSize: 12))
+            Text(
+              'Und. II',
+              style: TextStyle(fontSize: 12),
+            )
           ],
         ),
         Column(
           children: [
             Text('${course.finalTest}', style: TextStyle(fontSize: 16)),
-            Text('Prova Final', style: TextStyle(fontSize: 12))
+            Text(
+              'Prova Final',
+              style: TextStyle(fontSize: 12),
+            ),
           ],
         ),
       ],

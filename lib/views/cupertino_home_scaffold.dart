@@ -1,3 +1,4 @@
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -24,9 +25,10 @@ class CupertinoHomeScaffold extends StatelessWidget {
         border: Border.all(color: Theme.of(context).canvasColor),
         backgroundColor: Theme.of(context).canvasColor,
         items: [
-          _buildItem(context, TabItem.today),
-          _buildItem(context, TabItem.tasks),
-          _buildItem(context, TabItem.account),
+          _buildItem(TabItem.today),
+          _buildItem(TabItem.courses),
+          _buildItem(TabItem.tasks),
+          _buildItem(TabItem.account),
         ],
         onTap: (index) => onSelectTab(TabItem.values[index]),
       ),
@@ -40,14 +42,12 @@ class CupertinoHomeScaffold extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem _buildItem(BuildContext context, TabItem tabItem) {
+  BottomNavigationBarItem _buildItem(TabItem tabItem) {
     final itemData = TabItemData.allTabs[tabItem];
     return BottomNavigationBarItem(
       activeIcon: Icon(
         itemData.icon,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white
-            : Colors.black,
+        color: CustomThemes.accentColor,
       ),
       icon: Icon(itemData.icon),
       title: itemData.title != null ? Text(itemData.title) : null,

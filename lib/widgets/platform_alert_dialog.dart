@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class PlatformAlertDialog extends PlatformWidget {
   @override
   Widget buildMaterialWidget(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
+      title: Text(title,style: TextStyle(color: CustomThemes.accentColor),),
       content: Text(content),
       actions: _buildActions(context),
     );

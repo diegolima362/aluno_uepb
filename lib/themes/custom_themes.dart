@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 
 class CustomThemes {
+  static Color accentColor = Colors.pink[900];
+
+  static void setColor(Color color) {
+    accentColor = color;
+  }
+
   static ThemeData get light => ThemeData(
-        cursorColor: Colors.black87,
-        textSelectionColor: Colors.blueGrey[200],
-        textSelectionHandleColor: Colors.black87,
-        primaryColor: Colors.black,
+        cursorColor: accentColor,
+        textSelectionColor: accentColor.withAlpha(100),
+        textSelectionHandleColor: accentColor,
+        primaryColor: accentColor,
         primaryColorDark: Colors.blueGrey,
         primaryColorBrightness: Brightness.light,
         appBarTheme: AppBarTheme(
           brightness: Brightness.light,
-          color: Color(0xFFCCCCCC),
+          color: Colors.white,
         ),
-        backgroundColor: Color(0xFFCCCCCC),
-        canvasColor: Color(0xFFCCCCCC),
-        cardTheme: CardTheme(color: Color(0xFFEEEEEE)),
-        accentColor: Colors.black54,
+        backgroundColor: Colors.white,
+        canvasColor: Colors.white,
+        cardTheme: CardTheme(color: Color(0xFFF3F2FD)),
+        accentColor: accentColor,
         brightness: Brightness.light,
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.pink,
       );
 
   static ThemeData get dark => ThemeData(
@@ -31,12 +37,12 @@ class CustomThemes {
           brightness: Brightness.dark,
           color: Color(0xFF101010),
         ),
-        toggleableActiveColor: Colors.grey,
+        toggleableActiveColor: accentColor,
         backgroundColor: Colors.black87,
         canvasColor: Color(0xFF101010),
         cardTheme: CardTheme(color: Color(0xFF252525)),
-        accentColor: Colors.white70,
+        accentColor: accentColor,
         brightness: Brightness.dark,
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.pink,
       );
 }

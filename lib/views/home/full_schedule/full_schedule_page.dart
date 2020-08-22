@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cau3pb/models/models.dart';
 import 'package:cau3pb/services/services.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -67,7 +68,7 @@ class FullSchedulePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Horário completo'),
+        iconTheme: IconThemeData(color: CustomThemes.accentColor),
         centerTitle: true,
         elevation: 0,
       ),

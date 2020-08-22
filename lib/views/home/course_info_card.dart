@@ -1,4 +1,5 @@
 import 'package:cau3pb/models/models.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 
 class CourseInfoCard extends StatelessWidget {
@@ -34,6 +35,8 @@ class CourseInfoCard extends StatelessWidget {
                   course.title.toUpperCase(),
                   style: TextStyle(
                     fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
+                    color: CustomThemes.accentColor,
                   ),
                 ),
                 subtitle: Text(
@@ -42,7 +45,9 @@ class CourseInfoCard extends StatelessWidget {
                     fontSize: 12.0,
                   ),
                 ),
-                trailing: course.isCurrentClass ? Icon(Icons.timer) : null,
+                trailing: course.isCurrentClass
+                    ? Icon(Icons.timer, color: CustomThemes.accentColor)
+                    : null,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

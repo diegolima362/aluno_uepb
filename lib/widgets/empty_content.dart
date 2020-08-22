@@ -1,3 +1,4 @@
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 
 class EmptyContent extends StatelessWidget {
@@ -18,7 +19,10 @@ class EmptyContent extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 32.0),
+            style: TextStyle(
+              fontSize: 32.0,
+              color: CustomThemes.accentColor,
+            ),
           ),
           Text(
             message,

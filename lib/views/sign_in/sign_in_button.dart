@@ -1,3 +1,4 @@
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:cau3pb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class SignInButton extends CustomRaisedButton {
               fontSize: 15.0,
             ),
           ),
-          color: color,
+          color: color!=null?color:CustomThemes.accentColor,
           onPressed: onPressed,
           borderRadius: borderRadius,
         );

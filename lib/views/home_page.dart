@@ -17,6 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
     TabItem.today: GlobalKey<NavigatorState>(),
+    TabItem.courses: GlobalKey<NavigatorState>(),
     TabItem.tasks: GlobalKey<NavigatorState>(),
     TabItem.account: GlobalKey<NavigatorState>(),
   };
@@ -24,7 +25,8 @@ class _HomePageState extends State<HomePage> {
   Map<TabItem, WidgetBuilder> get _widgetBuilders {
     return {
       TabItem.today: (_) => TodaySchedulePage(),
-      TabItem.tasks: (context) => AllCoursesPage(),
+      TabItem.courses: (context) => AllCoursesPage(),
+      TabItem.tasks: (context) => AllTasksPage(),
       TabItem.account: (_) => AccountPage(),
     };
   }

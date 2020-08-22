@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cau3pb/models/models.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,9 +15,10 @@ import 'connection_state.dart';
 import 'scraper/scraper.dart';
 
 class BoxesName {
-  static const DARK_MODE_BOX = 'themePreference';
+  static const THEME_BOX = 'themePreference';
   static const LOGIN_BOX = 'login';
   static const COURSES_BOX = 'courses';
+  static const TASKS_BOX = 'tasks';
   static const PROFILE_BOX = 'profile';
 }
 
@@ -36,6 +40,10 @@ abstract class Database {
   Future<void> syncData();
 
   Future<void> closeDataBase();
+
+  Color getColorTheme();
+
+  void setColorTheme(Color color);
 }
 
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
@@ -50,9 +58,10 @@ class HiveDatabase implements Database {
 
     Hive.init(appDocumentDirectory.path);
 
-    await Hive.openBox(BoxesName.DARK_MODE_BOX);
+    await Hive.openBox(BoxesName.THEME_BOX);
     await Hive.openBox(BoxesName.LOGIN_BOX);
     await Hive.openBox(BoxesName.COURSES_BOX);
+    await Hive.openBox(BoxesName.TASKS_BOX);
     await Hive.openBox(BoxesName.PROFILE_BOX);
   }
 
@@ -268,7 +277,7 @@ class HiveDatabase implements Database {
     await coursesBox.clear();
     await profileBox.clear();
 
-    await Hive.box(BoxesName.DARK_MODE_BOX).clear();
+    await Hive.box(BoxesName.THEME_BOX).clear();
   }
 
   @override
@@ -293,11 +302,23 @@ class HiveDatabase implements Database {
 
   @override
   bool get isDarkMode =>
-      Hive.box(BoxesName.DARK_MODE_BOX).get('darkMode', defaultValue: false);
+      Hive.box(BoxesName.THEME_BOX).get('darkMode', defaultValue: false);
 
   @override
   Future<void> setDarkMode(bool isDark) async {
-    await Hive.box(BoxesName.DARK_MODE_BOX).put('darkMode', isDark);
+    await Hive.box(BoxesName.THEME_BOX).put('darkMode', isDark);
+  }
+
+  @override
+  Color getColorTheme() {
+    int val = Hive.box(BoxesName.THEME_BOX)
+        .get('color', defaultValue: Colors.black.value);
+    return Color(val);
+  }
+
+  @override
+  Future<void> setColorTheme(Color color) async {
+    await Hive.box(BoxesName.THEME_BOX).put('color', color.value);
   }
 
   @override
@@ -306,7 +327,7 @@ class HiveDatabase implements Database {
   }
 
   static ValueListenable<Box> get onDarkModeStateChanged =>
-      Hive.box(BoxesName.DARK_MODE_BOX).listenable();
+      Hive.box(BoxesName.THEME_BOX).listenable();
 
   @override
   Future<void> closeDataBase() async {

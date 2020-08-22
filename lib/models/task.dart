@@ -4,28 +4,21 @@ class Task {
   Task({
     @required this.id,
     @required this.courseId,
-    @required this.start,
-    @required this.end,
+    @required this.date,
     this.comment,
   });
 
   String id;
   String courseId;
-  DateTime start;
-  DateTime end;
+  DateTime date;
   String comment;
-
-  double get durationInHours =>
-      end.difference(start).inMinutes.toDouble() / 60.0;
 
   factory Task.fromMap(Map<dynamic, dynamic> value, String id) {
     final int startMilliseconds = value['start'];
-    final int endMilliseconds = value['end'];
     return Task(
       id: id,
       courseId: value['courseId'],
-      start: DateTime.fromMillisecondsSinceEpoch(startMilliseconds),
-      end: DateTime.fromMillisecondsSinceEpoch(endMilliseconds),
+      date: DateTime.fromMillisecondsSinceEpoch(startMilliseconds),
       comment: value['comment'],
     );
   }
@@ -33,8 +26,7 @@ class Task {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'courseId': courseId,
-      'start': start.millisecondsSinceEpoch,
-      'end': end.millisecondsSinceEpoch,
+      'date': date.millisecondsSinceEpoch,
       'comment': comment,
     };
   }

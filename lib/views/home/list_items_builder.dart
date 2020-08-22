@@ -31,6 +31,7 @@ class ListItemsBuilder<T> extends StatelessWidget {
         );
       }
     } else if (snapshot.hasError) {
+      print(snapshot.error.toString());
       return EmptyContent(
         title: 'Algo deu errado',
         message: snapshot.error.runtimeType == PlatformException

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum TabItem { today, tasks, account }
+enum TabItem { today, courses, tasks, account }
 
 class TabItemData {
   final String title;
@@ -10,7 +10,8 @@ class TabItemData {
 
   static const Map<TabItem, TabItemData> allTabs = {
     TabItem.today: TabItemData(icon: Icons.home),
-    TabItem.tasks: TabItemData(icon: Icons.view_headline),
+    TabItem.courses: TabItemData(icon: Icons.view_headline),
+    TabItem.tasks: TabItemData(icon: Icons.assignment),
     TabItem.account: TabItemData(icon: Icons.person),
   };
 }

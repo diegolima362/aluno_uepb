@@ -1,5 +1,6 @@
 import 'package:cau3pb/models/models.dart';
 import 'package:cau3pb/services/services.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:cau3pb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -72,10 +73,16 @@ class AllCoursesPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Disciplinas'),
+          title: Text(
+            'Disciplinas',
+            style: TextStyle(color: CustomThemes.accentColor),
+          ),
           actions: [
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: Icon(
+                Icons.refresh,
+                color: CustomThemes.accentColor,
+              ),
               onPressed: () async => await _syncData(context),
             )
           ],

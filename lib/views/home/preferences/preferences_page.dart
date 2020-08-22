@@ -1,7 +1,9 @@
 import 'package:cau3pb/services/services.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:cau3pb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 
 class PreferencesPage extends StatelessWidget {
@@ -35,9 +37,16 @@ class PreferencesPage extends StatelessWidget {
     return database.isDarkMode;
   }
 
-  void _setTheme(BuildContext context, bool isDark) {
+  Color _getCurrentColor(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-    database.setDarkMode(isDark);
+    return database.getColorTheme();
+  }
+
+  Future<void> _setTheme(BuildContext context,
+      {bool isDark, Color color}) async {
+    final database = Provider.of<Database>(context, listen: false);
+    if (isDark != null) await database.setDarkMode(isDark);
+    if (color != null) database.setColorTheme(color);
   }
 
   Future<void> _syncData(BuildContext context) async {
@@ -66,8 +75,13 @@ class PreferencesPage extends StatelessWidget {
             title: Text('Modo escuro'),
             trailing: Switch(
               value: darkMode,
-              onChanged: (val) => _setTheme(context, !darkMode),
+              onChanged: (val) => _setTheme(context, isDark: !darkMode),
             ),
+          ),
+          Divider(height: 1.0),
+          ListTile(
+            title: Text('Mudar cor de destaque'),
+            onTap: () => _pickColor(context),
           ),
           Divider(height: 1.0),
           ListTile(
@@ -76,7 +90,9 @@ class PreferencesPage extends StatelessWidget {
           ),
           Divider(height: 1.0),
           ListTile(
-            title: Text('Sair', style: TextStyle(fontSize: 18.0)),
+            title: Text('Sair',
+                style:
+                    TextStyle(fontSize: 18.0, color: CustomThemes.accentColor)),
             onTap: () => _confirmSignOut(context),
           ),
         ],
@@ -88,11 +104,32 @@ class PreferencesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Configurações'),
+        title: Text(
+          'Configurações',
+          style: TextStyle(color: CustomThemes.accentColor),
+        ),
+        iconTheme: IconThemeData(color: CustomThemes.accentColor),
         centerTitle: true,
         elevation: 0,
       ),
       body: _buildContents(context),
+    );
+  }
+
+  void _pickColor(BuildContext context) {
+    final dbContext = context;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: BlockPicker(
+              pickerColor: _getCurrentColor(dbContext),
+              onColorChanged: (color) => _setTheme(dbContext, color: color),
+            ),
+          ),
+        );
+      },
     );
   }
 }

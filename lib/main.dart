@@ -21,6 +21,8 @@ class MyApp extends StatelessWidget {
       valueListenable: HiveDatabase.onDarkModeStateChanged,
       builder: (context, box, child) {
         final darkMode = box.get('darkMode', defaultValue: false);
+        final colorValue = box.get('color', defaultValue: CustomThemes.accentColor.value);
+        CustomThemes.setColor(Color(colorValue));
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: _getTheme(darkMode),
           child: Provider<AuthBase>(

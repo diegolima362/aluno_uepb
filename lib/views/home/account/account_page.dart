@@ -1,5 +1,6 @@
 import 'package:cau3pb/models/models.dart';
 import 'package:cau3pb/services/services.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
 import 'package:cau3pb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ class AccountPage extends StatelessWidget {
               Divider(height: 1.0),
               ListTile(
                 title: Text('Sincronizar dados'),
-                trailing: Icon(Icons.refresh),
+                trailing: Icon(Icons.refresh, color: CustomThemes.accentColor),
                 onTap: () => _syncData(context),
               ),
             ],
@@ -123,10 +124,16 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meu perfil'),
+        title: Text(
+          'Meu perfil',
+          style: TextStyle(color: CustomThemes.accentColor),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              color: CustomThemes.accentColor,
+            ),
             onPressed: () => Navigator.of(context).push(
               CupertinoPageRoute(
                 fullscreenDialog: false,

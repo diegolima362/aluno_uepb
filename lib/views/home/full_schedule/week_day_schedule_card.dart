@@ -1,4 +1,6 @@
 import 'package:cau3pb/models/models.dart';
+import 'package:cau3pb/themes/custom_themes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../course_info_card.dart';
@@ -40,7 +42,10 @@ class WeekDayScheduleCard extends StatelessWidget {
         SizedBox(height: 10.0),
         Text(
           '${_weekDaysMap[weekDay]}',
-          style: TextStyle(fontSize: 20.0),
+          style: TextStyle(
+              fontSize: 20.0,
+              color: CustomThemes.accentColor,
+              fontWeight: FontWeight.w500),
         ),
         ...scheduleCards,
       ],
