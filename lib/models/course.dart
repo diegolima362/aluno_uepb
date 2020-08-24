@@ -42,9 +42,9 @@ class Course {
   }
 
   factory Course.fromMap(Map<dynamic, dynamic> map) {
-    var scheduleObjsJson = map['schedule'] as List;
+    final scheduleMap = map['schedule'] as List;
 
-    List<Schedule> schedules = scheduleObjsJson
+    List<Schedule> schedules = scheduleMap
         .map((scheduleJson) => Schedule.fromMap(scheduleJson))
         .toList();
 
