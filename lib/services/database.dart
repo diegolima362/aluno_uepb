@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:cau3pb/models/models.dart';
-import 'package:cau3pb/themes/custom_themes.dart';
+import 'package:cau3pb/services/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +24,10 @@ class BoxesName {
 abstract class Database {
   Future<Map<String, dynamic>> getAllData({bool ignoreLocalData});
 
+  Future<List<Task>> getTasksData();
+
+  Future<void> addTask(Task task);
+
   Future<List<Course>> getCoursesData({bool ignoreLocalData});
 
   Future<Profile> getProfileData({bool ignoreLocalData});
@@ -43,7 +46,11 @@ abstract class Database {
 
   Color getColorTheme();
 
-  void setColorTheme(Color color);
+  Future<void> setColorTheme(Color color);
+
+  Future<void> deleteTask(Task task);
+
+  ValueListenable<Box> onTasksChanged();
 }
 
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
@@ -129,10 +136,7 @@ class HiveDatabase implements Database {
   @override
   Future<List<Course>> getCoursesData({bool ignoreLocalData: false}) async {
     if (!ignoreLocalData) {
-      if (_courses != null) {
-        print('> HiveDatabase > getCoursesData : found cached data');
-        return _courses;
-      }
+      if (_courses != null) return _courses;
 
       print('> HiveDatabase > getCoursesData : check data in database');
       _courses = await _getLocalCoursesData();
@@ -203,10 +207,7 @@ class HiveDatabase implements Database {
   @override
   Future<Profile> getProfileData({bool ignoreLocalData: false}) async {
     if (!ignoreLocalData) {
-      if (_profile != null) {
-        print('> HiveDatabase > getProfileData : found cached data');
-        return _profile;
-      }
+      if (_profile != null) return _profile;
 
       print('> HiveDatabase > getProfileData : check data in database');
       _profile = await _getLocalProfileData();
@@ -273,11 +274,36 @@ class HiveDatabase implements Database {
   static Future<void> clearBoxes() async {
     final coursesBox = await Hive.openBox(BoxesName.COURSES_BOX);
     final profileBox = await Hive.openBox(BoxesName.PROFILE_BOX);
+    final tasksBox = await Hive.openBox(BoxesName.TASKS_BOX);
 
     await coursesBox.clear();
     await profileBox.clear();
+    await tasksBox.clear();
 
     await Hive.box(BoxesName.THEME_BOX).clear();
+  }
+
+  // Get tasks data
+  @override
+  Future<void> addTask(Task task) async {
+    await Hive.box(BoxesName.TASKS_BOX).put(task.id, task.toMap());
+  }
+
+  @override
+  Future<void> deleteTask(Task task) async {
+    await Hive.box(BoxesName.TASKS_BOX).delete(task.id);
+  }
+
+  @override
+  Future<List<Task>> getTasksData() async {
+    final tasksBox = await Hive.openBox(BoxesName.TASKS_BOX);
+    final tasksMap = List<Map>();
+    tasksBox.toMap().forEach((key, value) => tasksMap.add(value));
+    return _buildTasks(tasksMap);
+  }
+
+  List<Task> _buildTasks(List<dynamic> data) {
+    return data.map((e) => Task.fromMap(e)).toList();
   }
 
   @override
@@ -328,6 +354,9 @@ class HiveDatabase implements Database {
 
   static ValueListenable<Box> get onDarkModeStateChanged =>
       Hive.box(BoxesName.THEME_BOX).listenable();
+
+  ValueListenable<Box> onTasksChanged() =>
+      Hive.box(BoxesName.TASKS_BOX).listenable();
 
   @override
   Future<void> closeDataBase() async {
