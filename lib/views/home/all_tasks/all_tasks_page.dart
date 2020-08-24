@@ -13,7 +13,14 @@ import 'package:provider/provider.dart';
 import '../list_items_builder.dart';
 import 'edit_task_page.dart';
 
-class AllTasksPage extends StatelessWidget {
+class AllTasksPage extends StatefulWidget {
+  @override
+  _AllTasksPageState createState() => _AllTasksPageState();
+}
+
+class _AllTasksPageState extends State<AllTasksPage> {
+  bool isLoading = false;
+
   Future<List<Task>> _getData(BuildContext context) async {
     final database = Provider.of<Database>(context, listen: false);
     List<Task> tasks;
@@ -34,9 +41,11 @@ class AllTasksPage extends StatelessWidget {
   }
 
   Future<void> _delete(BuildContext context, Task task) async {
+    setState(() => isLoading = true);
     try {
       final database = Provider.of<Database>(context, listen: false);
       await database.deleteTask(task);
+      setState(() => isLoading = false);
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Operação falhou',
@@ -80,13 +89,14 @@ class AllTasksPage extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-
+    if (isLoading) return Center(child: CircularProgressIndicator());
     return ValueListenableBuilder<Box>(
       valueListenable: database.onTasksChanged(),
       builder: (context, box, child) {
         return FutureBuilder<List<Task>>(
           future: _getData(context),
           builder: (context, snapshot) => ListItemsBuilder(
+            emptyMessage: 'Você não tem atividades agendadas',
             snapshot: snapshot,
             itemBuilder: (context, task) => Dismissible(
               key: UniqueKey(),

@@ -39,7 +39,9 @@ class CourseFullInfoCard extends StatelessWidget {
             fontSize: 16.0,
           ),
         ),
-        trailing: course.isCurrentClass ? Icon(Icons.timer) : null,
+        trailing: course.isCurrentClass
+            ? Icon(Icons.timer, color: CustomThemes.accentColor)
+            : null,
       ),
       Row(
         children: [
