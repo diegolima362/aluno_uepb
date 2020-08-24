@@ -32,17 +32,18 @@ class CourseInfoCard extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.all(0),
                 title: Text(
-                  course.title.toUpperCase(),
+                  course.title,
+                  maxLines: 2,
                   style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 16.0,
                     color: CustomThemes.accentColor,
                   ),
                 ),
                 subtitle: Text(
-                  course.professor.toUpperCase(),
+                  course.professor,
                   style: TextStyle(
-                    fontSize: 12.0,
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14.0,
                   ),
                 ),
                 trailing: course.isCurrentClass
@@ -55,15 +56,13 @@ class CourseInfoCard extends StatelessWidget {
                   Text(
                     course.scheduleAtDay(weekDay)?.local ?? '',
                     style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 10.0,
+                      fontSize: 12.0,
                     ),
                   ),
                   Text(
                     course.scheduleAtDay(weekDay)?.time ?? '',
                     style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 10.0,
+                      fontSize: 12.0,
                     ),
                   ),
                 ],
