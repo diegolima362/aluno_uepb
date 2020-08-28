@@ -12,7 +12,7 @@ class Format {
   }
 
   static String dayOfWeek(DateTime date) {
-    return DateFormat.E().format(date);
+    return DateFormat.E('pt_Br').format(date);
   }
 
   static String currency(double pay) {

@@ -53,7 +53,7 @@ abstract class Database {
   ValueListenable<Box> onTasksChanged();
 }
 
-String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
+String documentIdFromCurrentDate() => DateTime.now().hashCode.toString();
 
 class HiveDatabase implements Database {
   Profile _profile;
