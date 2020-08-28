@@ -7,8 +7,9 @@ class Task {
     @required this.courseId,
     @required this.courseTitle,
     @required this.date,
-    this.isCompleted: false,
+    this.isCompleted = false,
     this.comment,
+    this.setReminder = false,
   });
 
   final String id;
@@ -17,6 +18,7 @@ class Task {
   final String courseTitle;
   DateTime date;
   bool isCompleted;
+  bool setReminder;
   String comment;
 
   factory Task.fromMap(Map<dynamic, dynamic> value) {
@@ -29,6 +31,7 @@ class Task {
       date: DateTime.fromMillisecondsSinceEpoch(startMilliseconds),
       comment: value['comment'],
       isCompleted: value['isCompleted'] ?? false,
+      setReminder: value['setReminder'] ?? false,
     );
   }
 
@@ -41,6 +44,7 @@ class Task {
       'date': date.millisecondsSinceEpoch,
       'comment': comment,
       'isCompleted': isCompleted,
+      'setReminder': setReminder,
     };
   }
 
