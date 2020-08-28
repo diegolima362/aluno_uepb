@@ -4,24 +4,79 @@ import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/all_tasks/edit_task_page.dart';
+import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 class TaskInfoPage extends StatelessWidget {
   final Task task;
   final Database database;
+  final NotificationsService notificationsService;
 
-  const TaskInfoPage({Key key, this.task, this.database}) : super(key: key);
+  const TaskInfoPage({
+    Key key,
+    this.task,
+    this.database,
+    this.notificationsService,
+  }) : super(key: key);
 
-  static Future<void> show(BuildContext context, Task task) async {
-    final Database database = Provider.of<Database>(context, listen: false);
+  static Future<void> show({
+    @required BuildContext context,
+    Task task,
+    @required NotificationsService notificationsService,
+    @required Database database,
+  }) async {
     await Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: false,
-        builder: (context) => TaskInfoPage(database: database, task: task),
+        builder: (context) => TaskInfoPage(
+          database: database,
+          task: task,
+          notificationsService: notificationsService,
+        ),
       ),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final didRequestSignOut = await PlatformAlertDialog(
+      title: 'Remover Tarefa',
+      content: 'Tem certeza que quer Remover?',
+      cancelActionText: 'Cancelar',
+      defaultActionText: 'Remover',
+    ).show(context);
+
+    if (didRequestSignOut == true) {
+      await _deleteTask(context);
+    }
+  }
+
+  Future<void> _deleteTask(BuildContext context) async {
+    try {
+      await database.deleteTask(task);
+      await notificationsService.cancelNotification(int.parse(task.id));
+      Navigator.pop(context);
+    } on PlatformException catch (e) {
+      PlatformExceptionAlertDialog(
+        title: 'Operação falhou',
+        exception: e,
+      ).show(context);
+    }
+  }
+
+  Future<void> _markTaskAsDone(BuildContext context) async {
+    try {
+      task.isCompleted = true;
+      await database.addTask(task);
+      await notificationsService.cancelNotification(int.parse(task.id));
+      Navigator.pop(context);
+    } on PlatformException catch (e) {
+      PlatformExceptionAlertDialog(
+        title: 'Operação falhou',
+        exception: e,
+      ).show(context);
+    }
   }
 
   Future<void> _editTask(BuildContext context) async {
@@ -33,6 +88,7 @@ class TaskInfoPage extends StatelessWidget {
       database: database,
       course: course,
       task: task,
+      notificationsService: notificationsService,
     );
   }
 
@@ -43,12 +99,19 @@ class TaskInfoPage extends StatelessWidget {
         iconTheme: IconThemeData(color: CustomThemes.accentColor),
         elevation: 0,
         actions: [
-          FlatButton(
-            disabledTextColor: Theme.of(context).appBarTheme.color,
-            textColor: CustomThemes.accentColor,
-            child: Text('Editar', style: TextStyle(fontSize: 20.0)),
+          if (!task.isCompleted)
+            IconButton(
+              icon: Icon(Icons.done),
+              onPressed: () => _markTaskAsDone(context),
+            ),
+          IconButton(
+            icon: Icon(Icons.edit),
             onPressed: () => _editTask(context),
-          )
+          ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => _confirmDelete(context),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -88,10 +151,8 @@ class TaskInfoPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Text(
-                      Format.date(task.date),
-                      style: TextStyle(fontSize: 16.0)
-                    ),
+                    Text(Format.date(task.date),
+                        style: TextStyle(fontSize: 16.0)),
                     Text(
                       Format.hours(task.date),
                       style: TextStyle(fontSize: 16.0),

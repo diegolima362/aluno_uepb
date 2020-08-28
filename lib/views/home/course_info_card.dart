@@ -36,7 +36,8 @@ class CourseInfoCard extends StatelessWidget {
                   maxLines: 2,
                   style: TextStyle(
                     fontSize: 16.0,
-                    color: CustomThemes.accentColor,
+                    color:
+                        course.isCurrentClass ? CustomThemes.accentColor : null,
                   ),
                 ),
                 subtitle: Text(
@@ -47,7 +48,7 @@ class CourseInfoCard extends StatelessWidget {
                   ),
                 ),
                 trailing: course.isCurrentClass
-                    ? Icon(Icons.timer, color: CustomThemes.accentColor)
+                    ? Icon(Icons.av_timer, color: CustomThemes.accentColor)
                     : null,
               ),
               Row(

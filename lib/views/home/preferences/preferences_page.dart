@@ -11,6 +11,11 @@ class PreferencesPage extends StatelessWidget {
     try {
       final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
+      final notificationsService = Provider.of<NotificationsService>(
+        context,
+        listen: false,
+      );
+      notificationsService.cancelAllNotification();
     } catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Erro ao tentar sair',
@@ -90,9 +95,13 @@ class PreferencesPage extends StatelessWidget {
           ),
           Divider(height: 1.0),
           ListTile(
-            title: Text('Sair',
-                style:
-                    TextStyle(fontSize: 18.0, color: CustomThemes.accentColor)),
+            title: Text(
+              'Sair',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: CustomThemes.accentColor,
+              ),
+            ),
             onTap: () => _confirmSignOut(context),
           ),
         ],

@@ -1,6 +1,7 @@
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:aluno_uepb/views/home/course/course_info_page.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +57,10 @@ class AllCoursesPage extends StatelessWidget {
                 child: ListItemsBuilder(
                   itemBuilder: (context, course) => CourseFullInfoCard(
                     course: course,
-                    onTap: () => _print(context, course),
+                    onTap: () => CourseInfoPage.show(
+                      context: context,
+                      course: course,
+                    ),
                   ),
                   snapshot: snapshot,
                 ),

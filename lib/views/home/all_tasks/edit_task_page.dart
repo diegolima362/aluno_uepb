@@ -8,20 +8,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class EditTaskPage extends StatefulWidget {
-  const EditTaskPage(
-      {@required this.database,
-      @required this.course,
-      this.task,
-      this.courses});
+  const EditTaskPage({
+    @required this.database,
+    @required this.course,
+    @required this.notificationsService,
+    this.task,
+    this.courses,
+  });
 
   final Course course;
   final List<Course> courses;
   final Task task;
   final Database database;
+  final NotificationsService notificationsService;
 
   static Future<void> show({
     BuildContext context,
     Database database,
+    NotificationsService notificationsService,
     Course course,
     Task task,
   }) async {
@@ -31,6 +35,7 @@ class EditTaskPage extends StatefulWidget {
         builder: (context) => EditTaskPage(
           database: database,
           course: course,
+          notificationsService: notificationsService,
           courses: courses,
           task: task,
         ),
@@ -49,6 +54,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
   String _title;
   String _comment;
   Course _course;
+  bool _checked;
+  bool _done;
 
   @override
   void initState() {
@@ -59,6 +66,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _course = widget.course;
     _title = widget.task?.title ?? '';
     _comment = widget.task?.comment ?? '';
+    _checked = widget.task?.setReminder ?? false;
+    _done = widget.task?.isCompleted == true ? false : true;
     super.initState();
   }
 
@@ -75,6 +84,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
       courseTitle: _course.title,
       date: date,
       comment: _comment,
+      setReminder: _checked,
+      isCompleted: !_done,
     );
   }
 
@@ -82,6 +93,21 @@ class _EditTaskPageState extends State<EditTaskPage> {
     try {
       final task = _taskFromState();
       await widget.database.addTask(task);
+
+      if (_checked) {
+        widget.notificationsService.setListenerForLowerVersions((_) {});
+        widget.notificationsService.setOnNotificationClick((_) {});
+        widget.notificationsService.scheduleNotification(NotificationModel(
+          id: int.parse(task.id),
+          title: 'Entrega de atividade',
+          body: task.title,
+          dateTime: task.date,
+          payload: task.toString(),
+        ));
+      } else {
+        widget.notificationsService.cancelNotification(int.parse(task.id));
+      }
+
       Navigator.of(context).pop();
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
@@ -123,12 +149,15 @@ class _EditTaskPageState extends State<EditTaskPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _buildTitle(),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 10.0),
                 _buildComment(),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 10.0),
                 if (widget.course == null) _buildCourse(),
                 const SizedBox(height: 8.0),
                 _buildFinalDate(),
+                const SizedBox(height: 20.0),
+                _buildSetReminder(),
+                if (widget.task?.isCompleted ?? false) _buildMarkAsNotDone(),
                 const SizedBox(height: 10.0),
               ],
             ),
@@ -181,6 +210,30 @@ class _EditTaskPageState extends State<EditTaskPage> {
       ),
       style: TextStyle(fontSize: 20.0),
       onChanged: (comment) => _comment = comment,
+    );
+  }
+
+  Widget _buildSetReminder() {
+    return CheckboxListTile(
+      contentPadding: EdgeInsets.all(0),
+      title: Text(
+        'Definir lembrete',
+        style: TextStyle(fontSize: 20.0),
+      ),
+      onChanged: ((value) => setState(() => _checked = value)),
+      value: _checked,
+    );
+  }
+
+  Widget _buildMarkAsNotDone() {
+    return CheckboxListTile(
+      contentPadding: EdgeInsets.all(0),
+      title: Text(
+        'Marcar como não concluida',
+        style: TextStyle(fontSize: 20.0),
+      ),
+      onChanged: ((value) => setState(() => _done = value)),
+      value: _done,
     );
   }
 }

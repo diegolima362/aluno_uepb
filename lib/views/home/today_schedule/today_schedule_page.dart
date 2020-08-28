@@ -1,6 +1,7 @@
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:aluno_uepb/views/home/course/course_info_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,45 +92,35 @@ class TodaySchedulePage extends StatelessWidget {
     );
   }
 
-  Widget _buildContents(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildHeader(context),
-        Expanded(
-          child: FutureBuilder<List<Course>>(
-            future: _getData(context),
-            builder: (context, snapshot) {
-              return ListItemsBuilder(
-                itemBuilder: (context, course) => CourseInfoCard(
-                  course: course,
-                  weekDay: DateTime.now().weekday,
-                  onTap: () => _print(context, course),
-                ),
-                filter: _todayClassesList,
-                snapshot: snapshot,
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            FlatButton(
-              onPressed: () {},
-              child: Text('Send Notification'),
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 20),
+          _buildHeader(context),
+          Expanded(
+            child: FutureBuilder<List<Course>>(
+              future: _getData(context),
+              builder: (context, snapshot) {
+                return ListItemsBuilder(
+                  itemBuilder: (context, course) => CourseInfoCard(
+                    course: course,
+                    weekDay: DateTime.now().weekday,
+                    onTap: () => CourseInfoPage.show(
+                      context: context,
+                      course: course,
+                    ),
+                  ),
+                  filter: _todayClassesList,
+                  snapshot: snapshot,
+                );
+              },
             ),
-            Expanded(child: _buildContents(context)),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

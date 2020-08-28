@@ -8,8 +8,10 @@ typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 class ListItemsBuilder<T> extends StatelessWidget {
   final AsyncSnapshot<List<T>> snapshot;
   final ItemWidgetBuilder<T> itemBuilder;
+  final String emptyTitle;
   final String emptyMessage;
   final Function filter;
+  final Widget emptyWidget;
 
   const ListItemsBuilder({
     Key key,
@@ -17,6 +19,8 @@ class ListItemsBuilder<T> extends StatelessWidget {
     @required this.itemBuilder,
     this.filter,
     this.emptyMessage,
+    this.emptyTitle,
+    this.emptyWidget,
   }) : super(key: key);
 
   @override
@@ -27,10 +31,11 @@ class ListItemsBuilder<T> extends StatelessWidget {
       if (items.isNotEmpty) {
         return filter != null ? _buildList(filter(items)) : _buildList(items);
       } else {
-        return EmptyContent(
-          title: 'Nada por aqui',
-          message: emptyMessage ?? 'Você não tem aulas hoje',
-        );
+        return emptyWidget ??
+            EmptyContent(
+              title: emptyTitle ?? 'Nada por aqui',
+              message: emptyMessage ?? 'Você não tem aulas hoje',
+            );
       }
     } else if (snapshot.hasError) {
       print(snapshot.error.toString());

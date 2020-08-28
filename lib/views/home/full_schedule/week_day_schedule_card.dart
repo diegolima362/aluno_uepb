@@ -1,5 +1,6 @@
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:aluno_uepb/views/home/course/course_info_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,14 @@ class WeekDayScheduleCard extends StatelessWidget {
 
     courses.forEach(
       (e) => scheduleCards.add(
-        CourseInfoCard(course: e, weekDay: weekDay),
+        CourseInfoCard(
+          course: e,
+          weekDay: weekDay,
+          onTap: () => CourseInfoPage.show(
+            context: context,
+            course: e,
+          ),
+        ),
       ),
     );
 

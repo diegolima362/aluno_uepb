@@ -19,14 +19,23 @@ class AllTasksPage extends StatefulWidget {
 }
 
 class _AllTasksPageState extends State<AllTasksPage> {
+  Database _database;
+  NotificationsService _notificationsService;
   bool isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _database = Provider.of<Database>(context, listen: false);
+    _notificationsService =
+        Provider.of<NotificationsService>(context, listen: false);
+  }
+
   Future<List<Task>> _getData(BuildContext context) async {
-    final database = Provider.of<Database>(context, listen: false);
     List<Task> tasks;
 
     try {
-      tasks = await database.getTasksData();
+      tasks = await _database.getTasksData();
     } on PlatformException catch (e) {
       throw PlatformException(code: 'error_get_tasks_data', message: e.message);
     }
@@ -36,16 +45,32 @@ class _AllTasksPageState extends State<AllTasksPage> {
   }
 
   void _addTask(BuildContext context) {
-    final database = Provider.of<Database>(context, listen: false);
-    EditTaskPage.show(context: context, database: database);
+    EditTaskPage.show(
+      context: context,
+      database: _database,
+      notificationsService: _notificationsService,
+    );
   }
 
-  Future<void> _delete(BuildContext context, Task task) async {
+  Future<void> _confirmDelete(BuildContext context, Task task) async {
     setState(() => isLoading = true);
+    final didRequestSignOut = await PlatformAlertDialog(
+      title: 'Remover Tarefa',
+      content: 'Tem certeza que quer Remover?',
+      cancelActionText: 'Cancelar',
+      defaultActionText: 'Remover',
+    ).show(context);
+
+    if (didRequestSignOut == true) {
+      await _deleteTask(context, task);
+    }
+    setState(() => isLoading = false);
+  }
+
+  Future<void> _deleteTask(BuildContext context, Task task) async {
     try {
-      final database = Provider.of<Database>(context, listen: false);
-      await database.deleteTask(task);
-      setState(() => isLoading = false);
+      await _database.deleteTask(task);
+      await _notificationsService.cancelNotification(int.parse(task.id));
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Operação falhou',
@@ -54,11 +79,11 @@ class _AllTasksPageState extends State<AllTasksPage> {
     }
   }
 
-  Future<void> _markAsDone(BuildContext context, Task task) async {
+  Future<void> _markTaskAsDone(BuildContext context, Task task) async {
     try {
-      final database = Provider.of<Database>(context, listen: false);
       task.isCompleted = true;
-      await database.addTask(task);
+      await _database.addTask(task);
+      await _notificationsService.cancelNotification(int.parse(task.id));
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Operação falhou',
@@ -88,10 +113,9 @@ class _AllTasksPageState extends State<AllTasksPage> {
   }
 
   Widget _buildContent(BuildContext context) {
-    final database = Provider.of<Database>(context, listen: false);
     if (isLoading) return Center(child: CircularProgressIndicator());
     return ValueListenableBuilder<Box>(
-      valueListenable: database.onTasksChanged(),
+      valueListenable: _database.onTasksChanged(),
       builder: (context, box, child) {
         return FutureBuilder<List<Task>>(
           future: _getData(context),
@@ -110,11 +134,16 @@ class _AllTasksPageState extends State<AllTasksPage> {
                 padding: EdgeInsets.only(right: 16.0),
               ),
               direction: DismissDirection.endToStart,
-              onDismissed: (direction) => _delete(context, task),
+              onDismissed: (direction) => _confirmDelete(context, task),
               child: TaskInfoCard(
                 task: task,
-                onTap: () => TaskInfoPage.show(context, task),
-                onLongPress: () => _markAsDone(context, task),
+                onTap: () => TaskInfoPage.show(
+                  context: context,
+                  task: task,
+                  database: _database,
+                  notificationsService: _notificationsService,
+                ),
+                onLongPress: () => _markTaskAsDone(context, task),
               ),
             ),
           ),

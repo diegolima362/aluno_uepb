@@ -14,11 +14,15 @@ final _days = {
 class CourseFullInfoCard extends StatelessWidget {
   final Course course;
   final VoidCallback onTap;
+  final Color customCardColor;
+  final double customElevation;
 
   const CourseFullInfoCard({
     Key key,
     @required this.course,
     this.onTap,
+    this.customCardColor,
+    this.customElevation,
   }) : super(key: key);
 
   List<Widget> _buildHeader(Course course) {
@@ -40,7 +44,7 @@ class CourseFullInfoCard extends StatelessWidget {
           ),
         ),
         trailing: course.isCurrentClass
-            ? Icon(Icons.timer, color: CustomThemes.accentColor)
+            ? Icon(Icons.av_timer, color: CustomThemes.accentColor)
             : null,
       ),
       Row(
@@ -81,7 +85,7 @@ class CourseFullInfoCard extends StatelessWidget {
           return PieChartSectionData(
             showTitle: false,
             title: '${course.absencesLimit}',
-            color: Theme.of(context).canvasColor,
+            color: CustomThemes.accentColor.withAlpha(25),
             value: limit < current ? 0 : limit - current,
             radius: radius,
           );
@@ -186,7 +190,8 @@ class CourseFullInfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 2.0,
+        elevation: customElevation ?? 2.0,
+        color: customCardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
