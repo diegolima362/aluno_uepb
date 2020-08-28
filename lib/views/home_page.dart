@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'cupertino_home_scaffold.dart';
 import 'home/home.dart';
+import 'loading/loading_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -55,18 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildContent() {
     if (_isLoading)
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              const SizedBox(height: 20),
-              Text('Carregando ...'),
-            ],
-          ),
-        ),
-      );
+      return LoadingPage();
     else
       return CupertinoHomeScaffold(
         currentTab: _currentTab,

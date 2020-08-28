@@ -69,7 +69,7 @@ class _SingInFormChangeNotifierState extends State<SingInFormChangeNotifier> {
       Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          'Entre com os dados do controle acadêmico',
+          'Entre com seus dados do controle acadêmico',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.w300,
@@ -93,41 +93,47 @@ class _SingInFormChangeNotifierState extends State<SingInFormChangeNotifier> {
   }
 
   Widget _buildPasswordTextField() {
-    return TextField(
-      controller: _passwordController,
-      focusNode: _passwordFocusNode,
-      decoration: InputDecoration(
-        hintText: 'Senha',
-        errorText: model.passwordErrorText,
-        enabled: model.isLoading == false,
-        icon: Icon(Icons.lock),
-        border: InputBorder.none,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+      child: TextField(
+        controller: _passwordController,
+        focusNode: _passwordFocusNode,
+        decoration: InputDecoration(
+          hintText: 'Senha',
+          errorText: model.passwordErrorText,
+          enabled: model.isLoading == false,
+          icon: Icon(Icons.lock),
+          border: InputBorder.none,
+        ),
+        obscureText: true,
+        textInputAction: TextInputAction.done,
+        onChanged: model.updatePassword,
+        onEditingComplete: model.canSubmit ? _submit : null,
       ),
-      obscureText: true,
-      textInputAction: TextInputAction.done,
-      onChanged: model.updatePassword,
-      onEditingComplete: model.canSubmit ? _submit : null,
     );
   }
 
   Widget _buildUserTextField() {
-    return TextField(
-      controller: _userController,
-      focusNode: _userFocusNode,
-      decoration: InputDecoration(
-        hintText: 'Matrícula',
-        errorText: model.userErrorText,
-        enabled: model.isLoading == false,
-        border: InputBorder.none,
-        icon: Icon(Icons.person),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+      child: TextField(
+        controller: _userController,
+        focusNode: _userFocusNode,
+        decoration: InputDecoration(
+          hintText: 'Matrícula',
+          errorText: model.userErrorText,
+          enabled: model.isLoading == false,
+          border: InputBorder.none,
+          icon: Icon(Icons.person),
+        ),
+        autocorrect: false,
+        autofocus: false,
+        enableSuggestions: true,
+        keyboardType: TextInputType.number,
+        textInputAction: TextInputAction.next,
+        onChanged: model.updateUser,
+        onEditingComplete: () => _userEditingComplete(),
       ),
-      autocorrect: false,
-      autofocus: false,
-      enableSuggestions: true,
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.next,
-      onChanged: model.updateUser,
-      onEditingComplete: () => _userEditingComplete(),
     );
   }
 

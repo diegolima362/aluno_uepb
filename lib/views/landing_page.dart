@@ -19,7 +19,10 @@ class LandingPage extends StatelessWidget {
         } else {
           return Provider<Database>(
             create: (_) => HiveDatabase(),
-            child: HomePage(),
+            child: Provider<NotificationsService>(
+              create: (_) => LocalNotificationsService(),
+              child: HomePage(),
+            ),
           );
         }
       },
