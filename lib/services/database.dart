@@ -53,7 +53,8 @@ abstract class Database {
   ValueListenable<Box> onTasksChanged();
 }
 
-String documentIdFromCurrentDate() => DateTime.now().hashCode.toString();
+String documentIdFromCurrentDate() =>
+    (DateTime.now().millisecondsSinceEpoch / 6000).floor().toString();
 
 class HiveDatabase implements Database {
   Profile _profile;

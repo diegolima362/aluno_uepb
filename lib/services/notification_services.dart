@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:aluno_uepb/models/models.dart';
-import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -52,7 +51,7 @@ class LocalNotificationsService implements NotificationsService {
   }
 
   void initializePlatformSpecifics() {
-    final android = AndroidInitializationSettings('ic_stat_name');
+    final android = AndroidInitializationSettings("@drawable/ic_stat_name");
 
     final ios = IOSInitializationSettings(
       requestAlertPermission: true,
@@ -176,17 +175,8 @@ class LocalNotificationsService implements NotificationsService {
       'CHANNEL_ID 1',
       'CHANNEL_NAME 1',
       "CHANNEL_DESCRIPTION 1",
-      icon: 'ic_stat_name',
-      enableLights: true,
-      color: CustomThemes.accentColor,
-      ledColor: CustomThemes.accentColor,
-      ledOnMs: 1000,
-      ledOffMs: 500,
       importance: Importance.Max,
       priority: Priority.High,
-      playSound: true,
-      timeoutAfter: 5000,
-      styleInformation: DefaultStyleInformation(true, true),
     );
 
     final platformChannelSpecifics = NotificationDetails(
