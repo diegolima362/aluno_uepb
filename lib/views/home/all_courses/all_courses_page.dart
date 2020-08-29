@@ -3,6 +3,7 @@ import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/course/course_info_page.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -43,32 +44,24 @@ class AllCoursesPage extends StatelessWidget {
   }
 
   Widget _buildContents(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: FutureBuilder<List<Course>>(
-            future: _getData(context),
-            builder: (context, snapshot) {
-              return Padding(
-                padding: const EdgeInsets.all(0),
-                child: ListItemsBuilder(
-                  itemBuilder: (context, course) => CourseFullInfoCard(
-                    course: course,
-                    onTap: () => CourseInfoPage.show(
-                      context: context,
-                      course: course,
-                    ),
-                  ),
-                  snapshot: snapshot,
-                ),
-              );
-            },
+    return FutureBuilder<List<Course>>(
+      future: _getData(context),
+      builder: (context, snapshot) {
+        return Padding(
+          padding: const EdgeInsets.all(0),
+          child: ListItemsBuilder(
+            adUnitID: "ca-app-pub-5662469668063693/6242120972",
+            itemBuilder: (context, course) => CourseFullInfoCard(
+              course: course,
+              onTap: () => CourseInfoPage.show(
+                context: context,
+                course: course,
+              ),
+            ),
+            snapshot: snapshot,
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 

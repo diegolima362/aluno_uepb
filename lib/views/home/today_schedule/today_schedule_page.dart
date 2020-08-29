@@ -11,6 +11,10 @@ import 'package:provider/provider.dart';
 import '../home.dart';
 
 class TodaySchedulePage extends StatelessWidget {
+  static const _adUnitID = "ca-app-pub-5662469668063693/1451994574";
+
+  // static const _adUnitID = "ca-app-pub-3940256099942544/8135179316";
+
   Future<List<Course>> _getData(BuildContext context) async {
     final database = Provider.of<Database>(context, listen: true);
     List<Course> courses;
@@ -39,10 +43,6 @@ class TodaySchedulePage extends StatelessWidget {
         a.startTimeAtDay(weekday).compareTo(b.startTimeAtDay(weekday)));
 
     return todayClasses;
-  }
-
-  void _print(BuildContext context, Course course) {
-    print(course);
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -106,6 +106,7 @@ class TodaySchedulePage extends StatelessWidget {
               future: _getData(context),
               builder: (context, snapshot) {
                 return ListItemsBuilder(
+                  adUnitID: _adUnitID,
                   itemBuilder: (context, course) => CourseInfoCard(
                     course: course,
                     weekDay: DateTime.now().weekday,

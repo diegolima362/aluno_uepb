@@ -55,6 +55,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   String _comment;
   Course _course;
   bool _checked;
+  bool _haveChanged = false;
   bool _done;
 
   @override
@@ -94,18 +95,12 @@ class _EditTaskPageState extends State<EditTaskPage> {
       final task = _taskFromState();
       await widget.database.addTask(task);
 
-      if (_checked) {
-        widget.notificationsService.setListenerForLowerVersions((_) {});
-        widget.notificationsService.setOnNotificationClick((_) {});
-        widget.notificationsService.scheduleNotification(NotificationModel(
-          id: int.parse(task.id),
-          title: 'Entrega de atividade',
-          body: task.title,
-          dateTime: task.date,
-          payload: task.toString(),
-        ));
-      } else {
-        widget.notificationsService.cancelNotification(int.parse(task.id));
+      if (_haveChanged) {
+        if (_checked) {
+          _setNotification(task);
+        } else {
+          widget.notificationsService.cancelNotification(int.parse(task.id));
+        }
       }
 
       Navigator.of(context).pop();
@@ -115,6 +110,18 @@ class _EditTaskPageState extends State<EditTaskPage> {
         exception: e,
       ).show(context);
     }
+  }
+
+  void _setNotification(Task task) {
+    widget.notificationsService.setListenerForLowerVersions((_) {});
+    widget.notificationsService.setOnNotificationClick((_) {});
+    widget.notificationsService.scheduleNotification(NotificationModel(
+      id: int.parse(task.id),
+      title: task.title,
+      body: task.courseTitle,
+      dateTime: task.date,
+      payload: task.toString(),
+    ));
   }
 
   @override
@@ -220,8 +227,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
         'Definir lembrete',
         style: TextStyle(fontSize: 20.0),
       ),
-      onChanged: ((value) => setState(() => _checked = value)),
       value: _checked,
+      onChanged: ((value) => setState(() {
+            _haveChanged = true;
+            _checked = value;
+          })),
     );
   }
 

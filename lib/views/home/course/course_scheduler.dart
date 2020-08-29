@@ -69,7 +69,7 @@ class _EditTaskPageState extends State<CourseScheduler> {
     super.initState();
   }
 
-  Future<void> _setTaskAndDismiss(BuildContext context) async {
+  Future<void> _setReminderAndDismiss(BuildContext context) async {
     for (int i = 0; i < _selectedDays.length; i++) {
       if (_selectedDays[i]) {
         final date = DateTime(
@@ -81,11 +81,11 @@ class _EditTaskPageState extends State<CourseScheduler> {
         );
 
         try {
-          widget.notificationsService.setListenerForLowerVersions((_){});
-          widget.notificationsService.setOnNotificationClick((_){});
+          widget.notificationsService.setListenerForLowerVersions((_) {});
+          widget.notificationsService.setOnNotificationClick((_) {});
           widget.notificationsService.showWeeklyAtDayTime(
             NotificationModel(
-              id: date.hashCode,
+              id: (date.millisecondsSinceEpoch / 6000).floor(),
               title: _title,
               body: _course.title,
               weekDay: i,
@@ -119,7 +119,7 @@ class _EditTaskPageState extends State<CourseScheduler> {
               style: TextStyle(fontSize: 20.0),
             ),
             onPressed:
-                _course != null ? () => _setTaskAndDismiss(context) : null,
+                _course != null ? () => _setReminderAndDismiss(context) : null,
           )
         ],
       ),
