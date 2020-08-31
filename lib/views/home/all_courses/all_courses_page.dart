@@ -50,7 +50,6 @@ class AllCoursesPage extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.all(0),
           child: ListItemsBuilder(
-            adUnitID: "ca-app-pub-5662469668063693/6242120972",
             itemBuilder: (context, course) => CourseFullInfoCard(
               course: course,
               onTap: () => CourseInfoPage.show(

@@ -3,6 +3,7 @@ import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/all_tasks/task_info_card.dart';
 import 'package:aluno_uepb/views/home/all_tasks/task_info_page.dart';
+import 'package:aluno_uepb/widgets/custom_ad_banner.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
   NotificationsService _notificationsService;
   bool isLoading = false;
 
-  static const _adUnitID = "ca-app-pub-5662469668063693/8475378557";
+  static const _adUnitID = "ca-app-pub-5662469668063693/6262851016";
 
   @override
   void initState() {
@@ -97,54 +98,56 @@ class _AllTasksPageState extends State<AllTasksPage> {
           ),
         ],
       ),
-      body: _buildContent(context),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(child: _buildContent(context)),
+          CustomAdBanner(adUnitID: _adUnitID, height: 100),
+        ],
+      ),
     );
   }
 
   Widget _buildContent(BuildContext context) {
     if (isLoading) return Center(child: CircularProgressIndicator());
-    return Column(
-      children: [
-        Expanded(
-          child: ValueListenableBuilder<Box>(
-            valueListenable: _database.onTasksChanged(),
-            builder: (context, box, child) {
-              return FutureBuilder<List<Task>>(
-                future: _getData(context),
-                builder: (context, snapshot) => ListItemsBuilder(
-                  adUnitID: _adUnitID,
-                  emptyMessage: 'Você não tem atividades agendadas',
-                  snapshot: snapshot,
-                  itemBuilder: (context, task) => Dismissible(
-                    key: UniqueKey(),
-                    background: Container(
-                      color: CustomThemes.accentColor,
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      padding: EdgeInsets.only(right: 16.0),
-                    ),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) => _deleteTask(context, task),
-                    child: TaskInfoCard(
-                      task: task,
-                      onTap: () => TaskInfoPage.show(
-                        context: context,
-                        task: task,
-                        database: _database,
-                        notificationsService: _notificationsService,
-                      ),
-                      onLongPress: () => _markTaskAsDone(context, task),
-                    ),
-                  ),
+    return ValueListenableBuilder<Box>(
+      valueListenable: _database.onTasksChanged(),
+      builder: (context, box, child) {
+        return FutureBuilder<List<Task>>(
+          future: _getData(context),
+          builder: (context, snapshot) => ListItemsBuilder(
+            emptyTitle: 'Nada por aqui',
+            emptyMessage: 'Você não tem atividades agendadas',
+            errorMessage: 'Tivemos um problema',
+            snapshot: snapshot,
+            itemBuilder: (context, task) => Dismissible(
+              key: UniqueKey(),
+              background: Container(
+                color: CustomThemes.accentColor,
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
                 ),
-              );
-            },
+                padding: EdgeInsets.only(right: 16.0),
+              ),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) => _deleteTask(context, task),
+              child: TaskInfoCard(
+                task: task,
+                onTap: () => TaskInfoPage.show(
+                  context: context,
+                  task: task,
+                  database: _database,
+                  notificationsService: _notificationsService,
+                ),
+                onLongPress: () => _markTaskAsDone(context, task),
+              ),
+            ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }

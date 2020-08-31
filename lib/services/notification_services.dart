@@ -51,8 +51,7 @@ class LocalNotificationsService implements NotificationsService {
   }
 
   void initializePlatformSpecifics() {
-    final android = AndroidInitializationSettings("@drawable/ic_stat_name");
-
+    final android = AndroidInitializationSettings("app_icon");
     final ios = IOSInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,

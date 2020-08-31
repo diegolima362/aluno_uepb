@@ -118,9 +118,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
     widget.notificationsService.scheduleNotification(NotificationModel(
       id: int.parse(task.id),
       title: task.title,
-      body: task.courseTitle,
+      body: 'Disc. ' + task.courseTitle,
       dateTime: task.date,
-      payload: task.toString(),
+      payload: '${Format.date(task.date)} ${Format.hours(task.date)}',
     ));
   }
 

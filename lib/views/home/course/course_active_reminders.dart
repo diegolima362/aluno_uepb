@@ -50,7 +50,7 @@ class _CourseActiveRemindersState extends State<CourseActiveReminders> {
         return FutureBuilder<List<PendingNotificationRequest>>(
           future: _getRemindersData(),
           builder: (context, snapshot) => ListItemsBuilder(
-            emptyWidget: Text('Sem alertas registrados'),
+            emptyWidget: Text('Sem alertas agendados'),
             snapshot: snapshot,
             itemBuilder: (context, PendingNotificationRequest reminder) {
               return ListTile(

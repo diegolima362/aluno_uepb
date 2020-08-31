@@ -2,6 +2,7 @@ import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/course/course_info_page.dart';
+import 'package:aluno_uepb/widgets/custom_ad_banner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../home.dart';
 
 class TodaySchedulePage extends StatelessWidget {
-  static const _adUnitID = "ca-app-pub-5662469668063693/1451994574";
+  static const _adUnitID = "ca-app-pub-5662469668063693/4250737676";
 
   // static const _adUnitID = "ca-app-pub-3940256099942544/8135179316";
 
@@ -43,6 +44,22 @@ class TodaySchedulePage extends StatelessWidget {
         a.startTimeAtDay(weekday).compareTo(b.startTimeAtDay(weekday)));
 
     return todayClasses;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 20),
+          _buildHeader(context),
+          Expanded(child: _buildContent(context)),
+          CustomAdBanner(adUnitID: _adUnitID, height: 100),
+        ],
+      ),
+    );
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -92,37 +109,26 @@ class TodaySchedulePage extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 20),
-          _buildHeader(context),
-          Expanded(
-            child: FutureBuilder<List<Course>>(
-              future: _getData(context),
-              builder: (context, snapshot) {
-                return ListItemsBuilder(
-                  adUnitID: _adUnitID,
-                  itemBuilder: (context, course) => CourseInfoCard(
-                    course: course,
-                    weekDay: DateTime.now().weekday,
-                    onTap: () => CourseInfoPage.show(
-                      context: context,
-                      course: course,
-                    ),
-                  ),
-                  filter: _todayClassesList,
-                  snapshot: snapshot,
-                );
-              },
+  Widget _buildContent(BuildContext context) {
+    return FutureBuilder<List<Course>>(
+      future: _getData(context),
+      builder: (context, snapshot) {
+        return ListItemsBuilder(
+          emptyTitle: 'Nada por aqui',
+          emptyMessage: 'Você não tem aulas hoje!',
+          errorMessage: 'Tivemos um problema',
+          itemBuilder: (context, course) => CourseInfoCard(
+            course: course,
+            weekDay: DateTime.now().weekday,
+            onTap: () => CourseInfoPage.show(
+              context: context,
+              course: course,
             ),
           ),
-        ],
-      ),
+          filter: _todayClassesList,
+          snapshot: snapshot,
+        );
+      },
     );
   }
 }

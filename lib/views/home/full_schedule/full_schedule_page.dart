@@ -55,7 +55,6 @@ class FullSchedulePage extends StatelessWidget {
       future: _getData(context),
       builder: (context, snapshot) {
         return ListItemsBuilder(
-          adUnitID: _adUnitID,
           itemBuilder: (context, schedule) => WeekDayScheduleCard(
             schedule: schedule,
             onTap: () {},
