@@ -1,7 +1,7 @@
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
-import 'package:aluno_uepb/views/home/course/course_info_page.dart';
+import 'package:aluno_uepb/views/home/course_info/course_info_page.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -2,8 +2,10 @@ import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:weekday_selector/weekday_selector.dart';
 
 final Map<int, String> _weekDaysMap = {
@@ -59,14 +61,26 @@ class _EditTaskPageState extends State<CourseScheduler> {
   Course _course;
   String _title;
   final List<bool> _selectedDays = List.filled(7, false);
+  FirebaseAnalytics analytics;
 
   @override
   void initState() {
+    analytics = Provider.of<FirebaseAnalytics>(context, listen: false);
+    analytics.setCurrentScreen(screenName: '/course_schedule_page');
     _finalDate = DateTime.now();
     _selectedTime = TimeOfDay.now();
     _course = widget.course;
     _title = 'Inicio da aula';
     super.initState();
+  }
+
+  Future<void> _sendAnalyticsEvent(NotificationModel notification) async {
+    await analytics.logEvent(
+      name: 'reminder_created',
+      parameters: <String, dynamic>{
+        'setedTitle': notification.title != 'Inicio da aula',
+      },
+    );
   }
 
   Future<void> _setReminderAndDismiss(BuildContext context) async {
@@ -81,18 +95,20 @@ class _EditTaskPageState extends State<CourseScheduler> {
         );
 
         try {
+          final notification = NotificationModel(
+            id: (date.millisecondsSinceEpoch / 6000).floor(),
+            title: _title,
+            body: _course.title,
+            weekDay: i,
+            dateTime: date,
+            payload: '${_weekDaysMap[i]} ${Format.hours(date)}',
+          );
+
           widget.notificationsService.setListenerForLowerVersions((_) {});
           widget.notificationsService.setOnNotificationClick((_) {});
-          widget.notificationsService.showWeeklyAtDayTime(
-            NotificationModel(
-              id: (date.millisecondsSinceEpoch / 6000).floor(),
-              title: _title,
-              body: _course.title,
-              weekDay: i,
-              dateTime: date,
-              payload: '${_weekDaysMap[i]} ${Format.hours(date)}',
-            ),
-          );
+          widget.notificationsService.showWeeklyAtDayTime(notification);
+
+          _sendAnalyticsEvent(notification);
         } on PlatformException catch (e) {
           PlatformExceptionAlertDialog(
             title: 'Operação Falhou',

@@ -3,13 +3,13 @@ import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/all_courses/course_full_info_card.dart';
 import 'package:aluno_uepb/views/home/all_tasks/all_tasks.dart';
-import 'package:aluno_uepb/views/home/course/course_active_reminders.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../home.dart';
+import 'course_active_reminders.dart';
 import 'course_scheduler.dart';
 
 class CourseInfoPage extends StatelessWidget {

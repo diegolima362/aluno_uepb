@@ -16,7 +16,7 @@ class CustomAdBanner extends StatelessWidget {
     final textColor = currentTheme.textTheme.bodyText1.color;
     final defaultTextTheme = NativeTextStyle(color: textColor);
     return Container(
-      height: height,
+      height: height ?? MediaQuery.of(context).size.height * 0.1,
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.only(bottom: 20.0),
       child: NativeAdmob(
@@ -36,7 +36,7 @@ class CustomAdBanner extends StatelessWidget {
         numberAds: 1,
         loading: CupertinoActivityIndicator(),
         controller: NativeAdmobController(),
-        type: NativeAdmobType.banner,
+        type: NativeAdmobType.full,
       ),
     );
   }

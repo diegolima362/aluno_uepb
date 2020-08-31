@@ -1,8 +1,8 @@
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
-import 'package:aluno_uepb/views/home/course/course_info_page.dart';
-import 'package:aluno_uepb/widgets/custom_ad_banner.dart';
+import 'package:aluno_uepb/views/home/course_info/course_info_page.dart';
+import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../home.dart';
 
 class TodaySchedulePage extends StatelessWidget {
-  static const _adUnitID = "ca-app-pub-5662469668063693/4250737676";
+  static const _adUnitID = AdUnitIds.homeAdID;
 
   // static const _adUnitID = "ca-app-pub-3940256099942544/8135179316";
 
@@ -56,7 +56,7 @@ class TodaySchedulePage extends StatelessWidget {
           const SizedBox(height: 20),
           _buildHeader(context),
           Expanded(child: _buildContent(context)),
-          CustomAdBanner(adUnitID: _adUnitID, height: 100),
+          CustomAdBanner(adUnitID: _adUnitID),
         ],
       ),
     );

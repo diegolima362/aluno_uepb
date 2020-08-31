@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import '../home.dart';
 
 class AccountPage extends StatelessWidget {
+  static const _settingPageAd = AdUnitIds.settingPageAd;
+
   Future<Profile> _getData(BuildContext context,
       {bool ignoreLocalData: false}) async {
     final database = Provider.of<Database>(context, listen: false);
@@ -32,6 +34,69 @@ class AccountPage extends StatelessWidget {
         exception: e,
       ).show(context);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Meu perfil',
+          style: TextStyle(color: CustomThemes.accentColor),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+              color: CustomThemes.accentColor,
+            ),
+            onPressed: () => Navigator.of(context).push(
+              CupertinoPageRoute(
+                fullscreenDialog: false,
+                builder: (context) => PreferencesPage(),
+              ),
+            ),
+          ),
+        ],
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Expanded(child: _buildContent(context)),
+          CustomAdBanner(adUnitID: _settingPageAd),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return FutureBuilder<Profile>(
+      future: _getData(context),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final user = snapshot.data;
+          return _buildUserInfoSection(context, user);
+        } else if (snapshot.hasError) {
+          return EmptyContent(
+            title: 'Algo deu errado',
+            message: snapshot.error.runtimeType == PlatformException
+                ? '${(snapshot.error as PlatformException).message}'
+                : snapshot.error.toString(),
+          );
+        } else {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20.0),
+                Text('Carregando ...'),
+              ],
+            ),
+          );
+        }
+      },
+    );
   }
 
   Widget _buildUserInfoSection(BuildContext context, Profile profile) {
@@ -81,70 +146,6 @@ class AccountPage extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: FutureBuilder<Profile>(
-            future: _getData(context),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final user = snapshot.data;
-                return _buildUserInfoSection(context, user);
-              } else if (snapshot.hasError) {
-                return EmptyContent(
-                  title: 'Algo deu errado',
-                  message: snapshot.error.runtimeType == PlatformException
-                      ? '${(snapshot.error as PlatformException).message}'
-                      : snapshot.error.toString(),
-                );
-              } else {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 20.0),
-                      Text('Carregando ...'),
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Meu perfil',
-          style: TextStyle(color: CustomThemes.accentColor),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: CustomThemes.accentColor,
-            ),
-            onPressed: () => Navigator.of(context).push(
-              CupertinoPageRoute(
-                fullscreenDialog: false,
-                builder: (context) => PreferencesPage(),
-              ),
-            ),
-          ),
-        ],
-        elevation: 0,
-      ),
-      body: _buildBody(context),
     );
   }
 }

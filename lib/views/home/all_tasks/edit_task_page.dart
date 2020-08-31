@@ -3,9 +3,11 @@ import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/all_tasks/course_picker.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class EditTaskPage extends StatefulWidget {
   const EditTaskPage({
@@ -49,6 +51,7 @@ class EditTaskPage extends StatefulWidget {
 }
 
 class _EditTaskPageState extends State<EditTaskPage> {
+  FirebaseAnalytics analytics;
   DateTime _finalDate;
   TimeOfDay _finalTime;
   String _title;
@@ -60,6 +63,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
   @override
   void initState() {
+    analytics = Provider.of<FirebaseAnalytics>(context, listen: false);
+    analytics.setCurrentScreen(screenName: '/edit_task_page');
+
     final date = widget.task?.date ?? DateTime.now();
 
     _finalDate = DateTime(date.year, date.month, date.day);
@@ -90,6 +96,17 @@ class _EditTaskPageState extends State<EditTaskPage> {
     );
   }
 
+  Future<void> _sendAnalyticsEvent(Task task) async {
+    await analytics.logEvent(
+      name: 'task_created',
+      parameters: <String, dynamic>{
+        'setedTitle': task.title != 'Sem titulo',
+        'setedComments': task.comment?.isNotEmpty,
+        'setedReminder': task.setReminder,
+      },
+    );
+  }
+
   Future<void> _setTaskAndDismiss(BuildContext context) async {
     try {
       final task = _taskFromState();
@@ -103,6 +120,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
         }
       }
 
+      _sendAnalyticsEvent(task);
       Navigator.of(context).pop();
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(

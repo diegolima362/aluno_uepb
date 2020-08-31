@@ -12,8 +12,6 @@ import '../home.dart';
 import 'week_day_schedule_card.dart';
 
 class FullSchedulePage extends StatelessWidget {
-  final _adUnitID = 'ca-app-pub-5662469668063693/7852562025';
-
   List<Course> _buildWeekDaySchedule(List<Course> courses, int weekDay) {
     final todayClasses = List<Course>();
 

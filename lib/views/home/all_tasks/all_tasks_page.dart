@@ -3,7 +3,6 @@ import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/all_tasks/task_info_card.dart';
 import 'package:aluno_uepb/views/home/all_tasks/task_info_page.dart';
-import 'package:aluno_uepb/widgets/custom_ad_banner.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
   NotificationsService _notificationsService;
   bool isLoading = false;
 
-  static const _adUnitID = "ca-app-pub-5662469668063693/6262851016";
+  static const _adUnitID = AdUnitIds.allTaskPageAd;
 
   @override
   void initState() {
