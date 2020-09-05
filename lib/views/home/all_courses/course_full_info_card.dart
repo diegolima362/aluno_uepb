@@ -44,7 +44,7 @@ class CourseFullInfoCard extends StatelessWidget {
           ),
         ),
         trailing: course.isCurrentClass
-            ? Icon(Icons.av_timer, color: CustomThemes.accentColor)
+            ? Icon(Icons.timer, color: CustomThemes.accentColor)
             : null,
       ),
       Row(
@@ -154,32 +154,59 @@ class CourseFullInfoCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Column(
-          children: [
-            Text('${course.und1Grade}', style: TextStyle(fontSize: 16)),
-            Text(
-              'Und. I',
-              style: TextStyle(fontSize: 12),
-            )
-          ],
+        Container(
+          width: 100,
+          child: Column(
+            children: [
+              Text(
+                '${course.und1Grade}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: CustomThemes.accentColor,
+                ),
+              ),
+              Text(
+                'Und. I',
+                style: TextStyle(fontSize: 12),
+              )
+            ],
+          ),
         ),
-        Column(
-          children: [
-            Text('${course.und2Grade}', style: TextStyle(fontSize: 16)),
-            Text(
-              'Und. II',
-              style: TextStyle(fontSize: 12),
-            )
-          ],
+        Container(
+          width: 100,
+          child: Column(
+            children: [
+              Text(
+                '${course.und2Grade}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: CustomThemes.accentColor,
+                ),
+              ),
+              Text(
+                'Und. II',
+                style: TextStyle(fontSize: 12),
+              )
+            ],
+          ),
         ),
-        Column(
-          children: [
-            Text('${course.finalTest}', style: TextStyle(fontSize: 16)),
-            Text(
-              'Prova Final',
-              style: TextStyle(fontSize: 12),
-            ),
-          ],
+        Container(
+          width: 100,
+          child: Column(
+            children: [
+              Text(
+                '${course.finalTest}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: CustomThemes.accentColor,
+                ),
+              ),
+              Text(
+                'Prova Final',
+                style: TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
         ),
       ],
     );

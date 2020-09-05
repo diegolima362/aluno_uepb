@@ -50,7 +50,7 @@ class ListItemsBuilder<T> extends StatelessWidget {
 
   Widget _buildList(List<T> items) {
     if (items == null || items.isEmpty) {
-      return EmptyContent();
+      return EmptyContent(message: emptyMessage, title: emptyTitle);
     }
 
     return ListView.builder(

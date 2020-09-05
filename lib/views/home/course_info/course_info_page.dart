@@ -3,12 +3,12 @@ import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/all_courses/course_full_info_card.dart';
 import 'package:aluno_uepb/views/home/all_tasks/all_tasks.dart';
+import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../home.dart';
 import 'course_active_reminders.dart';
 import 'course_scheduler.dart';
 
@@ -97,7 +97,6 @@ class CourseInfoPage extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(8.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -117,6 +116,7 @@ class CourseInfoPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Container(
+              padding: EdgeInsets.all(8),
               height: _height * .2,
               child: CourseActiveReminders(
                 notificationsService: notificationsService,
@@ -133,6 +133,7 @@ class CourseInfoPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Container(
+              padding: EdgeInsets.all(8),
               height: _height * .2,
               child: _buildTasks(context),
             ),
@@ -148,13 +149,28 @@ class CourseInfoPage extends StatelessWidget {
       builder: (context, snapshot) => ListItemsBuilder(
         emptyWidget: Text('Sem atividades agendadas'),
         snapshot: snapshot,
-        itemBuilder: (context, task) => TaskInfoCard(
-          task: task,
-          onTap: () => TaskInfoPage.show(
-            context: context,
-            task: task,
-            database: database,
-            notificationsService: notificationsService,
+        itemBuilder: (BuildContext context, Task task) => ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            task.title,
+            style: TextStyle(
+              color: CustomThemes.accentColor,
+              fontSize: 20,
+            ),
+          ),
+          subtitle: Text(Format.date(task.date)),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.arrow_forward_ios_sharp,
+              color: CustomThemes.accentColor,
+              size: 20,
+            ),
+            onPressed: () => TaskInfoPage.show(
+              context: context,
+              task: task,
+              database: database,
+              notificationsService: notificationsService,
+            ),
           ),
         ),
       ),

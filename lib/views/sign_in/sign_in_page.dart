@@ -48,7 +48,7 @@ class SignInPage extends StatelessWidget {
           SizedBox(height: size.height * 0.2),
           Center(
             child: Text(
-              'Made with ❤️ by @diegolima362',
+              'Made with ❤️ by @diegolima_362',
               style: TextStyle(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w700,

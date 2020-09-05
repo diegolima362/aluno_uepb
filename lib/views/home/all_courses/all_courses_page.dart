@@ -8,10 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../home.dart';
 import 'course_full_info_card.dart';
 
-class AllCoursesPage extends StatelessWidget {
+class AllCoursesPage extends StatefulWidget {
+  @override
+  _AllCoursesPageState createState() => _AllCoursesPageState();
+}
+
+class _AllCoursesPageState extends State<AllCoursesPage> {
+  bool isLoading;
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = false;
+  }
+
   Future<List<Course>> _getData(BuildContext context,
       {bool ignoreLocalData: false}) async {
     final database = Provider.of<Database>(context, listen: false);
@@ -22,6 +34,8 @@ class AllCoursesPage extends StatelessWidget {
     } on PlatformException catch (e) {
       throw PlatformException(
           code: 'error_get_courses_data', message: e.message);
+    } catch (e) {
+      print(e);
     }
 
     courses.sort((a, b) => a.title.compareTo(b.title));
@@ -29,8 +43,10 @@ class AllCoursesPage extends StatelessWidget {
   }
 
   Future<void> _syncData(BuildContext context) async {
+    setState(() => isLoading = true);
     try {
       await _getData(context, ignoreLocalData: true);
+      setState(() => isLoading = false);
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Erro ao tentar atualizar',
@@ -39,11 +55,26 @@ class AllCoursesPage extends StatelessWidget {
     }
   }
 
-  void _print(BuildContext context, Course course) {
-    print(course);
-  }
-
   Widget _buildContents(BuildContext context) {
+    if (isLoading)
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            CircularProgressIndicator(),
+            const SizedBox(height: 20),
+            Text(
+              'Atualizando ... ',
+              style: TextStyle(
+                color: CustomThemes.accentColor,
+                fontSize: 16,
+              ),
+            )
+          ],
+        ),
+      );
+
     return FutureBuilder<List<Course>>(
       future: _getData(context),
       builder: (context, snapshot) {
@@ -79,7 +110,8 @@ class AllCoursesPage extends StatelessWidget {
                 Icons.refresh,
                 color: CustomThemes.accentColor,
               ),
-              onPressed: () async => await _syncData(context),
+              onPressed:
+                  isLoading ? null : () async => await _syncData(context),
             )
           ],
           elevation: 0,

@@ -9,13 +9,14 @@ import 'package:provider/provider.dart';
 class PreferencesPage extends StatelessWidget {
   Future<void> _signOut(BuildContext context) async {
     try {
+      final notify = Provider.of<NotificationsService>(context, listen: false);
+      notify.cancelAllNotification();
+
+      final database = Provider.of<Database>(context, listen: false);
+      database.clearData();
+
       final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
-      final notificationsService = Provider.of<NotificationsService>(
-        context,
-        listen: false,
-      );
-      notificationsService.cancelAllNotification();
     } catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Erro ao tentar sair',
@@ -67,10 +68,44 @@ class PreferencesPage extends StatelessWidget {
     }
   }
 
+  void _pickColor(BuildContext context) {
+    final dbContext = context;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: BlockPicker(
+              pickerColor: _getCurrentColor(dbContext),
+              onColorChanged: (color) => _setTheme(dbContext, color: color),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Configurações',
+          style: TextStyle(color: CustomThemes.accentColor),
+        ),
+        iconTheme: IconThemeData(color: CustomThemes.accentColor),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: _buildContents(context),
+    );
+  }
+
   Widget _buildContents(BuildContext context) {
     final darkMode = _isDark(context);
 
     return Card(
+      margin: EdgeInsets.all(10),
       elevation: 2.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Column(
@@ -106,39 +141,6 @@ class PreferencesPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Configurações',
-          style: TextStyle(color: CustomThemes.accentColor),
-        ),
-        iconTheme: IconThemeData(color: CustomThemes.accentColor),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: _buildContents(context),
-    );
-  }
-
-  void _pickColor(BuildContext context) {
-    final dbContext = context;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: SingleChildScrollView(
-            child: BlockPicker(
-              pickerColor: _getCurrentColor(dbContext),
-              onColorChanged: (color) => _setTheme(dbContext, color: color),
-            ),
-          ),
-        );
-      },
     );
   }
 }

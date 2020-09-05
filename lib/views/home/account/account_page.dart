@@ -9,8 +9,20 @@ import 'package:provider/provider.dart';
 
 import '../home.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
+  @override
+  _AccountPageState createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
   static const _settingPageAd = AdUnitIds.settingPageAd;
+  bool isLoading;
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = false;
+  }
 
   Future<Profile> _getData(BuildContext context,
       {bool ignoreLocalData: false}) async {
@@ -27,7 +39,9 @@ class AccountPage extends StatelessWidget {
 
   Future<void> _syncData(BuildContext context) async {
     try {
+      setState(() => isLoading = true);
       await _getData(context, ignoreLocalData: true);
+      setState(() => isLoading = false);
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Erro ao tentar atualizar',
@@ -70,6 +84,25 @@ class AccountPage extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    if (isLoading)
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            CircularProgressIndicator(),
+            const SizedBox(height: 20),
+            Text(
+              'Atualizando ... ',
+              style: TextStyle(
+                color: CustomThemes.accentColor,
+                fontSize: 16,
+              ),
+            )
+          ],
+        ),
+      );
+
     return FutureBuilder<Profile>(
       future: _getData(context),
       builder: (context, snapshot) {
@@ -103,6 +136,7 @@ class AccountPage extends StatelessWidget {
     return ListView(
       children: [
         Card(
+          margin: EdgeInsets.all(10),
           elevation: 2.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),

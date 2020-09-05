@@ -46,32 +46,6 @@ class Scraper {
     return data;
   }
 
-  Future<Map<String, Document>> _requestDOMFake() async {
-    final String baseURL = "https://192.168.0.109:8000";
-
-    Session client = Session();
-
-    Document inicio;
-    Document cadastro;
-    Document rdm;
-
-    try {
-      cadastro = await client.get(baseURL + '/cadastro');
-      inicio = await client.get(baseURL + '/inicio');
-      rdm = await client.get(baseURL + '/rdm');
-    } catch (e) {
-      rethrow;
-    }
-
-    final data = {
-      'inicio': inicio,
-      'cadastro': cadastro,
-      'rdm': rdm,
-    };
-
-    return data;
-  }
-
   Future<Map<String, Document>> _requestDOMProfile() async {
     final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
     final String loginURL =
@@ -106,7 +80,7 @@ class Scraper {
     return data;
   }
 
-  Future<Document> _requestDOMCourses() async {
+  Future<Map<String, Document>> _requestDOMCourses() async {
     final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
     final String loginURL =
         "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
@@ -121,7 +95,7 @@ class Scraper {
     Document rdm;
 
     // Start cookies
-    await client.get(baseURL + '/rdm');
+    rdm = await client.get(baseURL + '/index');
 
     try {
       await client.post(loginURL, formData);
@@ -130,8 +104,38 @@ class Scraper {
       rethrow;
     }
 
-    return rdm;
+    final data = {
+      'rdm': rdm,
+    };
+
+    return data;
   }
+
+  // Future<Map<String, Document>> _requestDOMFake() async {
+  //   final String baseURL = "https://192.168.0.109:8000";
+
+  //   Session client = Session();
+
+  //   Document inicio;
+  //   Document cadastro;
+  //   Document rdm;
+
+  //   try {
+  //     cadastro = await client.get(baseURL + '/cadastro');
+  //     inicio = await client.get(baseURL + '/inicio');
+  //     rdm = await client.get(baseURL + '/rdm');
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+
+  //   final data = {
+  //     'inicio': inicio,
+  //     'cadastro': cadastro,
+  //     'rdm': rdm,
+  //   };
+
+  //   return data;
+  // }
 
 //  Future<Map<String, Map<String, Document>>> _requestDOMFake(
 //      {@required String baseURL}) async {
@@ -330,8 +334,8 @@ class Scraper {
     return _buildProfile(personalData, homeInfo);
   }
 
-  Future<List<Map<String, dynamic>>> getCourses() async {
-    Document _dom;
+  Future<Map<String, dynamic>> getCourses() async {
+    Map<String, Document> _dom;
 
     try {
       _dom = await _requestDOMCourses();
@@ -341,24 +345,30 @@ class Scraper {
 
     if (_dom == null) return null;
 
-    final courses = _sanitizeCourses(_dom);
+    final data = {
+      'courses': _sanitizeCourses(_dom['rdm']),
+    };
 
-    return courses;
+    return data;
   }
 
   Future<Map<String, dynamic>> getProfile() async {
     Map<String, Document> _dom;
 
     try {
+      print('get dom');
       _dom = await _requestDOMProfile();
     } catch (e) {
       rethrow;
     }
 
+    print('ok dom');
     if (_dom == null) return null;
-
-    final profile = _sanitizeProfile(_dom);
-
+    print('go sanitize');
+    final profile = {
+      'profile': _sanitizeProfile(_dom),
+    };
+    print('back from sanitize');
     return profile;
   }
 
@@ -373,11 +383,11 @@ class Scraper {
 
     if (_dom == null) return null;
 
-    final profile = {
+    final data = {
       'profile': _sanitizeProfile(_dom),
       'courses': _sanitizeCourses(_dom['rdm']),
     };
 
-    return profile;
+    return data;
   }
 }

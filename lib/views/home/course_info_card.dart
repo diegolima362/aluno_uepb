@@ -43,12 +43,11 @@ class CourseInfoCard extends StatelessWidget {
                 subtitle: Text(
                   course.professor,
                   style: TextStyle(
-                    fontWeight: FontWeight.w300,
                     fontSize: 14.0,
                   ),
                 ),
                 trailing: course.isCurrentClass
-                    ? Icon(Icons.av_timer, color: CustomThemes.accentColor)
+                    ? Icon(Icons.timer_sharp, color: CustomThemes.accentColor)
                     : null,
               ),
               Row(

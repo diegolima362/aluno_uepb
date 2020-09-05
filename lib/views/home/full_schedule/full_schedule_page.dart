@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../home.dart';
 import 'week_day_schedule_card.dart';
 
 class FullSchedulePage extends StatelessWidget {

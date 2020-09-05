@@ -12,10 +12,6 @@ import 'package:provider/provider.dart';
 import '../home.dart';
 
 class TodaySchedulePage extends StatelessWidget {
-  static const _adUnitID = AdUnitIds.homeAdID;
-
-  // static const _adUnitID = "ca-app-pub-3940256099942544/8135179316";
-
   Future<List<Course>> _getData(BuildContext context) async {
     final database = Provider.of<Database>(context, listen: true);
     List<Course> courses;
@@ -31,17 +27,14 @@ class TodaySchedulePage extends StatelessWidget {
   }
 
   List<Course> _todayClassesList(List<Course> items) {
-    final todayClasses = List<Course>();
-    final weekday = DateTime.now().weekday;
+    final today = DateTime.now().weekday;
 
-    items.forEach((element) {
-      final days = element.schedule.map((e) => e.weekDay).toList();
-      final contains = days.indexOf(weekday);
-      if (contains != -1) todayClasses.add(element);
-    });
+    final List<Course> todayClasses = items
+        .where((e) => e.schedule.map((e) => e.weekDay).toList().contains(today))
+        .toList();
 
-    todayClasses.sort((a, b) =>
-        a.startTimeAtDay(weekday).compareTo(b.startTimeAtDay(weekday)));
+    todayClasses.sort(
+        (a, b) => a.startTimeAtDay(today).compareTo(b.startTimeAtDay(today)));
 
     return todayClasses;
   }
@@ -56,7 +49,6 @@ class TodaySchedulePage extends StatelessWidget {
           const SizedBox(height: 20),
           _buildHeader(context),
           Expanded(child: _buildContent(context)),
-          CustomAdBanner(adUnitID: _adUnitID),
         ],
       ),
     );

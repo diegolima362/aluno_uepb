@@ -2,7 +2,7 @@ import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'home/tab_item.dart';
+import 'tab_item.dart';
 
 class CupertinoHomeScaffold extends StatelessWidget {
   final TabItem currentTab;

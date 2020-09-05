@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-import 'home_page.dart';
+import 'home/home_page.dart';
 import 'sign_in/sign_in.dart';
 
 class LandingPage extends StatelessWidget {

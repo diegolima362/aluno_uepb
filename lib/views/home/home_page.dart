@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'cupertino_home_scaffold.dart';
-import 'home/home.dart';
-import 'loading/loading_page.dart';
+import '../home/cupertino_home_scaffold.dart';
+import 'home.dart';
+import '../loading/loading_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -54,18 +54,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  Widget _buildContent() {
-    if (_isLoading)
-      return LoadingPage();
-    else
-      return CupertinoHomeScaffold(
-        currentTab: _currentTab,
-        onSelectTab: _select,
-        widgetBuilders: _widgetBuilders,
-        navigatorKeys: _navigatorKeys,
-      );
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -81,5 +69,17 @@ class _HomePageState extends State<HomePage> {
         child: _buildContent(),
       ),
     );
+  }
+
+  Widget _buildContent() {
+    if (_isLoading)
+      return LoadingPage();
+    else
+      return CupertinoHomeScaffold(
+        currentTab: _currentTab,
+        onSelectTab: _select,
+        widgetBuilders: _widgetBuilders,
+        navigatorKeys: _navigatorKeys,
+      );
   }
 }

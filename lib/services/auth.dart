@@ -61,10 +61,7 @@ class Auth implements AuthBase {
   }
 
   @override
-  Future<void> signOut() async {
-    HiveDatabase.clearBoxes();
-    await Hive.box(BoxesName.LOGIN_BOX).clear();
-  }
+  Future<void> signOut() async => await Hive.box(BoxesName.LOGIN_BOX).clear();
 
   @override
   ValueListenable<Box> get onAuthStateChanged =>

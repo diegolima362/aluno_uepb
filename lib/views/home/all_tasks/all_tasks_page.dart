@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-import '../list_items_builder.dart';
+import '../../../widgets/list_items_builder.dart';
 import 'edit_task_page.dart';
 
 class AllTasksPage extends StatefulWidget {

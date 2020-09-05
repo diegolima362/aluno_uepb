@@ -13,7 +13,7 @@ class LoadingPage extends StatelessWidget {
             CircularProgressIndicator(),
             const SizedBox(height: 40),
             Text(
-              'Preparando seu primeiro acesso ...',
+              'Carrengando suas informações ...',
               style: TextStyle(fontSize: 16),
             ),
             Expanded(child: SizedBox()),

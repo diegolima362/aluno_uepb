@@ -22,7 +22,7 @@ class BoxesName {
 }
 
 abstract class Database {
-  Future<Map<String, dynamic>> getAllData({bool ignoreLocalData});
+  Future<Map<String, dynamic>> getAllData({bool getLocalData});
 
   Future<List<Task>> getTasksData();
 
@@ -73,10 +73,11 @@ class HiveDatabase implements Database {
     await Hive.openBox(BoxesName.PROFILE_BOX);
   }
 
-  Future<Map<String, dynamic>> getAllData({bool ignoreLocalData: false}) async {
-    if (!ignoreLocalData) {
+  Future<Map<String, dynamic>> getAllData({bool getLocalData: true}) async {
+    if (getLocalData) {
       // return data from cache
-      if (_courses != null) return {'courses': _courses, 'profile': _profile};
+      if (_courses != null && _profile != null)
+        return {'courses': _courses, 'profile': _profile};
 
       // return data from local database
       _courses = await _getLocalCoursesData();
@@ -99,7 +100,7 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
-//     open boxes to store data
+    // open boxes to store data
     final boxCourses = await Hive.openBox(BoxesName.COURSES_BOX);
     final boxProfile = await Hive.openBox(BoxesName.PROFILE_BOX);
 
@@ -139,23 +140,19 @@ class HiveDatabase implements Database {
     if (!ignoreLocalData) {
       if (_courses != null) return _courses;
 
-      print('> HiveDatabase > getCoursesData : check data in database');
       _courses = await _getLocalCoursesData();
 
       if (_courses != null) {
-        print('> HiveDatabase > getCoursesData : found data in database');
         return _courses;
       }
     }
 
     try {
-      print('> HiveDatabase > getCoursesData : get remote data');
       _courses = await _getRemoteCoursesData();
     } catch (e) {
       rethrow;
     }
 
-    print('> HiveDatabase > getCoursesData : return remote data');
     return _courses;
   }
 
@@ -179,13 +176,15 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
+    // open boxes to store data
     final boxCourses = await Hive.openBox(BoxesName.COURSES_BOX);
+
     await boxCourses.clear();
 
     final user = _getCurrentUser();
     final scraper = Scraper(user: user.user, password: user.password);
 
-    List<Map<String, dynamic>> data;
+    Map<String, dynamic> data;
 
     try {
       data = await scraper.getCourses();
@@ -193,8 +192,9 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
-    _courses = _buildCourses(data);
-    await boxCourses.put('courses', data);
+    _courses = _buildCourses(data['courses']);
+
+    await boxCourses.put('courses', data['courses']);
 
     return _courses;
   }
@@ -249,7 +249,9 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
+    // open boxes to store data
     final boxProfile = await Hive.openBox(BoxesName.PROFILE_BOX);
+
     await boxProfile.clear();
 
     final user = _getCurrentUser();
@@ -263,26 +265,14 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
-    _profile = _buildProfile(data);
+    _profile = _buildProfile(data['profile']);
 
-    await boxProfile.put('profile', data);
+    await boxProfile.put('profile', data['profile']);
 
     return _profile;
   }
 
   Profile _buildProfile(Map<dynamic, dynamic> map) => Profile.fromMap(map);
-
-  static Future<void> clearBoxes() async {
-    final coursesBox = await Hive.openBox(BoxesName.COURSES_BOX);
-    final profileBox = await Hive.openBox(BoxesName.PROFILE_BOX);
-    final tasksBox = await Hive.openBox(BoxesName.TASKS_BOX);
-
-    await coursesBox.clear();
-    await profileBox.clear();
-    await tasksBox.clear();
-
-    await Hive.box(BoxesName.THEME_BOX).clear();
-  }
 
   // Get tasks data
   @override
@@ -309,7 +299,16 @@ class HiveDatabase implements Database {
 
   @override
   Future<void> clearData() async {
-    await clearBoxes();
+    final coursesBox = await Hive.openBox(BoxesName.COURSES_BOX);
+    final profileBox = await Hive.openBox(BoxesName.PROFILE_BOX);
+    final tasksBox = await Hive.openBox(BoxesName.TASKS_BOX);
+
+    await coursesBox.clear();
+    await profileBox.clear();
+    await tasksBox.clear();
+
+    await Hive.box(BoxesName.THEME_BOX).clear();
+
     _profile = null;
     _courses = null;
   }
@@ -350,7 +349,7 @@ class HiveDatabase implements Database {
 
   @override
   Future<void> syncData() async {
-    await getAllData(ignoreLocalData: true);
+    await getAllData(getLocalData: false);
   }
 
   static ValueListenable<Box> get onDarkModeStateChanged =>

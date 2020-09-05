@@ -15,9 +15,7 @@ class CustomThemes {
     900: accentColor.withOpacity(1),
   };
 
-  static void setColor(Color color) {
-    accentColor = color;
-  }
+  static void setColor(Color color) => accentColor = color;
 
   static ThemeData get light => ThemeData(
         cursorColor: accentColor,
@@ -32,7 +30,7 @@ class CustomThemes {
         ),
         backgroundColor: Colors.white,
         canvasColor: Colors.white,
-        cardTheme: CardTheme(color: Color(0xFFEEEEEE)),
+        cardTheme: const CardTheme(color: const Color(0xEEFFFFFF)),
         accentColor: accentColor,
         brightness: Brightness.light,
         primarySwatch: MaterialColor(accentColor.value, swash),
@@ -47,12 +45,16 @@ class CustomThemes {
         textSelectionHandleColor: Colors.white70,
         appBarTheme: AppBarTheme(
           brightness: Brightness.dark,
-          color: Color(0xFF101010),
+          color: Colors.black,
         ),
+        dialogBackgroundColor: const Color(0xFF101010),
         toggleableActiveColor: accentColor,
-        backgroundColor: Colors.black87,
-        canvasColor: Color(0xFF101010),
-        cardTheme: CardTheme(color: Color(0xFF252525)),
+        backgroundColor: Colors.black,
+        canvasColor: Colors.black,
+        cardTheme: const CardTheme(
+          color: const Color.fromARGB(255, 25, 25, 25),
+          shadowColor: const Color(0xFFAAAAAA),
+        ),
         accentColor: accentColor,
         brightness: Brightness.dark,
         primarySwatch: MaterialColor(accentColor.value, swash),

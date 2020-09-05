@@ -1,10 +1,9 @@
 import 'package:aluno_uepb/models/models.dart';
 import 'package:aluno_uepb/services/notification_services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import '../home.dart';
 
 class CourseActiveReminders extends StatefulWidget {
   final NotificationsService notificationsService;
