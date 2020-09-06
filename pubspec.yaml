@@ -44,6 +44,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - images/
   # To add assets to your application, add an assets section, like this:
 #  assets:
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,5 +1,6 @@
 import 'package:aluno_uepb/services/services.dart';
 import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:aluno_uepb/views/home/about_me/about_me_page.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,43 +105,64 @@ class PreferencesPage extends StatelessWidget {
   Widget _buildContents(BuildContext context) {
     final darkMode = _isDark(context);
 
-    return Card(
-      margin: EdgeInsets.all(10),
-      elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            title: Text('Modo escuro'),
-            trailing: Switch(
-              value: darkMode,
-              onChanged: (val) => _setTheme(context, isDark: !darkMode),
-            ),
+    return Column(
+      children: [
+        Card(
+          margin: EdgeInsets.all(10),
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          Divider(height: 1.0),
-          ListTile(
-            title: Text('Mudar cor de destaque'),
-            onTap: () => _pickColor(context),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('Modo escuro'),
+                trailing: Switch(
+                  value: darkMode,
+                  onChanged: (val) => _setTheme(context, isDark: !darkMode),
+                ),
+              ),
+              Divider(height: 1.0),
+              ListTile(
+                title: Text('Mudar cor de destaque'),
+                onTap: () => _pickColor(context),
+              ),
+              Divider(height: 1.0),
+              ListTile(
+                title: Text('Atualizar Informações'),
+                onTap: () => _syncData(context),
+              ),
+              Divider(height: 1.0),
+              ListTile(
+                title: Text('Sobre o aplicativo'),
+                onTap: () async {
+                  return await Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                      builder: (context) => AboutMePage(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          Divider(height: 1.0),
-          ListTile(
-            title: Text('Atualizar Informações'),
-            onTap: () => _syncData(context),
+        ),
+        Card(
+          margin: EdgeInsets.all(10),
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          Divider(height: 1.0),
-          ListTile(
+          child: ListTile(
             title: Text(
               'Sair',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: CustomThemes.accentColor,
-              ),
+              style: TextStyle(fontSize: 18.0),
             ),
             onTap: () => _confirmSignOut(context),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
