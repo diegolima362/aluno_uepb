@@ -8,6 +8,7 @@ import 'package:flutter_native_admob/native_admob_options.dart';
 class CustomAdBanner extends StatelessWidget {
   final String adUnitID;
   final double height;
+
   const CustomAdBanner({Key key, this.adUnitID, this.height}) : super(key: key);
 
   @override

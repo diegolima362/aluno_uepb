@@ -46,7 +46,10 @@ class PlatformAlertDialog extends PlatformWidget {
   @override
   Widget buildMaterialWidget(BuildContext context) {
     return AlertDialog(
-      title: Text(title,style: TextStyle(color: CustomThemes.accentColor),),
+      title: Text(
+        title,
+        style: TextStyle(color: CustomThemes.accentColor),
+      ),
       content: Text(content),
       actions: _buildActions(context),
     );
