@@ -6,6 +6,8 @@ Features:
 
 - Horário do dia e da semana completa
 - Informações das cadeiras: Professor, faltas, horários e notas
+- Definir lembretes de atividades
+- Criar alertas para inicio de aulas
 - Dados Offline depois do primeiro login
 
 # Avisos:
@@ -23,5 +25,5 @@ build jul 17, 2020
 
 [**Apks v1.0.0**](https://drive.google.com/drive/folders/1RRPdX84snPGFUWBsbWo9YyGJwEQaml91?usp=sharing)
 
-
+![Screenshots](./media/banner.jpg)
 
