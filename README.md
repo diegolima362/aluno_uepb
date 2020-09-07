@@ -21,7 +21,7 @@ O aplicativo só realiza operações de leitura, nenhum dado é alterado na pág
 
 ### APKs
 
-build jul 17, 2020
+build sep 7, 2020
 
 [**Apks v1.0.0**](https://drive.google.com/drive/folders/1RRPdX84snPGFUWBsbWo9YyGJwEQaml91?usp=sharing)
 
