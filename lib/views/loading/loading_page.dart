@@ -13,12 +13,12 @@ class LoadingPage extends StatelessWidget {
             CircularProgressIndicator(),
             const SizedBox(height: 40),
             Text(
-              'Carrengando suas informações ...',
+              'Carregando suas informações ...',
               style: TextStyle(fontSize: 16),
             ),
             Expanded(child: SizedBox()),
             Text(
-              'Estamos salvando seus dados offline\npara os próximos acessos',
+              'Salvando seus dados offline\npara os próximos acessos',
               style: TextStyle(fontSize: 12),
               textAlign: TextAlign.center,
               maxLines: 2,

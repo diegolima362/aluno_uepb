@@ -102,7 +102,10 @@ class _AllTasksPageState extends State<AllTasksPage> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(child: _buildContent(context)),
-          CustomAdBanner(adUnitID: _adUnitID, height: 100),
+          CustomAdBanner(
+            adUnitID: _adUnitID,
+            height: MediaQuery.of(context).size.height * .1,
+          ),
         ],
       ),
     );

@@ -1,11 +1,12 @@
 import 'package:aluno_uepb/services/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 import '../home/cupertino_home_scaffold.dart';
-import 'home.dart';
 import '../loading/loading_page.dart';
+import 'home.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -72,14 +73,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildContent() {
-    if (_isLoading)
-      return LoadingPage();
-    else
-      return CupertinoHomeScaffold(
-        currentTab: _currentTab,
-        onSelectTab: _select,
-        widgetBuilders: _widgetBuilders,
-        navigatorKeys: _navigatorKeys,
-      );
+    if (_isLoading) return LoadingPage();
+
+    return ValueListenableBuilder<Box>(
+      valueListenable: HiveDatabase.onUpdatePreferences,
+      builder: (BuildContext context, box, Widget child) {
+        final updating = box.get('isUpdating', defaultValue: false);
+        if (updating) return LoadingPage();
+        return CupertinoHomeScaffold(
+          currentTab: _currentTab,
+          onSelectTab: _select,
+          widgetBuilders: _widgetBuilders,
+          navigatorKeys: _navigatorKeys,
+        );
+      },
+      child: null,
+    );
   }
 }

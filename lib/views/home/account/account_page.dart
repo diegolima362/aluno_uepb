@@ -15,22 +15,20 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  bool _updating;
   static const _settingPageAd = AdUnitIds.settingPageAd;
-  bool isLoading;
 
   @override
   void initState() {
     super.initState();
-    isLoading = false;
+    _updating = false;
   }
 
-  Future<Profile> _getData(BuildContext context,
-      {bool ignoreLocalData: false}) async {
+  Future<Profile> _getData(BuildContext context) async {
     final database = Provider.of<Database>(context, listen: false);
-    var profile;
-
+    Profile profile;
     try {
-      profile = await database.getProfileData(ignoreLocalData: ignoreLocalData);
+      profile = await database.getProfileData();
     } on PlatformException catch (e) {
       throw PlatformException(code: 'error_network', message: e.message);
     }
@@ -38,11 +36,14 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<void> _syncData(BuildContext context) async {
+    setState(() => _updating = true);
+    final database = Provider.of<Database>(context, listen: false);
     try {
-      setState(() => isLoading = true);
-      await _getData(context, ignoreLocalData: true);
-      setState(() => isLoading = false);
+      await database.getAllData(getLocalData: false);
+      setState(() => _updating = false);
     } on PlatformException catch (e) {
+      setState(() => _updating = false);
+
       PlatformExceptionAlertDialog(
         title: 'Erro ao tentar atualizar',
         exception: e,
@@ -84,25 +85,6 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Widget _buildContent(BuildContext context) {
-    if (isLoading)
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            CircularProgressIndicator(),
-            const SizedBox(height: 20),
-            Text(
-              'Atualizando ... ',
-              style: TextStyle(
-                color: CustomThemes.accentColor,
-                fontSize: 16,
-              ),
-            )
-          ],
-        ),
-      );
-
     return FutureBuilder<Profile>(
       future: _getData(context),
       builder: (context, snapshot) {
@@ -170,13 +152,19 @@ class _AccountPageState extends State<AccountPage> {
                 title: Text('Curso'),
                 trailing: Text('${profile.program}'),
               ),
-              Divider(height: 1.0),
-              ListTile(
-                title: Text('Sincronizar dados'),
-                trailing: Icon(Icons.refresh, color: CustomThemes.accentColor),
-                onTap: () => _syncData(context),
-              ),
             ],
+          ),
+        ),
+        Card(
+          margin: EdgeInsets.all(10),
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: ListTile(
+            title: Text('Atualizar dados'),
+            trailing: Icon(Icons.refresh, color: CustomThemes.accentColor),
+            onTap: () => _updating ? null : _syncData(context),
           ),
         ),
       ],

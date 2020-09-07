@@ -42,19 +42,6 @@ class _AllCoursesPageState extends State<AllCoursesPage> {
     return courses;
   }
 
-  Future<void> _syncData(BuildContext context) async {
-    setState(() => isLoading = true);
-    try {
-      await _getData(context, ignoreLocalData: true);
-      setState(() => isLoading = false);
-    } on PlatformException catch (e) {
-      PlatformExceptionAlertDialog(
-        title: 'Erro ao tentar atualizar',
-        exception: e,
-      ).show(context);
-    }
-  }
-
   Widget _buildContents(BuildContext context) {
     if (isLoading)
       return Center(
@@ -81,6 +68,7 @@ class _AllCoursesPageState extends State<AllCoursesPage> {
         return Padding(
           padding: const EdgeInsets.all(0),
           child: ListItemsBuilder(
+            snapshot: snapshot,
             itemBuilder: (context, course) => CourseFullInfoCard(
               course: course,
               onTap: () => CourseInfoPage.show(
@@ -88,7 +76,6 @@ class _AllCoursesPageState extends State<AllCoursesPage> {
                 course: course,
               ),
             ),
-            snapshot: snapshot,
           ),
         );
       },
@@ -100,21 +87,11 @@ class _AllCoursesPageState extends State<AllCoursesPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
           title: Text(
             'Disciplinas',
             style: TextStyle(color: CustomThemes.accentColor),
           ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.refresh,
-                color: CustomThemes.accentColor,
-              ),
-              onPressed:
-                  isLoading ? null : () async => await _syncData(context),
-            )
-          ],
-          elevation: 0,
         ),
         body: _buildContents(context),
       ),

@@ -3,7 +3,6 @@ import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:aluno_uepb/views/home/about_me/about_me_page.dart';
 import 'package:aluno_uepb/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 
@@ -49,24 +48,36 @@ class PreferencesPage extends StatelessWidget {
     return database.getColorTheme();
   }
 
+  List<Color> _getColorsPicker(BuildContext context) {
+    return [
+      Colors.blueGrey,
+      Color(0xFF505050),
+      Color(0xFFCCCCCC),
+      Colors.green,
+      Colors.teal,
+      Colors.pink,
+      Colors.amberAccent,
+      Colors.cyan,
+      Colors.deepOrange,
+      Colors.blueAccent,
+      Colors.greenAccent,
+      Colors.deepPurple,
+      Colors.lightGreenAccent,
+      Colors.indigo,
+      Colors.purpleAccent,
+      Colors.yellowAccent,
+      Color(0xFFEE0000),
+      Colors.lightBlue,
+      Colors.brown,
+      Color(0xFF00AA00),
+    ];
+  }
+
   Future<void> _setTheme(BuildContext context,
       {bool isDark, Color color}) async {
     final database = Provider.of<Database>(context, listen: false);
     if (isDark != null) await database.setDarkMode(isDark);
     if (color != null) database.setColorTheme(color);
-  }
-
-  Future<void> _syncData(BuildContext context) async {
-    final database = Provider.of<Database>(context, listen: false);
-
-    try {
-      await database.syncData();
-    } on PlatformException catch (e) {
-      PlatformExceptionAlertDialog(
-        title: 'Erro ao tentar atualizar',
-        exception: e,
-      ).show(context);
-    }
   }
 
   void _pickColor(BuildContext context) {
@@ -77,6 +88,7 @@ class PreferencesPage extends StatelessWidget {
         return AlertDialog(
           content: SingleChildScrollView(
             child: BlockPicker(
+              availableColors: _getColorsPicker(dbContext),
               pickerColor: _getCurrentColor(dbContext),
               onColorChanged: (color) => _setTheme(dbContext, color: color),
             ),
@@ -127,11 +139,6 @@ class PreferencesPage extends StatelessWidget {
               ListTile(
                 title: Text('Mudar cor de destaque'),
                 onTap: () => _pickColor(context),
-              ),
-              Divider(height: 1.0),
-              ListTile(
-                title: Text('Atualizar Informações'),
-                onTap: () => _syncData(context),
               ),
               Divider(height: 1.0),
               ListTile(

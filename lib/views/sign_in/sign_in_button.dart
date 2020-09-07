@@ -18,7 +18,7 @@ class SignInButton extends CustomRaisedButton {
               fontSize: 15.0,
             ),
           ),
-          color: color!=null?color:CustomThemes.accentColor,
+          color: color != null ? color : CustomThemes.accentColor,
           onPressed: onPressed,
           borderRadius: borderRadius,
         );

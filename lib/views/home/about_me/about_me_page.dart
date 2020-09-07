@@ -39,7 +39,7 @@ class AboutMePage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Feito com ❤️ por Diego Vinicius\n' + '#Flutter',
+                  'Feito com ❤️ por diegolima_362\n' + '#Flutter',
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
