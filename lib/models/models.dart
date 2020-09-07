@@ -1,6 +1,6 @@
 export 'course.dart';
-export 'profile.dart';
 export 'notification_model.dart';
+export 'profile.dart';
 export 'schedule.dart';
 export 'task.dart';
 export 'user.dart';
