@@ -14,7 +14,7 @@ import 'connection_state.dart';
 import 'scraper/scraper.dart';
 
 class BoxesName {
-  static const THEME_BOX = 'themePreference';
+  static const PREFERENCES_BOX = 'preferences';
   static const LOGIN_BOX = 'login';
   static const COURSES_BOX = 'courses';
   static const TASKS_BOX = 'tasks';
@@ -40,8 +40,6 @@ abstract class Database {
 
   Future<void> setDarkMode(bool isDark);
 
-  Future<void> syncData();
-
   Future<void> closeDataBase();
 
   Color getColorTheme();
@@ -66,7 +64,7 @@ class HiveDatabase implements Database {
 
     Hive.init(appDocumentDirectory.path);
 
-    await Hive.openBox(BoxesName.THEME_BOX);
+    await Hive.openBox(BoxesName.PREFERENCES_BOX);
     await Hive.openBox(BoxesName.LOGIN_BOX);
     await Hive.openBox(BoxesName.COURSES_BOX);
     await Hive.openBox(BoxesName.TASKS_BOX);
@@ -74,28 +72,34 @@ class HiveDatabase implements Database {
   }
 
   Future<Map<String, dynamic>> getAllData({bool getLocalData: true}) async {
-    if (getLocalData) {
-      // return data from cache
-      if (_courses != null && _profile != null)
-        return {'courses': _courses, 'profile': _profile};
+    final preferencesBox = Hive.box(BoxesName.PREFERENCES_BOX);
 
-      // return data from local database
+    if (getLocalData) {
+      await preferencesBox.put('isUpdating', false);
+
+      if (_courses != null && _profile != null) {
+        print('> returning cached data');
+        return {'courses': _courses, 'profile': _profile};
+      }
+
       _courses = await _getLocalCoursesData();
       _profile = await _getLocalProfileData();
 
-      if (_courses != null && _profile != null)
+      if (_courses != null && _profile != null) {
+        print('> returning local data');
         return {'courses': _courses, 'profile': _profile};
+      }
     }
 
-    // get remote data
-
+    print('> getting remote data');
+    bool canConnect;
     try {
-      if (!await CheckConnection.checkConnection()) {
+      canConnect = await CheckConnection.checkConnection();
+      if (canConnect == false)
         throw PlatformException(
-          message: 'Sem conexão com a internet',
           code: 'error_connection',
+          message: 'Falha ao conectar ao servidor',
         );
-      }
     } catch (e) {
       rethrow;
     }
@@ -104,8 +108,7 @@ class HiveDatabase implements Database {
     final boxCourses = await Hive.openBox(BoxesName.COURSES_BOX);
     final boxProfile = await Hive.openBox(BoxesName.PROFILE_BOX);
 
-    await boxCourses.clear();
-    await boxProfile.clear();
+    await preferencesBox.put('isUpdating', true);
 
     final user = _getCurrentUser();
     final scraper = Scraper(user: user.user, password: user.password);
@@ -118,15 +121,20 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
+    print('> building data models');
     _courses = _buildCourses(data['courses']);
     _profile = _buildProfile(data['profile']);
 
     final service = Analytics.instance;
     await service.setUserProperties(_profile.toMapFirestore());
 
+    print('> saving data to database');
+
     await boxCourses.put('courses', data['courses']);
     await boxProfile.put('profile', data['profile']);
+    await preferencesBox.put('isUpdating', false);
 
+    print('> returning remote data');
     return {
       'courses': _courses,
       'profile': _profile,
@@ -138,11 +146,14 @@ class HiveDatabase implements Database {
   @override
   Future<List<Course>> getCoursesData({bool ignoreLocalData: false}) async {
     if (!ignoreLocalData) {
-      if (_courses != null) return _courses;
-
+      if (_courses != null) {
+        print('> returning cached data');
+        return _courses;
+      }
       _courses = await _getLocalCoursesData();
 
       if (_courses != null) {
+        print('> returning local data');
         return _courses;
       }
     }
@@ -153,6 +164,7 @@ class HiveDatabase implements Database {
       rethrow;
     }
 
+    print('> returning remote data');
     return _courses;
   }
 
@@ -307,7 +319,7 @@ class HiveDatabase implements Database {
     await profileBox.clear();
     await tasksBox.clear();
 
-    await Hive.box(BoxesName.THEME_BOX).clear();
+    await Hive.box(BoxesName.PREFERENCES_BOX).clear();
 
     _profile = null;
     _courses = null;
@@ -328,32 +340,31 @@ class HiveDatabase implements Database {
 
   @override
   bool get isDarkMode =>
-      Hive.box(BoxesName.THEME_BOX).get('darkMode', defaultValue: false);
+      Hive.box(BoxesName.PREFERENCES_BOX).get('darkMode', defaultValue: false);
 
   @override
   Future<void> setDarkMode(bool isDark) async {
-    await Hive.box(BoxesName.THEME_BOX).put('darkMode', isDark);
+    await Hive.box(BoxesName.PREFERENCES_BOX).put('darkMode', isDark);
   }
 
   @override
   Color getColorTheme() {
-    int val = Hive.box(BoxesName.THEME_BOX)
-        .get('color', defaultValue: Colors.black.value);
+    int val = Hive.box(BoxesName.PREFERENCES_BOX)
+        .get('color', defaultValue: Colors.pink.value);
     return Color(val);
   }
 
   @override
   Future<void> setColorTheme(Color color) async {
-    await Hive.box(BoxesName.THEME_BOX).put('color', color.value);
-  }
-
-  @override
-  Future<void> syncData() async {
-    await getAllData(getLocalData: false);
+    await Hive.box(BoxesName.PREFERENCES_BOX).put('color', color.value);
   }
 
   static ValueListenable<Box> get onDarkModeStateChanged =>
-      Hive.box(BoxesName.THEME_BOX).listenable();
+      Hive.box(BoxesName.PREFERENCES_BOX)
+          .listenable(keys: ['darkMode', 'color']);
+
+  static ValueListenable<Box> get onUpdatePreferences =>
+      Hive.box(BoxesName.PREFERENCES_BOX).listenable(keys: ['isUpdating']);
 
   ValueListenable<Box> onTasksChanged() =>
       Hive.box(BoxesName.TASKS_BOX).listenable();

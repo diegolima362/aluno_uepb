@@ -1,11 +1,9 @@
 import 'package:intl/intl.dart';
 
 class Format {
-
   static String hours(DateTime date) {
     return DateFormat.Hm().format(date);
   }
-
 
   static String date(DateTime date) {
     return DateFormat.MMMEd('pt_Br').format(date);
