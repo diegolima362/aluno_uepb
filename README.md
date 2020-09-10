@@ -25,5 +25,5 @@ build sep 7, 2020
 
 [**Apks v1.0.0**](https://drive.google.com/drive/folders/1RRPdX84snPGFUWBsbWo9YyGJwEQaml91?usp=sharing)
 
-![Screenshots](./media/banner.jpg)
+![Screenshots](./media/banner.png)
 
