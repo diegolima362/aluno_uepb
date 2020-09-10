@@ -23,12 +23,6 @@ class AboutMePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Aplicativo não oficial para alunos da UEPB\n' + 'v1.0.0',
-                  style: TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.all(10),
                   height: 200,
@@ -39,7 +33,13 @@ class AboutMePage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Feito com ❤️ por diegolima_362\n' + '#Flutter',
+                  'Aplicativo não oficial para\n alunos da UEPB\n\n' + 'v1.0.0',
+                  style: TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 100),
+                Text(
+                  'Feito com ❤️ por @diegolima_362\n' + '#Flutter',
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),

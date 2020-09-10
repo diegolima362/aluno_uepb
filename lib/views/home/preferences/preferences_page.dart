@@ -13,6 +13,7 @@ class PreferencesPage extends StatelessWidget {
       notify.cancelAllNotification();
 
       final database = Provider.of<Database>(context, listen: false);
+      database.setColorTheme(CustomThemes.defaultaAccentColor);
       database.clearData();
 
       final auth = Provider.of<AuthBase>(context, listen: false);

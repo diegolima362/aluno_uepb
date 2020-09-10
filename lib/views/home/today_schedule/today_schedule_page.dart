@@ -42,61 +42,55 @@ class TodaySchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: false,
+        toolbarHeight: 100,
+        title: ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            'Aulas de Hoje',
+            style: TextStyle(
+              fontSize: 32.0,
+              color: CustomThemes.accentColor,
+            ),
+          ),
+          subtitle: Text(
+            DateFormat('MMMEd', 'pt_Br').format(DateTime.now()),
+            style: TextStyle(fontSize: 16.0),
+          ),
+        ),
+      ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 20),
-          _buildHeader(context),
           Expanded(child: _buildContent(context)),
+          _buildButton(context),
+          SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.only(left: 10.0, top: 20.0),
-      title: Text(
-        'Aulas de Hoje',
-        style: TextStyle(
-          fontSize: 32.0,
-          color: CustomThemes.accentColor,
+  Widget _buildButton(BuildContext context) {
+    return OutlineButton(
+      borderSide: BorderSide(
+        width: 2,
+        color: CustomThemes.accentColor,
+      ),
+      onPressed: () => Navigator.of(context).push(
+        CupertinoPageRoute(
+          fullscreenDialog: false,
+          builder: (context) => FullSchedulePage(),
         ),
       ),
-      subtitle: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            DateFormat('MMMEd', 'pt_Br').format(DateTime.now()),
-            style: TextStyle(fontSize: 16.0),
-          ),
-          FlatButton(
-            onPressed: () => Navigator.of(context).push(
-              CupertinoPageRoute(
-                fullscreenDialog: false,
-                builder: (context) => FullSchedulePage(),
-              ),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  'Horário completo',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: CustomThemes.accentColor,
-                  ),
-                  textAlign: TextAlign.end,
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14.0,
-                  color: CustomThemes.accentColor,
-                ),
-              ],
-            ),
-          ),
-        ],
+      padding: EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      child: Text(
+        'Horário completo',
+        style: TextStyle(fontSize: 14.0, color: CustomThemes.accentColor),
+        textAlign: TextAlign.end,
       ),
     );
   }
