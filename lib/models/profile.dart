@@ -66,7 +66,8 @@ class Profile {
   }
 
   Map<String, String> toMapFirestore() {
-    final campus = this.campus.toLowerCase().replaceAll(' ', '');
+    final campus =
+        removeDiacritics(this.campus).toLowerCase().replaceAll(' ', '');
     final building = this.building.toLowerCase().split(' ');
     final program =
         removeDiacritics(this.program).toLowerCase().replaceAll(' ', '-');
@@ -79,12 +80,13 @@ class Profile {
 
     return {
       'register': this.register,
-      'birthDate': this.fBirthDate,
       'campus': campus,
-      'gender': this.gender.toLowerCase() == 'm' ? 'male' : 'female',
-      'age': '$age',
-      'program': program,
       'building': buffer.toString(),
+      'program': program,
+      'gender': this.gender.toLowerCase() == 'm' ? 'male' : 'female',
+      'birthDate': this.fBirthDate,
+      'cra': this.cra,
+      'name': this.name.toLowerCase(),
     };
   }
 

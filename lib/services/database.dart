@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:aluno_uepb/models/models.dart';
+import 'package:aluno_uepb/services/api_path.dart';
+import 'package:aluno_uepb/services/firestore_services.dart';
 import 'package:aluno_uepb/services/services.dart';
+import 'package:aluno_uepb/themes/custom_themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -125,8 +128,12 @@ class HiveDatabase implements Database {
     _courses = _buildCourses(data['courses']);
     _profile = _buildProfile(data['profile']);
 
-    final service = Analytics.instance;
-    await service.setUserProperties(_profile.toMapFirestore());
+    final analytics = Analytics.instance;
+    await analytics.setUserProperties(_profile.toMapFirestore());
+
+    final path = APIPath.profile(_profile);
+    final firestore = FirestoreService.instance;
+    await firestore.setData(path: path, data: _profile.toMapFirestore());
 
     print('> saving data to database');
 
@@ -350,7 +357,7 @@ class HiveDatabase implements Database {
   @override
   Color getColorTheme() {
     int val = Hive.box(BoxesName.PREFERENCES_BOX)
-        .get('color', defaultValue: Colors.pink.value);
+        .get('color', defaultValue: CustomThemes.defaultaAccentColor);
     return Color(val);
   }
 

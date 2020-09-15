@@ -21,19 +21,31 @@ class MyApp extends StatelessWidget {
       FirebaseAnalyticsObserver(analytics: analytics);
   static AuthBase auth = Auth();
 
+  bool _isDarkMode(Box box) {
+    final darkMode = box.get('darkMode', defaultValue: false);
+    final colorValue = box.get(
+      'color',
+      defaultValue: CustomThemes.accentColor.value,
+    );
+    CustomThemes.setColor(Color(colorValue));
+    return darkMode;
+  }
+
+  SystemUiOverlayStyle _getStyle(bool darkMode) {
+    return SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Box>(
       valueListenable: HiveDatabase.onDarkModeStateChanged,
       builder: (context, box, child) {
-        final darkMode = box.get('darkMode', defaultValue: false);
-        final colorValue = box.get(
-          'color',
-          defaultValue: CustomThemes.accentColor.value,
-        );
-        CustomThemes.setColor(Color(colorValue));
+        final darkMode = _isDarkMode(box);
         return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: _getTheme(darkMode),
+          value: _getStyle(darkMode),
           child: MultiProvider(
             providers: [
               Provider<FirebaseAnalytics>.value(value: analytics),
@@ -56,13 +68,6 @@ class MyApp extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  SystemUiOverlayStyle _getTheme(bool darkMode) {
-    return SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
     );
   }
 }

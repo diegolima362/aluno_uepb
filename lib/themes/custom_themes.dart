@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomThemes {
-  static Color accentColor = Colors.pink;
-  static Color defaultaAccentColor = Colors.pink;
+  static Color accentColor = Color(0xFF505050);
+  static Color defaultaAccentColor = Color(0xFF505050);
 
   static Map<int, Color> swash = {
     50: accentColor.withOpacity(.1),
