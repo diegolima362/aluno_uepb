@@ -33,7 +33,7 @@ class AboutMePage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Aplicativo não oficial para\n alunos da UEPB\n\n' + 'v1.0.0',
+                  'Aplicativo não oficial para\n alunos da UEPB\n\n' + 'v1.0.1_b',
                   style: TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),

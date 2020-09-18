@@ -356,8 +356,10 @@ class HiveDatabase implements Database {
 
   @override
   Color getColorTheme() {
-    int val = Hive.box(BoxesName.PREFERENCES_BOX)
-        .get('color', defaultValue: CustomThemes.defaultaAccentColor);
+    int val = Hive.box(BoxesName.PREFERENCES_BOX).get(
+      'color',
+      defaultValue: CustomThemes.defaultAccentColor.value,
+    );
     return Color(val);
   }
 

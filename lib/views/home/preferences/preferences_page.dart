@@ -13,7 +13,7 @@ class PreferencesPage extends StatelessWidget {
       notify.cancelAllNotification();
 
       final database = Provider.of<Database>(context, listen: false);
-      database.setColorTheme(CustomThemes.defaultaAccentColor);
+      database.setColorTheme(CustomThemes.defaultAccentColor);
       database.clearData();
 
       final auth = Provider.of<AuthBase>(context, listen: false);
@@ -57,8 +57,8 @@ class PreferencesPage extends StatelessWidget {
       Color(0xFF505050),
       Colors.green,
       Colors.lightGreenAccent,
-      Colors.yellowAccent,
-      Colors.amberAccent,
+      Colors.yellow,
+      Colors.amber,
       Colors.greenAccent,
       Colors.cyan,
       Colors.blueAccent,
@@ -67,8 +67,8 @@ class PreferencesPage extends StatelessWidget {
       Colors.deepPurpleAccent,
       Colors.indigoAccent,
       Colors.deepPurple[900],
-      Colors.pink,
       Color(0xFFE63946),
+      Colors.pink,
       Color(0xFFB71C1C),
       Colors.deepOrange,
     ];
