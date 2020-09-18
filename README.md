@@ -21,9 +21,7 @@ O aplicativo só realiza operações de leitura, nenhum dado é alterado na pág
 
 ### APKs
 
-build sep 7, 2020
-
-[**Apks v1.0.0**](https://drive.google.com/drive/folders/1RRPdX84snPGFUWBsbWo9YyGJwEQaml91?usp=sharing)
+[<img src="media/google-play-badge.png" height="50">](https://play.google.com/store/apps/details?id=com.u362devs.aluno_uepb&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
 ![Screenshots](./media/banner.png)
 
