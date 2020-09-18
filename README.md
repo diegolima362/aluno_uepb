@@ -19,9 +19,9 @@ O aplicativo só realiza operações de leitura, nenhum dado é alterado na pág
 
 #### Necessário acesso a internet para primeiro acesso e para futuras sincronizações com os dados remotos.
 
-### APKs
+### Baixe o app
 
-[<img src="media/google-play-badge.png" height="50">](https://play.google.com/store/apps/details?id=com.u362devs.aluno_uepb&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+[<img src="media/google-play-badge.png" height="100">](https://play.google.com/store/apps/details?id=com.u362devs.aluno_uepb&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
 ![Screenshots](./media/banner.png)
 
