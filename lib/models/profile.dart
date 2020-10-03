@@ -79,13 +79,12 @@ class Profile {
     });
 
     return {
-      'register': this.register,
       'campus': campus,
       'building': buffer.toString(),
       'program': program,
       'gender': this.gender.toLowerCase() == 'm' ? 'male' : 'female',
-      'birthDate': this.fBirthDate,
-      'cra': this.cra,
+      'age': age.toString(),
+      'age': this.cra,
       'name': this.name.toLowerCase(),
     };
   }

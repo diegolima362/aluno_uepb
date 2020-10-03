@@ -14,6 +14,16 @@ class Course {
   final String und2Grade;
   final String finalTest;
 
+  String get capitalTitle {
+    final s = StringBuffer();
+    title.toLowerCase().split(' ').forEach((i) => s.write(i.length == 1
+        ? i.toUpperCase() + ' '
+        : i.length > 2
+            ? i[0].toUpperCase() + i.substring(1) + ' '
+            : i + ' '));
+    return s.toString();
+  }
+
   Course({
     this.id,
     this.title,
