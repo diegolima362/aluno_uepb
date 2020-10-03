@@ -163,6 +163,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
       ),
       body: SingleChildScrollView(
         child: Card(
+          margin: EdgeInsets.all(10),
           elevation: 2.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -198,7 +199,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
       maxLength: 50,
       controller: TextEditingController(text: _title),
       decoration: InputDecoration(
-        labelText: 'Nome',
+        labelText: 'Título',
         alignLabelWithHint: true,
       ),
       style: TextStyle(fontSize: 20.0),
@@ -208,20 +209,76 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   Widget _buildCourse() {
-    return CoursePicker(
-      selectCourse: (course) => setState(() => _course = course),
-      courses: widget.courses,
+    return Column(
+      children: [
+        CoursePicker(
+          selectCourse: (course) => setState(() => _course = course),
+          courses: widget.courses,
+        ),
+        Divider(
+          color: CustomThemes.isDark
+              ? CustomThemes.anotherWhite
+              : CustomThemes.anotherBlack,
+        ),
+      ],
     );
   }
 
   Widget _buildFinalDate() {
-    return DateTimePicker(
-      labelText: 'Entrega',
-      selectedDate: _finalDate,
-      selectedTime: _finalTime,
-      selectDate: (date) => setState(() => _finalDate = date),
-      selectTime: (time) => setState(() => _finalTime = time),
+    final valueStyle = Theme.of(context).textTheme.headline6;
+
+    return Row(
+      children: [
+        Expanded(
+          child: InputDropdown(
+            labelText: 'Data',
+            valueText: Format.date(_finalDate),
+            valueStyle: valueStyle,
+            onPressed: () => _selectDate(),
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: InputDropdown(
+            labelText: 'Horário',
+            valueText: _finalTime.format(context),
+            valueStyle: valueStyle,
+            onPressed: () => _selectTime(),
+          ),
+        ),
+      ],
     );
+  }
+
+  Future<void> _selectDate() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _finalDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2025),
+    );
+    if (pickedDate != null && pickedDate != _finalDate) {
+      setState(() => _finalDate = pickedDate);
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final accent = CustomThemes.accentColor;
+
+    if (CustomThemes.isDark) {
+      widget.database.setColorTheme(Colors.white);
+    }
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _finalTime,
+    );
+
+    if (pickedTime != null && pickedTime != _finalTime) {
+      setState(() => _finalTime = pickedTime);
+    }
+
+    widget.database.setColorTheme(accent);
   }
 
   Widget _buildComment() {
@@ -242,7 +299,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     return CheckboxListTile(
       contentPadding: EdgeInsets.all(0),
       title: Text(
-        'Definir lembrete',
+        'Criar lembrete',
         style: TextStyle(fontSize: 20.0),
       ),
       value: _checked,

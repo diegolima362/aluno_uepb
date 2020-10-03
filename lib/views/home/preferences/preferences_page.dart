@@ -49,31 +49,6 @@ class PreferencesPage extends StatelessWidget {
     return database.getColorTheme();
   }
 
-  List<Color> _getColorsPicker(BuildContext context) {
-    return [
-      Color(0xFFCCCCCC),
-      Colors.blueGrey,
-      Colors.brown,
-      Color(0xFF505050),
-      Colors.green,
-      Colors.lightGreenAccent,
-      Colors.yellow,
-      Colors.amber,
-      Colors.greenAccent,
-      Colors.cyan,
-      Colors.blueAccent,
-      Colors.teal,
-      Colors.purpleAccent,
-      Colors.deepPurpleAccent,
-      Colors.indigoAccent,
-      Colors.deepPurple[900],
-      Color(0xFFE63946),
-      Colors.pink,
-      Color(0xFFB71C1C),
-      Colors.deepOrange,
-    ];
-  }
-
   Future<void> _setTheme(BuildContext context,
       {bool isDark, Color color}) async {
     final database = Provider.of<Database>(context, listen: false);
@@ -89,7 +64,9 @@ class PreferencesPage extends StatelessWidget {
         return AlertDialog(
           content: SingleChildScrollView(
             child: BlockPicker(
-              availableColors: _getColorsPicker(dbContext),
+              availableColors: _isDark(dbContext)
+                  ? CustomThemes.accentColorsDark
+                  : CustomThemes.accentColors,
               pickerColor: _getCurrentColor(dbContext),
               onColorChanged: (color) => _setTheme(dbContext, color: color),
             ),
@@ -131,14 +108,15 @@ class PreferencesPage extends StatelessWidget {
             children: [
               ListTile(
                 title: Text('Modo escuro'),
-                trailing: Switch(
+                trailing: CustomSwitch(
+                  activeColor: CustomThemes.accentColor,
                   value: darkMode,
                   onChanged: (val) => _setTheme(context, isDark: !darkMode),
                 ),
               ),
               Divider(height: 1.0),
               ListTile(
-                title: Text('Mudar cor de destaque'),
+                title: Text('Cor de destaque'),
                 onTap: () => _pickColor(context),
               ),
               Divider(height: 1.0),

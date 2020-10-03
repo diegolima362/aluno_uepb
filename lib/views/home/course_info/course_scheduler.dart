@@ -70,7 +70,7 @@ class _EditTaskPageState extends State<CourseScheduler> {
     _finalDate = DateTime.now();
     _selectedTime = TimeOfDay.now();
     _course = widget.course;
-    _title = 'Inicio da aula';
+    _title = '';
     super.initState();
   }
 
@@ -78,7 +78,7 @@ class _EditTaskPageState extends State<CourseScheduler> {
     await analytics.logEvent(
       name: 'reminder_created',
       parameters: <String, dynamic>{
-        'setedTitle': notification.title != 'Inicio da aula',
+        'setedTitle': notification.title,
       },
     );
   }
@@ -97,7 +97,7 @@ class _EditTaskPageState extends State<CourseScheduler> {
         try {
           final notification = NotificationModel(
             id: (date.millisecondsSinceEpoch / 6000).floor(),
-            title: _title,
+            title: _title != '' ? _title : 'Sem Titulo',
             body: _course.title,
             weekDay: i,
             dateTime: date,
@@ -134,13 +134,15 @@ class _EditTaskPageState extends State<CourseScheduler> {
               'Salvar',
               style: TextStyle(fontSize: 20.0),
             ),
-            onPressed:
-                _course != null ? () => _setReminderAndDismiss(context) : null,
+            onPressed: _selectedDays.contains(true)
+                ? () => _setReminderAndDismiss(context)
+                : null,
           )
         ],
       ),
       body: SingleChildScrollView(
         child: Card(
+          margin: EdgeInsets.all(10),
           elevation: 2.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -169,7 +171,7 @@ class _EditTaskPageState extends State<CourseScheduler> {
       maxLength: 50,
       controller: TextEditingController(text: _title),
       decoration: InputDecoration(
-        labelText: 'Nome',
+        labelText: 'Lembrete',
         alignLabelWithHint: true,
       ),
       style: TextStyle(fontSize: 20.0),
@@ -190,14 +192,20 @@ class _EditTaskPageState extends State<CourseScheduler> {
             labelText: 'Horário',
             valueText: _selectedTime.format(context),
             valueStyle: valueStyle,
-            onPressed: () => _selectTime(context),
+            onPressed: () => _selectTime(),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectTime() async {
+    final accent = CustomThemes.accentColor;
+
+    if (CustomThemes.isDark) {
+      widget.database.setColorTheme(Colors.white);
+    }
+
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
@@ -205,10 +213,15 @@ class _EditTaskPageState extends State<CourseScheduler> {
     if (pickedTime != null && pickedTime != _selectedTime) {
       setState(() => _selectedTime = pickedTime);
     }
+    widget.database.setColorTheme(accent);
   }
 
   Widget _selectWeekDay() {
+    final fillColor = Theme.of(context).cardTheme.color;
+
     return WeekdaySelector(
+      elevation: 2,
+      fillColor: fillColor,
       shortWeekdays: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
       onChanged: (int day) {
         setState(() {

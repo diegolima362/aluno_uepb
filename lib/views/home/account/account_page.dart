@@ -16,7 +16,7 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   bool _updating;
-  static const _settingPageAd = AdUnitIds.settingPageAd;
+  static const _settingPageAd = AdUnitIds.appAdId;
 
   @override
   void initState() {

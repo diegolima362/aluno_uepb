@@ -21,6 +21,7 @@ class TaskInfoCard extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       child: Card(
+
         elevation: 2.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),

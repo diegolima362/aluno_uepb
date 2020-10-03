@@ -1,4 +1,6 @@
 import 'package:aluno_uepb/models/models.dart';
+import 'package:aluno_uepb/themes/custom_themes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CoursePicker extends StatefulWidget {
@@ -12,8 +14,8 @@ class CoursePicker extends StatefulWidget {
 }
 
 class _CoursePickerState extends State<CoursePicker> {
-  Course _dropdownValue;
   List<Course> _courses;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -23,18 +25,74 @@ class _CoursePickerState extends State<CoursePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return Row(
-      children: [
-        const Text('Disciplina', style: TextStyle(fontSize: 20.0)),
-        Expanded(child: const SizedBox()),
-        Container(
+    return GestureDetector(
+      child: Container(
+        height: 50,
+        child: Row(
+          children: [
+            Text(
+              'Curso: ',
+              style: TextStyle(fontSize: 18),
+            ),
+            Expanded(
+              child: Text(
+                _courses[_selectedIndex].capitalTitle,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 18.0),
+              ),
+            ),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
+      onTap: () {
+        showCupertinoModalPopup(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              height: 100,
+              child: CupertinoPicker(
+                backgroundColor: Theme.of(context).cardTheme.color,
+                looping: true,
+                onSelectedItemChanged: (index) => setState(() {
+                  widget.selectCourse(_courses[index]);
+                  _selectedIndex = index;
+                }),
+                itemExtent: 70,
+                children: List<Widget>.generate(
+                  _courses.length,
+                  (int index) {
+                    return Center(
+                      child: Text(
+                        _courses[index].capitalTitle,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: CustomThemes.isDark
+                                ? Colors.white
+                                : Colors.black),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+/*
+* Container(
           width: width * .6,
           child: DropdownButton<Course>(
             itemHeight: 70,
             elevation: 2,
             isExpanded: true,
             value: _dropdownValue,
+            dropdownColor: Theme.of(context).cardTheme.color,
             hint: Text('Escolher'),
             icon: Icon(Icons.arrow_drop_down),
             onChanged: (course) => setState(() => _dropdownValue = course),
@@ -57,8 +115,4 @@ class _CoursePickerState extends State<CoursePicker> {
               );
             }).toList(),
           ),
-        ),
-      ],
-    );
-  }
-}
+        ),*/

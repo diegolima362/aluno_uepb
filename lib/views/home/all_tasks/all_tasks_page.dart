@@ -23,7 +23,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
   NotificationsService _notificationsService;
   bool isLoading = false;
 
-  static const _adUnitID = AdUnitIds.allTaskPageAd;
+  static const _adUnitID = AdUnitIds.appAdId;
 
   @override
   void initState() {
@@ -102,10 +102,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(child: _buildContent(context)),
-          CustomAdBanner(
-            adUnitID: _adUnitID,
-            height: MediaQuery.of(context).size.height * .1,
-          ),
+          CustomAdBanner(adUnitID: _adUnitID),
         ],
       ),
     );

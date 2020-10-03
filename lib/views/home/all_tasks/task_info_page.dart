@@ -117,6 +117,7 @@ class TaskInfoPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Card(
           elevation: 2.0,
+          margin: EdgeInsets.all(10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
