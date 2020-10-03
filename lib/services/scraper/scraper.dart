@@ -111,53 +111,6 @@ class Scraper {
     return data;
   }
 
-  // Future<Map<String, Document>> _requestDOMFake() async {
-  //   final String baseURL = "https://192.168.0.109:8000";
-
-  //   Session client = Session();
-
-  //   Document inicio;
-  //   Document cadastro;
-  //   Document rdm;
-
-  //   try {
-  //     cadastro = await client.get(baseURL + '/cadastro');
-  //     inicio = await client.get(baseURL + '/inicio');
-  //     rdm = await client.get(baseURL + '/rdm');
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-
-  //   final data = {
-  //     'inicio': inicio,
-  //     'cadastro': cadastro,
-  //     'rdm': rdm,
-  //   };
-
-  //   return data;
-  // }
-
-//  Future<Map<String, Map<String, Document>>> _requestDOMFake(
-//      {@required String baseURL}) async {
-//    Session client = Session();
-//
-//    final inicio = await client.get(baseURL + '/inicio/');
-//    final cadastro = await client.get(baseURL + '/cadastro/');
-//    final rdm = await client.get(baseURL + '/rdm/');
-//
-//    final data = {
-//      'profile': {
-//        'inicio': inicio,
-//        'cadastro': cadastro,
-//      },
-//      'courses': {
-//        'rdm': rdm,
-//      },
-//    };
-//
-//    return data;
-//  }
-
   /// Extract absences for all courses at once.
   List<int> _sanitizeAbsences(Document dom) {
     List<int> absences = List<int>();
@@ -254,8 +207,6 @@ class Scraper {
   }
 
   List<Map<String, dynamic>> _sanitizeCourses(Document dom) {
-//    print(dom.outerHtml);
-
     List<Element> data = dom.getElementsByTagName('.profile-nav');
     List<Map<String, dynamic>> courses = List<Map<String, dynamic>>();
 

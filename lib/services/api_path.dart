@@ -11,12 +11,12 @@ class APIPath {
     final program =
         removeDiacritics(profile.program).toLowerCase().replaceAll(' ', '-');
 
-    final buffer = new StringBuffer();
+    final buffer = StringBuffer();
 
     building.forEach((e) {
       if (e.length > 2) buffer.write(e[0]);
     });
 
-    return "$campus/${buffer.toString()}/$program/$register/";
+    return "users/$campus/building/${buffer.toString()}/$program/$register/";
   }
 }

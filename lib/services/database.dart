@@ -51,6 +51,8 @@ abstract class Database {
 
   Future<void> deleteTask(Task task);
 
+  Future syncWithFirestore();
+
   ValueListenable<Box> onTasksChanged();
 }
 
@@ -131,9 +133,7 @@ class HiveDatabase implements Database {
     final analytics = Analytics.instance;
     await analytics.setUserProperties(_profile.toMapFirestore());
 
-    final path = APIPath.profile(_profile);
-    final firestore = FirestoreService.instance;
-    await firestore.setData(path: path, data: _profile.toMapFirestore());
+    await syncWithFirestore();
 
     print('> saving data to database');
 
@@ -146,6 +146,14 @@ class HiveDatabase implements Database {
       'courses': _courses,
       'profile': _profile,
     };
+  }
+
+  Future syncWithFirestore() async {
+    print('> sync');
+    final path = APIPath.profile(_profile);
+    print('> path: $path');
+    final firestore = FirestoreService.instance;
+    await firestore.setData(path: path, data: _profile.toMapFirestore());
   }
 
 //  Get Courses data
