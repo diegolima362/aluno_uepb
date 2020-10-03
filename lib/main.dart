@@ -25,9 +25,12 @@ class MyApp extends StatelessWidget {
     final darkMode = box.get('darkMode', defaultValue: false);
     final colorValue = box.get(
       'color',
-      defaultValue: CustomThemes.accentColor.value,
+      defaultValue: CustomThemes.defaultAccentColor.value,
     );
+
     CustomThemes.setColor(Color(colorValue));
+    CustomThemes.isDark = darkMode;
+
     return darkMode;
   }
 
