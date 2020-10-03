@@ -1,5 +1,6 @@
 export 'custom_ad_banner.dart';
 export 'custom_raised_button.dart';
+export 'custom_switcher.dart';
 export 'date_time_picker.dart';
 export 'empty_content.dart';
 export 'form_submit_button.dart';
