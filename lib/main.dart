@@ -1,76 +1,23 @@
-import 'package:aluno_uepb/services/services.dart';
-import 'package:aluno_uepb/themes/custom_themes.dart';
-import 'package:aluno_uepb/views/landing_page.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
+import 'package:aluno_uepb/app/app_module.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+const bool USE_FIRE_STORE_EMULATOR = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveDatabase.initDatabase();
-  runApp(MyApp());
-}
+  initializeDateFormatting("pt_BR", null);
 
-class MyApp extends StatelessWidget {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
-  static AuthBase auth = Auth();
+  // await Firebase.initializeApp();
 
-  bool _isDarkMode(Box box) {
-    final darkMode = box.get('darkMode', defaultValue: false);
-    final colorValue = box.get(
-      'color',
-      defaultValue: CustomThemes.defaultAccentColor.value,
-    );
+  // if (USE_FIRE_STORE_EMULATOR) {
+  //   String host = defaultTargetPlatform == TargetPlatform.android
+  //       ? '10.0.2.2:8080'
+  //       : 'localhost:8080';
+  //   FirebaseFirestore.instance.settings =
+  //       Settings(host: host, sslEnabled: false, persistenceEnabled: false);
+  // }
 
-    CustomThemes.setColor(Color(colorValue));
-    CustomThemes.isDark = darkMode;
-
-    return darkMode;
-  }
-
-  SystemUiOverlayStyle _getStyle(bool darkMode) {
-    return SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<Box>(
-      valueListenable: HiveDatabase.onDarkModeStateChanged,
-      builder: (context, box, child) {
-        final darkMode = _isDarkMode(box);
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: _getStyle(darkMode),
-          child: MultiProvider(
-            providers: [
-              Provider<FirebaseAnalytics>.value(value: analytics),
-              Provider<FirebaseAnalyticsObserver>.value(value: observer),
-              Provider<AuthBase>.value(value: auth)
-            ],
-            child: MaterialApp(
-              title: 'Aluno UEPB',
-              home: LandingPage(),
-              themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
-              theme: CustomThemes.light,
-              darkTheme: CustomThemes.dark,
-              navigatorObservers: <NavigatorObserver>[observer],
-              supportedLocales: [const Locale('pt', 'BR')],
-              localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  runApp(ModularApp(module: AppModule()));
 }

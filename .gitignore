@@ -1,3 +1,9 @@
+# Slidy History Files
+.slidy/
+
+*.g.dart
+
+
 .dart_tool/
 windows/
 linux/
@@ -27,4 +33,3 @@ doc/api/
 /android/app/debug
 /android/app/release
 /android/app/profile
-
