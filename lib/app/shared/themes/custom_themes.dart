@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 class CustomThemes {
   CustomThemes._();
 
-  static Color darkAccentColor = Color(0xFFE63946);
-  static Color lightAccentColor = Color(0xFF1D3557);
+  static Color darkAccentColor = Color(0xFFE43F5A);
+  static Color lightAccentColor = Color(0xFF1A1A1A);
+
+  // static Color lightAccentColor = Color(0xFF1D3557);
 
   static Map<int, Color> _getSwash(Color accentColor) {
     return {

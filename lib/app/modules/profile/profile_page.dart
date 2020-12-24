@@ -21,9 +21,26 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          FlatButton(
+            onPressed: controller.signOut,
+            child: Text('Sair'),
+          ),
+        ],
       ),
-      body: Column(
-        children: <Widget>[],
+      body: Card(
+        margin: EdgeInsets.all(10),
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(controller.user.id),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: Observer(
         builder: (context) => FloatingActionButton.extended(
@@ -31,7 +48,9 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
           label: Text('Tema'),
           tooltip: 'Mudar Tema',
           icon: Icon(
-            controller.isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round,
+            controller.isDark
+                ? Icons.wb_sunny_outlined
+                : Icons.nightlight_round,
           ),
         ),
       ),
