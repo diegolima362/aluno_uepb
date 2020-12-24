@@ -1,3 +1,4 @@
+import 'package:aluno_uepb/app/shared/repositories/local_storage/interfaces/local_storage_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
@@ -9,11 +10,14 @@ class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase with Store {
   _AppControllerBase() {
-    // darkThemePreference = Modular.get();
+    storage = Modular.get();
+
+    storage.onThemeChanged.listen((e) => loadTheme());
+
     loadTheme();
   }
 
-  // ILocalStorage darkThemePreference;
+  ILocalStorage storage;
 
   @observable
   ThemeData themeType;
@@ -24,24 +28,16 @@ abstract class _AppControllerBase with Store {
   @computed
   bool get isDark => themeType.brightness == Brightness.dark;
 
-  bool tempThemeMode = false;
-
-  void tempSetTheme(bool value) {
-    print('> is dark: $value');
-    tempThemeMode = value;
-    loadTheme();
-  }
-
   @action
   Future<void> loadTheme() async {
-    // final prefs = await darkThemePreference.isDarkTheme();
+    final isDarkMode = storage.isDarkMode;
 
-    final prefs = tempThemeMode;
-
-    if (prefs) {
+    if (isDarkMode) {
+      print('> theme is dark');
       themeType = ThemeData.dark();
       themeMode = ThemeMode.dark;
     } else {
+      print('> theme is light');
       themeType = ThemeData.light();
       themeMode = ThemeMode.light;
     }

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-class Task {
-  Task({
+class TaskModel {
+  TaskModel({
     @required this.title,
     @required this.id,
     @required this.courseId,
@@ -21,9 +21,9 @@ class Task {
   bool setReminder;
   String comment;
 
-  factory Task.fromMap(Map<dynamic, dynamic> value) {
+  factory TaskModel.fromMap(Map<dynamic, dynamic> value) {
     final int startMilliseconds = value['date'];
-    return Task(
+    return TaskModel(
       id: value['id'],
       title: value['title'] ?? '',
       courseId: value['courseId'],

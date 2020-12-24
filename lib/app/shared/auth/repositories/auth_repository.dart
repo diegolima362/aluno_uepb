@@ -62,7 +62,7 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Stream<UserModel> get onAuthStateChanged =>
-      _box.watch(key: 'user').map((map) => _userFromDatabase(map.value));
+      _box.watch(key: 'user').map((e) => _userFromDatabase(e.value));
 
   @override
   Future<UserModel> signInWithIdPassword(String id, String password) async {

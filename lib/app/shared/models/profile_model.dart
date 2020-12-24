@@ -1,13 +1,13 @@
 import 'package:aluno_uepb/app/utils/format.dart';
 
-class Profile {
+class ProfileModel {
   final String register;
   final String name;
   String cra;
   String cumulativeCh;
 
   String viewName;
-  final DateTime birthDate;
+  final String birthDateString;
 
   String program;
   String campus;
@@ -15,18 +15,26 @@ class Profile {
 
   final String gender;
 
-  Profile(
+  ProfileModel(
     this.name,
     this.register, {
-    this.cra = '-',
-    this.cumulativeCh = '-',
-    this.viewName,
-    this.birthDate,
-    this.campus,
-    this.gender,
-    this.program,
-    this.building,
+    this.cra: '-',
+    this.cumulativeCh: '-',
+    this.viewName: '',
+    this.birthDateString: '',
+    this.campus: '',
+    this.gender: '',
+    this.program: '',
+    this.building: '',
   });
+
+  DateTime get birthDate => birthDateString.isEmpty
+      ? DateTime.now()
+      : DateTime(
+          int.tryParse(birthDateString[2]) ?? 0,
+          int.tryParse(birthDateString[1]) ?? 0,
+          int.tryParse(birthDateString[0]) ?? 0,
+        );
 
   int get age {
     DateTime currentDate = DateTime.now();
@@ -64,14 +72,14 @@ class Profile {
     };
   }
 
-  factory Profile.fromMap(Map<dynamic, dynamic> map) {
-    return Profile(
+  factory ProfileModel.fromMap(Map<dynamic, dynamic> map) {
+    return ProfileModel(
       map['name'] as String,
       map['register'] as String,
       cra: map['cra'] as String,
       cumulativeCh: map['cumulativeCH'] as String,
       viewName: map['viewName'] as String,
-      birthDate: map['birthDate'],
+      birthDateString: map['birthDate'],
       campus: map['campus'] as String,
       gender: map['gender'] as String,
       program: map['program'] as String,

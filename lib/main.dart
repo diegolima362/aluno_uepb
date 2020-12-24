@@ -1,4 +1,5 @@
 import 'package:aluno_uepb/app/app_module.dart';
+import 'package:aluno_uepb/app/shared/repositories/local_storage/hive_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hive/hive.dart';
@@ -27,6 +28,8 @@ Future<void> main() async {
   Hive.init(appDocumentDirectory.path);
 
   await Hive.openBox('login');
+
+  await HiveStorage.initDatabase();
 
   runApp(ModularApp(module: AppModule()));
 }

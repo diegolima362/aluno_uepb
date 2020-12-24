@@ -4,6 +4,7 @@ import 'package:aluno_uepb/app/modules/home/home_module.dart';
 import 'package:aluno_uepb/app/modules/profile/profile_module.dart';
 import 'package:aluno_uepb/app/modules/rdm/rdm_module.dart';
 import 'package:aluno_uepb/app/modules/reminders/reminders_module.dart';
+import 'package:aluno_uepb/app/shared/repositories/data_respository/data_repository.dart';
 import 'package:aluno_uepb/app/shared/repositories/local_storage/hive_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -33,6 +34,11 @@ class AppModule extends MainModule {
         ),
         BindInject(
           (i) => HiveStorage(),
+          singleton: true,
+          lazy: true,
+        ),
+        BindInject(
+          (i) => DataRepository(),
           singleton: true,
           lazy: true,
         ),

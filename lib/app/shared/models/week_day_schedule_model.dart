@@ -1,10 +1,10 @@
 import 'course_model.dart';
 
-class WeekDaySchedule {
-  final List<Course> courses;
+class WeekDayScheduleModel {
+  final List<CourseModel> courses;
   final int weekDay;
 
-  WeekDaySchedule({this.courses, this.weekDay});
+  WeekDayScheduleModel({this.courses, this.weekDay});
 
   @override
   String toString() {

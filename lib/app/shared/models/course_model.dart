@@ -2,44 +2,37 @@ import 'package:intl/intl.dart';
 
 import 'schedule_model.dart';
 
-class Course {
+class CourseModel {
   final String id;
   final String title;
   final String professor;
   final int ch;
   int absences;
   int absencesLimit;
-  final List<Schedule> schedule;
+  List<ScheduleModel> schedule;
   final String und1Grade;
   final String und2Grade;
   final String finalTest;
 
-  String get capitalTitle {
-    final s = StringBuffer();
-    title.toLowerCase().split(' ').forEach((i) => s.write(i.length == 1
-        ? i.toUpperCase() + ' '
-        : i.length > 2
-            ? i[0].toUpperCase() + i.substring(1) + ' '
-            : i + ' '));
-    return s.toString();
-  }
-
-  Course({
-    this.id,
-    this.title,
-    this.professor,
-    this.ch,
-    this.absences,
-    this.absencesLimit,
-    this.und1Grade,
-    this.und2Grade,
-    this.finalTest,
+  CourseModel({
+    this.id: '',
+    this.title: '',
+    this.professor: '',
+    this.ch: 0,
+    this.absences: 0,
+    this.absencesLimit: 0,
+    this.und1Grade: '',
+    this.und2Grade: '',
+    this.finalTest: '',
     this.schedule,
-  });
+  }) {
+    if (schedule == null) schedule = <ScheduleModel>[];
+  }
 
   Map<String, dynamic> toMap() {
     final mapSchedules = <Map<String, dynamic>>[];
-    this.schedule.forEach((element) => mapSchedules.add(element.toMap()));
+    this.schedule.forEach((e) => mapSchedules.add(e.toMap()));
+
     return {
       'id': this.id,
       'title': this.title,
@@ -51,14 +44,16 @@ class Course {
     };
   }
 
-  factory Course.fromMap(Map<dynamic, dynamic> map) {
-    final scheduleMap = map['schedule'] as List;
+  factory CourseModel.fromMap(Map<dynamic, dynamic> map) {
+    List scheduleMap = map['schedule'] as List;
 
-    List<Schedule> schedules = scheduleMap
-        .map((scheduleJson) => Schedule.fromMap(scheduleJson))
+    if (scheduleMap == null) scheduleMap = [];
+
+    List<ScheduleModel> schedules = scheduleMap
+        .map((scheduleJson) => ScheduleModel.fromMap(scheduleJson))
         .toList();
 
-    return Course(
+    return CourseModel(
       id: map['id'] as String,
       title: map['title'] as String,
       professor: map['professor'] as String,
@@ -81,7 +76,7 @@ class Course {
     return schedule?.time ?? null;
   }
 
-  Schedule scheduleAtDay(int day) {
+  ScheduleModel scheduleAtDay(int day) {
     final schedules = this.schedule.where((e) => e.weekDay == day).toList();
     return schedules.isNotEmpty ? schedules[0] : null;
   }
@@ -89,12 +84,13 @@ class Course {
   bool get isCurrentClass {
     final now = DateTime.now();
     final _weekday = now.weekday;
-    var _isCurrentClass = false;
+    bool _isCurrentClass = false;
 
     if (scheduleAtDay(_weekday) != null) {
-      final currentHour = int.tryParse(DateFormat('H').format(now));
+      final currentHour = int.tryParse(DateFormat('H').format(now)) ?? 0;
       final courseSchedule = scheduleAtDay(_weekday);
-      final classTime = int.tryParse(courseSchedule?.time?.split(':')[0]);
+      final classTime = int.tryParse(courseSchedule?.time?.split(':')[0]) ?? 0;
+
       _isCurrentClass = _weekday == now.weekday &&
           (currentHour == classTime || currentHour == classTime + 1);
     }

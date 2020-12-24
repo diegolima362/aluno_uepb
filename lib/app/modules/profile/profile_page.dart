@@ -49,8 +49,8 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
           tooltip: 'Mudar Tema',
           icon: Icon(
             controller.isDark
-                ? Icons.wb_sunny_outlined
-                : Icons.nightlight_round,
+                ? Icons.nightlight_round
+                : Icons.wb_sunny_outlined,
           ),
         ),
       ),

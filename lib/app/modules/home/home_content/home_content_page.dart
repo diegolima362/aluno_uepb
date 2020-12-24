@@ -1,3 +1,4 @@
+import 'package:aluno_uepb/app/shared/repositories/local_storage/interfaces/local_storage_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -24,13 +25,18 @@ class _HomeContentPageState
 
     final textStyle = Theme.of(context).textTheme.bodyText2;
 
+    final s = Modular.get<ILocalStorage>();
+
     return Scaffold(
       appBar: AppBar(title: Text('Home')),
       body: Column(
         children: [],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => print('> show full schedule'),
+        onPressed: () {
+          final p = s.getProfile();
+          p.then(print);
+        },
         label: Text('Horário Completo'),
         tooltip: 'Mostrar Horário Completo',
         icon: Icon(Icons.calendar_today_sharp),

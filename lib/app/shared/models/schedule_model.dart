@@ -8,12 +8,12 @@ final _weekDaysMap = {
   'dom': 7,
 };
 
-class Schedule {
+class ScheduleModel {
   final String day;
   final String time;
   final String local;
 
-  Schedule({this.day, this.time, this.local});
+  ScheduleModel({this.day, this.time, this.local});
 
   int get weekDay => _weekDaysMap[this.day.substring(0, 3).toLowerCase()];
 
@@ -23,8 +23,8 @@ class Schedule {
         'local': this.local,
       };
 
-  factory Schedule.fromMap(Map<dynamic, dynamic> map) {
-    return Schedule(
+  factory ScheduleModel.fromMap(Map<dynamic, dynamic> map) {
+    return ScheduleModel(
       day: map['day'] as String,
       time: map['time'] as String,
       local: map['local'] as String,
