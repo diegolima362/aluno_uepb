@@ -1,11 +1,15 @@
 import 'package:aluno_uepb/app/app_controller.dart';
 import 'package:aluno_uepb/app/app_widget.dart';
 import 'package:aluno_uepb/app/modules/home/home_module.dart';
+import 'package:aluno_uepb/app/modules/home_content/home_content_module.dart';
 import 'package:aluno_uepb/app/modules/profile/profile_module.dart';
 import 'package:aluno_uepb/app/modules/rdm/rdm_module.dart';
 import 'package:aluno_uepb/app/modules/reminders/reminders_module.dart';
-import 'package:aluno_uepb/app/shared/repositories/data_respository/data_repository.dart';
+import 'package:aluno_uepb/app/shared/event_logger/event_logger.dart';
+import 'package:aluno_uepb/app/shared/notifications/notifications_manager.dart';
+import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:aluno_uepb/app/shared/repositories/local_storage/hive_storage.dart';
+import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -38,7 +42,22 @@ class AppModule extends MainModule {
           lazy: true,
         ),
         BindInject(
-          (i) => DataRepository(),
+          (i) => DataController(),
+          singleton: true,
+          lazy: true,
+        ),
+        BindInject(
+          (i) => CustomThemes(),
+          singleton: true,
+          lazy: true,
+        ),
+        BindInject(
+          (i) => NotificationsManager(),
+          singleton: true,
+          lazy: true,
+        ),
+        BindInject(
+          (i) => EventLogger(),
           singleton: true,
           lazy: true,
         ),
@@ -59,6 +78,11 @@ class AppModule extends MainModule {
         ModularRouter(
           '/home',
           module: HomeModule(),
+          transition: TransitionType.noTransition,
+        ),
+        ModularRouter(
+          '/content',
+          module: HomeContentModule(),
           transition: TransitionType.noTransition,
         ),
         ModularRouter(
