@@ -28,13 +28,20 @@ class ProfileModel {
     this.building: '',
   });
 
-  DateTime get birthDate => birthDateString.isEmpty
-      ? DateTime.now()
-      : DateTime(
-          int.tryParse(birthDateString[2]) ?? 0,
-          int.tryParse(birthDateString[1]) ?? 0,
-          int.tryParse(birthDateString[0]) ?? 0,
-        );
+  factory ProfileModel.fromMap(Map<dynamic, dynamic> map) {
+    return ProfileModel(
+      map['name'] as String,
+      map['register'] as String,
+      cra: map['cra'] as String,
+      cumulativeCh: map['cumulativeCH'] as String,
+      viewName: map['viewName'] as String,
+      birthDateString: map['birthDate'],
+      campus: map['campus'] as String,
+      gender: map['gender'] as String,
+      program: map['program'] as String,
+      building: map['building'] as String,
+    );
+  }
 
   int get age {
     DateTime currentDate = DateTime.now();
@@ -52,6 +59,14 @@ class ProfileModel {
     }
 
     return age;
+  }
+
+  DateTime get birthDate {
+    if (birthDateString.isEmpty) {
+      return DateTime.now();
+    } else {
+      return DateTime.fromMicrosecondsSinceEpoch(int.tryParse(birthDateString));
+    }
   }
 
   String get fBirthDate => Format.dateFirebase(birthDate).toString();
@@ -72,19 +87,19 @@ class ProfileModel {
     };
   }
 
-  factory ProfileModel.fromMap(Map<dynamic, dynamic> map) {
-    return ProfileModel(
-      map['name'] as String,
-      map['register'] as String,
-      cra: map['cra'] as String,
-      cumulativeCh: map['cumulativeCH'] as String,
-      viewName: map['viewName'] as String,
-      birthDateString: map['birthDate'],
-      campus: map['campus'] as String,
-      gender: map['gender'] as String,
-      program: map['program'] as String,
-      building: map['building'] as String,
-    );
+  Map<String, dynamic> toMapDB() {
+    return {
+      'name': this.name,
+      'register': this.register,
+      'cra': this.cra,
+      'age': this.age,
+      'cumulativeCH': this.cumulativeCh,
+      'campus': this.campus,
+      'gender': this.gender,
+      'program': this.program,
+      'building': this.building,
+      'date': Format.dateFirebase(DateTime.now()),
+    };
   }
 
   @override

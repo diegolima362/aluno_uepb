@@ -1,39 +1,61 @@
 import 'package:flutter/foundation.dart';
 
+import 'notification_model.dart';
+
 class TaskModel {
+  final String id;
+  final String courseId;
+  final String courseTitle;
+
+  String title;
+  DateTime dueDate;
+  bool isCompleted;
+  bool setReminder;
+  String text;
+  NotificationModel reminder;
+
+  DateTime createdDate = DateTime.now();
+
   TaskModel({
     @required this.title,
     @required this.id,
     @required this.courseId,
     @required this.courseTitle,
-    @required this.date,
+    @required this.dueDate,
     this.isCompleted = false,
-    this.comment,
+    this.text,
     this.setReminder = false,
+    this.createdDate,
+    this.reminder,
   });
 
-  final String id;
-  final String title;
-  final String courseId;
-  final String courseTitle;
-  DateTime date;
-  bool isCompleted;
-  bool setReminder;
-  String comment;
-
   factory TaskModel.fromMap(Map<dynamic, dynamic> value) {
-    final int startMilliseconds = value['date'];
+    final int due = int.tryParse(value['dueDate']);
+    final int created = int.tryParse(value['createdDate']);
+
+    NotificationModel reminder = value['reminder'] != null
+        ? NotificationModel.fromMap(value['reminder'])
+        : null;
+
     return TaskModel(
       id: value['id'],
       title: value['title'] ?? '',
       courseId: value['courseId'],
       courseTitle: value['courseTitle'] ?? '',
-      date: DateTime.fromMillisecondsSinceEpoch(startMilliseconds),
-      comment: value['comment'],
+      text: value['text'],
       isCompleted: value['isCompleted'] ?? false,
       setReminder: value['setReminder'] ?? false,
+      reminder: reminder,
+      dueDate: DateTime.fromMillisecondsSinceEpoch(due),
+      createdDate: DateTime.fromMillisecondsSinceEpoch(created),
     );
   }
+
+  bool get hasReminder => reminder != null;
+
+  bool get isAfterNow => dueDate.isAfter(DateTime.now());
+
+  bool get isBeforeNow => dueDate.isBefore(DateTime.now());
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -41,15 +63,17 @@ class TaskModel {
       'title': title,
       'courseId': courseId,
       'courseTitle': courseTitle,
-      'date': date.millisecondsSinceEpoch,
-      'comment': comment,
+      'text': text,
       'isCompleted': isCompleted,
       'setReminder': setReminder,
+      'dueDate': dueDate.millisecondsSinceEpoch.toString(),
+      'createdDate': createdDate.millisecondsSinceEpoch.toString(),
+      'reminder': reminder?.toMap(),
     };
   }
 
   @override
   String toString() {
-    return 'id: $id courseId: $courseId date: $date comment: $comment';
+    return 'id: $id courseId: $courseId dueDate: $dueDate text: $text';
   }
 }
