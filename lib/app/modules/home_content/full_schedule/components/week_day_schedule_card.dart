@@ -1,0 +1,95 @@
+import 'package:aluno_uepb/app/modules/rdm/components/course_info_card.dart';
+import 'package:aluno_uepb/app/shared/models/course_model.dart';
+import 'package:flutter/material.dart';
+
+final weekDaysMap = {
+  1: 'Segunda-feira',
+  2: 'Terça-feira',
+  3: 'Quarta-feira',
+  4: 'Quinta-feira',
+  5: 'Sexta-feira',
+};
+
+class WeekDayScheduleCard extends StatelessWidget {
+  final double width;
+  final double height;
+  final int weekDay;
+  final List<CourseModel> courses;
+  final bool showCurrentClass;
+
+  const WeekDayScheduleCard({
+    Key key,
+    this.width,
+    this.height,
+    @required this.weekDay,
+    @required this.courses,
+    this.showCurrentClass: true,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final _width = width ?? MediaQuery.of(context).size.width;
+    final _height = height ?? MediaQuery.of(context).size.height;
+    final _portrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+
+    final accent = Theme.of(context).accentColor;
+
+    final _courses = courses
+        .map((c) => CourseInfoCard(
+              course: c,
+              weekDay: weekDay,
+              showCurrentClass: showCurrentClass,
+            ))
+        .toList();
+
+    return Container(
+      width: _width * (_portrait ? .9 : .5),
+      height: _height * .8,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              weekDaysMap[weekDay],
+              style: TextStyle(fontSize: 20, color: accent),
+            ),
+          ),
+          SizedBox(height: _height * .01),
+          Container(
+            height: _height * (_portrait ? .75 : .65),
+            child: SingleChildScrollView(
+              child: courses.isEmpty
+                  ? Card(
+                      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                      color: Theme.of(context).cardColor,
+                      elevation: 2.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Container(
+                        height: 150,
+                        child: Center(
+                          child: Text(
+                            'Sem aulas nesse dia',
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: accent,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [..._courses],
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
