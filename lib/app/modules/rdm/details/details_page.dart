@@ -83,7 +83,6 @@ class _DetailsPageState extends ModularState<DetailsPage, DetailsController> {
     final extended = controller.extended;
 
     return CustomFAB(
-      color: Theme.of(context).cardColor,
       onPressed: () async => await controller.showScheduler(),
       tooltip: 'Adicionar alerta',
       label: 'Adicionar',
