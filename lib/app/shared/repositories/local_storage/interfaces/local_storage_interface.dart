@@ -1,26 +1,49 @@
-import 'package:aluno_uepb/app/shared/models/models.dart';
+import 'package:aluno_uepb/app/shared/models/course_model.dart';
+import 'package:aluno_uepb/app/shared/models/history_entry_model.dart';
+import 'package:aluno_uepb/app/shared/models/profile_model.dart';
+import 'package:aluno_uepb/app/shared/models/task_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hive/hive.dart';
 
 abstract class ILocalStorage implements Disposable {
-  Future<List<CourseModel>> getCourses({bool ignoreLocalData});
+  int get darkAccentColorCode;
 
-  Future<ProfileModel> getProfile({bool ignoreLocalData});
+  int get lightAccentColorCode;
+
+  Stream<int> get onDarkAccentChanged;
+
+  Stream<int> get onLightAccentChanged;
 
   Stream<bool> get onThemeChanged;
 
-  bool get isDarkMode;
+  bool get themeMode;
 
-  Future<void> setDarkMode(bool isDark);
+  Future<void> clearDatabase();
+
+  Future<void> deleteTask(String id);
+
+  Future<List<CourseModel>> getCourses();
+
+  Future<List<HistoryEntryModel>> getHistory();
+
+  Future<ProfileModel> getProfile();
 
   Future<List<TaskModel>> getTasks();
 
-  Future<void> addTask(TaskModel task);
-
-  Future<void> deleteTask(TaskModel task);
-
   ValueListenable<Box> onTasksChanged();
 
-  Future<void> clearDatabase();
+  Future<void> saveCourses(List<CourseModel> courses);
+
+  Future<void> saveHistory(List<HistoryEntryModel> history);
+
+  Future<void> saveProfile(ProfileModel profile);
+
+  Future<void> saveTask(TaskModel task);
+
+  Future<void> setDarkAccentColorCode(int value);
+
+  Future<void> setLightAccentColorCode(int value);
+
+  Future<void> setThemeMode(bool value);
 }
