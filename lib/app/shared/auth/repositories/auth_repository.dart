@@ -1,5 +1,7 @@
-import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/models/user_model.dart';
+import 'package:aluno_uepb/app/shared/repositories/scraper/session.dart';
+import 'package:aluno_uepb/app/utils/connection_state.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hive/hive.dart';
 
@@ -10,35 +12,47 @@ class AuthRepository implements IAuthRepository {
   AuthRepository() {
     _box = Hive.box(LOGIN_BOX);
 
-    _localLogin();
+    Future.sync(_localLogin);
   }
 
   Future _localLogin() async {
     if (_box.isEmpty) {
-      print('> box isEmpty');
       _user = null;
-    } else {
-      print('> box not Empty');
-      final data = _box.get('user', defaultValue: null);
-
-      Map<String, String> map = {
-        'id': data['id'],
-        'password': data['password'],
-      };
-
-      _user = UserModel.fromMap(map);
-
-      await _box.delete('user');
-
       await _box.put('user', {
-        'id': map['id'],
-        'password': map['password'],
+        'logged': false,
         'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
       }).then((value) {
-        print('> login updated');
+        print('> AuthRepository: login empty');
       });
+    } else {
+      final data = _box.get('user', defaultValue: null);
+      print('> AuthRepository: data = ');
+      print(data);
 
-      _box.get('user', defaultValue: null);
+      if (data['logged'] ?? false == true) {
+        final map = {
+          'id': data['id'],
+          'password': data['password'],
+          'logged': data['logged'],
+        };
+
+        _user = UserModel.fromMap(map);
+
+        await _box.delete('user');
+
+        await _box.put('user', {
+          'id': map['id'],
+          'password': map['password'],
+          'logged': true,
+          'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
+        }).then((value) {
+          print('> AuthRepository: login updated');
+        });
+
+        _box.get('user', defaultValue: null);
+      } else {
+        _user = null;
+      }
     }
   }
 
@@ -55,8 +69,11 @@ class AuthRepository implements IAuthRepository {
       _user = UserModel.fromMap({
         'id': map['id'],
         'password': map['password'],
+        'logged': map['logged'],
+        'accessed': map['accessed'],
       });
     }
+
     return _user;
   }
 
@@ -66,54 +83,73 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<UserModel> signInWithIdPassword(String id, String password) async {
-    // return UserModel(id: 'id', password: 'password');
+    try {
+      if (!await CheckConnection.checkConnection()) {
+        throw PlatformException(
+            message: 'Sem conexão com a internet', code: 'error_connection');
+      }
+    } catch (e) {
+      rethrow;
+    }
 
-    // try {
-    //   if (!await CheckConnection.checkConnection()) {
-    //     throw PlatformException(
-    //         message: 'Sem conexão com a internet', code: 'error_connection');
-    //   }
-    // } catch (e) {
-    //   rethrow;
-    // }
+    final session = Session();
 
-    // final session = Session();
-    //
-    // final String loginURL =
-    //     "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
-    //
-    // Map<String, String> formData = {
-    //   'nome_usuario': id,
-    //   'senha_usuario': password
-    // };
-    //
-    // try {
-    //   await session.signIn(loginURL, formData);
-    // } catch (e) {
-    //   rethrow;
-    // }
+    final String loginURL =
+        "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
+
+    Map<String, String> formData = {
+      'nome_usuario': id,
+      'senha_usuario': password
+    };
+
+    try {
+      await session.post(loginURL, formData);
+    } catch (e) {
+      rethrow;
+    }
 
     // final service = Analytics.instance;
     // await service.onLogin();
 
-    Map<String, String> map = {
-      'user': id,
+    final map = {
+      'id': id,
       'password': password,
+      'logged': true,
     };
+
     final user = UserModel.fromMap(map);
+
     await _box.put('user', {
       'id': id,
       'password': password,
+      'logged': true,
+      'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
     });
 
     _box.get('user', defaultValue: null);
+    _user = user;
 
     return user;
   }
 
   @override
   Future<void> signOut() async {
-    await _box.clear();
+    final map = {
+      'logged': false,
+      'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
+    };
+
+    final user = UserModel.fromMap(map);
+
+    await _box.delete('user');
+
+    await _box.put('user', {
+      'logged': false,
+      'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
+    });
+
+    _box.get('user', defaultValue: null);
+    _user = user;
   }
 
   UserModel _userFromDatabase(Map user) {
@@ -122,17 +158,18 @@ class AuthRepository implements IAuthRepository {
         : UserModel.fromMap({
             'id': user['id'],
             'password': user['password'],
+            'logged': user['logged'],
           });
   }
 
-  Future<UserModel> getCurrentUser() async {
+  UserModel getCurrentUser() {
     final user = _box.get('user');
     return _userFromDatabase(user);
   }
 
   @override
   void dispose() {
-    print('> close box: auth');
+    print('> AuthRepository: dispose > close database');
     _box.close();
   }
 }

@@ -1,4 +1,5 @@
-import 'package:aluno_uepb/app/shared/models/models.dart';
+import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
+import 'package:aluno_uepb/app/shared/models/user_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -37,8 +38,10 @@ abstract class _AuthControllerBase with Store {
 
   @action
   void setUser(UserModel value) {
+    print('> _AuthControllerBase: set user: $value');
+
     user = value;
-    if (value == null)
+    if (value == null || !(value?.logged ?? false))
       status = AuthStatus.loggedOut;
     else
       status = AuthStatus.loggedOn;
@@ -57,8 +60,11 @@ abstract class _AuthControllerBase with Store {
     try {
       user = await _authRepository.signInWithIdPassword(id, password);
 
+      print('> _AuthControllerBase: returned user: $user');
+
       status = AuthStatus.loggedOn;
       setUser(user);
+      Modular.get<IEventLogger>().logSignIn();
     } on PlatformException {
       status = AuthStatus.loggedOut;
       rethrow;
@@ -71,6 +77,8 @@ abstract class _AuthControllerBase with Store {
       status = AuthStatus.waiting;
       await _authRepository.signOut();
       status = AuthStatus.loggedOut;
+
+      Modular.get<IEventLogger>().logEvent('logSignOut');
     } on PlatformException {
       status = AuthStatus.loggedOut;
       rethrow;
