@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:aluno_uepb/app/shared/components/platform_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'platform_widget.dart';
 
 class PlatformAlertDialog extends PlatformWidget {
   final String title;
@@ -44,7 +45,10 @@ class PlatformAlertDialog extends PlatformWidget {
   @override
   Widget buildMaterialWidget(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
+      title: Text(
+        title,
+        style: TextStyle(color: Theme.of(context).accentColor),
+      ),
       content: Text(content),
       actions: _buildActions(context),
     );
