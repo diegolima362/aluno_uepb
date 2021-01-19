@@ -1,0 +1,6 @@
+flutter_native_splash:
+  color: "#fafafa"  # required parameter
+  image: images/splash.png  # optional parameter
+  color_dark: "#141414"  # required if image_dark parameter is used
+  image_dark: images/splash-invert.png  # optional parameter
+  fill: true
