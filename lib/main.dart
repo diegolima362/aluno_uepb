@@ -1,76 +1,33 @@
-import 'package:aluno_uepb/services/services.dart';
-import 'package:aluno_uepb/themes/custom_themes.dart';
-import 'package:aluno_uepb/views/landing_page.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
+import 'dart:async';
+
+import 'package:aluno_uepb/app/app_module.dart';
+import 'package:aluno_uepb/app/shared/repositories/local_storage/hive_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveDatabase.initDatabase();
-  runApp(MyApp());
+  initializeDateFormatting("pt_BR", null);
+
+  await Firebase.initializeApp();
+
+  await Hive.initFlutter();
+
+  await HiveStorage.initDatabase();
+
+  final currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation(currentTimeZone));
+
+  runApp(ModularApp(module: AppModule()));
 }
 
-class MyApp extends StatelessWidget {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
-  static AuthBase auth = Auth();
-
-  bool _isDarkMode(Box box) {
-    final darkMode = box.get('darkMode', defaultValue: false);
-    final colorValue = box.get(
-      'color',
-      defaultValue: CustomThemes.defaultAccentColor.value,
-    );
-
-    CustomThemes.setColor(Color(colorValue));
-    CustomThemes.isDark = darkMode;
-
-    return darkMode;
-  }
-
-  SystemUiOverlayStyle _getStyle(bool darkMode) {
-    return SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<Box>(
-      valueListenable: HiveDatabase.onDarkModeStateChanged,
-      builder: (context, box, child) {
-        final darkMode = _isDarkMode(box);
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: _getStyle(darkMode),
-          child: MultiProvider(
-            providers: [
-              Provider<FirebaseAnalytics>.value(value: analytics),
-              Provider<FirebaseAnalyticsObserver>.value(value: observer),
-              Provider<AuthBase>.value(value: auth)
-            ],
-            child: MaterialApp(
-              title: 'Aluno UEPB',
-              home: LandingPage(),
-              themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
-              theme: CustomThemes.light,
-              darkTheme: CustomThemes.dark,
-              navigatorObservers: <NavigatorObserver>[observer],
-              supportedLocales: [const Locale('pt', 'BR')],
-              localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
+const bool USE_FIRE_STORE_EMULATOR = false;

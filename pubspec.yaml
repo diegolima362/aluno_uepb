@@ -3,73 +3,66 @@ description: Aplicativo não oficial para alunos da UEPB
 
 publish_to: "none"
 
-version: 1.0.2+3
+version: 1.1.0
+
+## Slidy Scripts 
+vars:
+  clean: flutter clean
+  get: flutter pub get
+  runner: flutter pub run build_runner
+scripts:
+  mobx_build: $runner build
+  mobx_watch: $clean & $get & $runner watch
+  mobx_build_clean: $clean & $get & $runner build --delete-conflicting-outputs
+
+
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  firebase_core: ^0.7.0
+  cloud_firestore: ^0.16.0
+  firebase_analytics: ^7.0.1
+  screenshot: ^0.2.0
+  permission_handler: ^5.0.1+1
+  image_gallery_saver: ^1.6.7
+  flutter_native_timezone: ^1.0.4
+  intl: ^0.16.1
+  charts_flutter: ^0.9.0
+  rxdart: ^0.25.0
+  device_info: ^1.0.0
+  flutter_local_notifications: ^3.0.3
+  weekday_selector: ^0.4.0
+  flutter_colorpicker: ^0.3.5
+  fl_chart: ^0.12.2
+  cupertino_icons: ^1.0.2
+  html: ^0.14.0+4
+  http: ^0.12.2
+  hive_flutter: ^0.3.1
+  hive: ^1.4.4+1
+  diacritic: ^0.1.1
+  flutter_mobx: ^1.1.0+2
+  mobx: ^1.2.1+4
+  flutter_modular: ^2.0.1
   flutter:
     sdk: flutter
-  http: ^0.12.1
-  html:
-  hive_flutter: ^0.3.0+2
-  hive: ^1.4.1+1
-  path_provider:
-  provider:
-  cupertino_icons:
-  firebase_analytics: ^5.0.16
-  cloud_firestore: ^0.13.7
-  diacritic: ^0.1.1
-  fl_chart: ^0.10.1
-  flutter_colorpicker: ^0.3.4
-  flutter_local_notifications: ^1.4.4+4
-  weekday_selector: ^0.4.0
-  rxdart: ^0.23.1
-  flutter_native_admob: ^2.1.0+3
-  flutter_localizations:
-    sdk: flutter
 
-dependency_overrides:
-  path: ^1.6.4
-  dartx: ^0.3.0
-  characters: 1.0.0
-  collection: 1.14.11
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
 
 dev_dependencies:
+  flutter_native_splash: ^0.2.7
+  mockito: ^4.1.3
+  modular_codegen: ^2.1.0
+  mobx_codegen: ^1.1.2
+  build_runner: ^1.10.1
   flutter_test:
     sdk: flutter
-  hive_generator: ^0.7.0+2
-  build_runner: ^1.10.0
 
 flutter:
   uses-material-design: true
   assets:
-    - images/
-  # To add assets to your application, add an assets section, like this:
-#  assets:
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware.
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+    - images/icon.png
 
-  
