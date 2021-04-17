@@ -37,12 +37,12 @@ abstract class _TaskDetailsControllerBase with Store {
     final RemindersController controller = Modular.get();
     await controller.loadData();
 
-    Modular.navigator.pop();
+    Modular.to.pop();
   }
 
   @action
   void edit() {
-    Modular.link.pushNamed('/task/edit', arguments: task);
+    Modular.to.pushNamed('/task/edit', arguments: task);
     Modular.get<IEventLogger>().logEvent('logEditTask');
   }
 

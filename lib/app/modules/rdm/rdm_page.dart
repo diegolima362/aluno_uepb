@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -10,7 +11,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'components/course_full_info_card.dart';
@@ -124,36 +125,30 @@ class _RdmPageState extends ModularState<RdmPage, RdmController> {
     });
   }
 
-  Future<void> _requestPermission() async {
+  Future<bool> _requestPermission() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.storage,
     ].request();
 
-    final info = statuses[Permission.storage].isGranted
-        ? 'Acesso permitido'
-        : 'Acesso Negado';
-
-    _showSnackBar(info);
+    final info = statuses[Permission.storage].isGranted;
+    _showSnackBar(info ? 'Acesso permitido' : 'Acesso Negado');
+    return info;
   }
 
   Future<void> _saveScreen(GlobalKey key) async {
     try {
-      print('save image');
-      await _requestPermission();
-      RenderRepaintBoundary boundary = key.currentContext.findRenderObject();
-      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      var pngBytes = byteData.buffer.asUint8List();
+      if (await _requestPermission()) {
+        RenderRepaintBoundary boundary = key.currentContext.findRenderObject();
+        ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+        ByteData byteData =
+            await image.toByteData(format: ui.ImageByteFormat.png);
+        var pngBytes = File.fromRawPath(byteData.buffer.asUint8List());
 
-      await ImageGallerySaver.saveImage(
-        pngBytes,
-        name: (DateTime.now().millisecondsSinceEpoch ~/ 6000).toString(),
-        quality: 100,
-      );
+        await GallerySaver.saveImage(pngBytes.path);
 
-      _showSnackBar('Imagem salva na galeria');
-      Modular.get<IEventLogger>().logEvent('logShareCourseInfo');
+        _showSnackBar('Imagem salva na galeria');
+        Modular.get<IEventLogger>().logEvent('logShareCourseInfo');
+      }
     } catch (e) {
       print(e);
     }

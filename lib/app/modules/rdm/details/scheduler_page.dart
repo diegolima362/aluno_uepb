@@ -91,7 +91,7 @@ class _SchedulerPageState extends State<SchedulerPage> {
                   child: Text('Salvar'),
                   onPressed: () {
                     controller.scheduleReminder();
-                    Modular.navigator.pop(true);
+                    Modular.to.pop(true);
                   },
                 ),
               ],

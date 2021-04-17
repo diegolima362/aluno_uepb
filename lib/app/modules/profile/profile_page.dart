@@ -1,5 +1,6 @@
 import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
 import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
+import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -189,26 +190,24 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     final title = 'Sair';
     final content = 'Tem certeza que quer sair?';
 
-    await Modular.to.showDialog(
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: [
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: () => Modular.navigator.pop(false),
-            ),
-            TextButton(
-              child: Text('Sair'),
-              onPressed: () async {
-                Modular.navigator.pop(true);
-                await controller.logout();
-              },
-            )
-          ],
-        );
-      },
+    await asuka.showDialog(
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            child: Text('Cancelar'),
+            onPressed: () => Modular.to.pop(false),
+          ),
+          TextButton(
+            child: Text('Sair'),
+            onPressed: () async {
+              Modular.to.pop(true);
+              await controller.logout();
+            },
+          )
+        ],
+      ),
     );
   }
 
@@ -221,7 +220,7 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     final h = MediaQuery.of(context).size.height * .6;
     controller.setTempAccent(controller.accentCode);
 
-    await Modular.to.showDialog(
+    await asuka.showDialog(
       builder: (_) {
         return AlertDialog(
           title: Observer(builder: (_) {
@@ -247,14 +246,14 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
           actions: [
             TextButton(
               child: Text('Cancelar'),
-              onPressed: () => Modular.navigator.pop(),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: Text('OK'),
               onPressed: () {
                 controller.setAccent(controller.tempAccentCode);
                 controller.logAccentColor();
-                Modular.navigator.pop();
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -284,8 +283,8 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     final themes = Modular.get<CustomThemes>();
     final accent = Theme.of(context).accentColor;
     List<Color> colors = controller.darkMode
-        ? themes.darkAccentColores
-        : themes.lightAccentColores;
+        ? themes.darkAccentColors
+        : themes.lightAccentColors;
 
     if (!colors.contains(accent)) colors.add(accent);
 
@@ -296,25 +295,25 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     if (controller.darkMode) colors = colors.reversed.toList();
 
     controller.setTempAccent(controller.accentCode);
-    return await Modular.to.showDialog(
+    return await asuka.showDialog(
       builder: (_) {
         return AlertDialog(
           title: Text('Cor de destaque'),
           actions: [
             TextButton(
               child: Text('Mais cores'),
-              onPressed: () async => Modular.navigator.pop(false),
+              onPressed: () async => Navigator.of(context).pop(false),
             ),
             TextButton(
               child: Text('Cancelar'),
-              onPressed: () => Modular.navigator.pop(true),
+              onPressed: () => Navigator.of(context).pop(true),
             ),
             TextButton(
               child: Text('OK'),
               onPressed: () {
                 controller.setAccent(controller.tempAccentCode);
                 controller.logAccentColor();
-                Modular.navigator.pop(true);
+                Navigator.of(context).pop(true);
               },
             ),
           ],

@@ -1,7 +1,7 @@
-import 'package:aluno_uepb/app/modules/home_content/home_content_module.dart';
-import 'package:aluno_uepb/app/modules/profile/profile_module.dart';
-import 'package:aluno_uepb/app/modules/rdm/rdm_module.dart';
-import 'package:aluno_uepb/app/modules/reminders/reminders_module.dart';
+import 'package:aluno_uepb/app/modules/home_content/home_content_page.dart';
+import 'package:aluno_uepb/app/modules/profile/profile_page.dart';
+import 'package:aluno_uepb/app/modules/rdm/rdm_page.dart';
+import 'package:aluno_uepb/app/modules/reminders/reminders_page.dart';
 import 'package:aluno_uepb/app/shared/components/loading_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -20,10 +20,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends ModularState<HomePage, HomeController> {
   final _pages = [
-    HomeContentModule(),
-    RdmModule(),
-    RemindersModule(),
-    ProfileModule(),
+    HomeContentPage(),
+    RdmPage(),
+    RemindersPage(),
+    ProfilePage(),
   ];
 
   final _items = [

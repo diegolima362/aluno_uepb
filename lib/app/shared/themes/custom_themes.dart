@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomThemes {
-  List<Color> get darkAccentColores => [
-        const Color(0xffe43f5a),
+  List<Color> get darkAccentColors => [
         const Color(0xfff0f0f0),
+        const Color(0xffe43f5a),
         const Color(0xff77e2c3),
         const Color(0xffffaf7b),
         const Color(0xfff8ca4d),
@@ -12,7 +12,7 @@ class CustomThemes {
         const Color(0xff2979ff),
       ];
 
-  List<Color> get lightAccentColores => [
+  List<Color> get lightAccentColors => [
         const Color(0xff141414),
         const Color(0xffe43f5a),
         const Color(0xff24314d),
@@ -24,7 +24,7 @@ class CustomThemes {
       ];
 
   ThemeData getDark({int colorValue}) {
-    Color accent = darkAccentColores[0];
+    Color accent = darkAccentColors[0];
 
     if (colorValue != null) {
       final accentColor = Color(colorValue);
@@ -126,7 +126,7 @@ class CustomThemes {
   }
 
   ThemeData getLight({int colorValue}) {
-    Color accent = lightAccentColores[0];
+    Color accent = lightAccentColors[0];
 
     if (colorValue != null) {
       final accentColor = Color(colorValue);

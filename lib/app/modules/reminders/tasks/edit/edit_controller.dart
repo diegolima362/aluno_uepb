@@ -142,7 +142,7 @@ abstract class _EditControllerBase with Store {
 
     await Modular.get<RemindersController>().loadData();
 
-    Modular.navigator.pop();
+    Modular.to.pop();
   }
 
   @action

@@ -4,6 +4,7 @@ import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_inter
 import 'package:aluno_uepb/app/shared/models/notification_model.dart';
 import 'package:aluno_uepb/app/shared/notifications/interfaces/notifications_manager_interface.dart';
 import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
+import 'package:asuka/asuka.dart' as asuka;
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,24 +41,18 @@ class _AppWidgetState extends State<AppWidget> {
               widget.controller.isDark ? Brightness.light : Brightness.dark,
         ));
 
-        var _theme = widget.controller.darkMode
+        ThemeData _theme = widget.controller.darkMode
             ? themes.getDark(colorValue: widget.controller.darkAccent)
             : themes.getLight(colorValue: widget.controller.lightAccent);
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          navigatorKey: Modular.navigatorKey,
           title: 'Aluno UEPB',
-          initialRoute: Modular.initialRoute,
-          onGenerateRoute: Modular.generateRoute,
           navigatorObservers: <NavigatorObserver>[observer],
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child,
-          ),
+          builder: asuka.builder,
           themeMode: widget.controller.themeMode,
           theme: _theme,
-        );
+        ).modular();
       },
     );
   }
@@ -65,7 +60,6 @@ class _AppWidgetState extends State<AppWidget> {
   @override
   void initState() {
     super.initState();
-
     _config();
     _configureSelectNotificationSubject();
   }
@@ -116,12 +110,11 @@ class _AppWidgetState extends State<AppWidget> {
         payload: payload,
       );
 
-      await Modular.to.showDialog(
+      await asuka.showDialog(
         builder: (context) {
           final map = json.decode(notification.payload);
 
           return AlertDialog(
-
             title: Text(map['title']),
             content: Text(map['courseName']),
           );

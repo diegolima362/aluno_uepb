@@ -134,7 +134,7 @@ abstract class _ProfileControllerBase with Store {
   @action
   void signOut() {
     _storage.clearDatabase();
-     cancelAllNotifications();
+    cancelAllNotifications();
     _authController.signOut();
   }
 
@@ -150,7 +150,7 @@ abstract class _ProfileControllerBase with Store {
   void logAccentColor() {
     final themes = Modular.get<CustomThemes>();
     List<Color> colors =
-        darkMode ? themes.darkAccentColores : themes.lightAccentColores;
+        darkMode ? themes.darkAccentColors : themes.lightAccentColors;
 
     final accent = Color(accentCode);
 

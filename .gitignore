@@ -34,3 +34,6 @@ doc/api/
 /android/app/debug
 /android/app/release
 /android/app/profile
+
+debug.keystore
+local.properties

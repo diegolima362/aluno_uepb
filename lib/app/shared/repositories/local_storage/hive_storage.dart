@@ -20,7 +20,7 @@ class HiveStorage implements ILocalStorage {
 
   @override
   int get darkAccentColorCode => Hive.box(PREFERENCES_BOX)
-      .get('darkAccentColorCode', defaultValue: 0xFFE43F5A);
+      .get('darkAccentColorCode', defaultValue: 0xfff0f0f0);
 
   @override
   int get lightAccentColorCode => Hive.box(PREFERENCES_BOX)

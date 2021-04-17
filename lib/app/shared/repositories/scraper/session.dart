@@ -29,7 +29,7 @@ class Session {
       return waiting = false;
     });
 
-    http.Response response = await http.get(url, headers: _headers);
+    http.Response response = await http.get(Uri(path: url), headers: _headers);
     if (_headers.isEmpty) {
       updateCookie(response);
     }
@@ -54,7 +54,7 @@ class Session {
     });
 
     http.Response response = await http.post(
-      url,
+      Uri(path: url),
       body: data,
       headers: _headers,
     );

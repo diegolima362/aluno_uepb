@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:aluno_uepb/app/app_module.dart';
+import 'package:aluno_uepb/app/app_widget.dart';
 import 'package:aluno_uepb/app/shared/repositories/local_storage/hive_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ Future<void> main() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation(currentTimeZone));
 
-  runApp(ModularApp(module: AppModule()));
+  runApp(ModularApp(module: AppModule(), child: AppWidget()));
 }
 
 const bool USE_FIRE_STORE_EMULATOR = false;

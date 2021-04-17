@@ -3,6 +3,7 @@ import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
 import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
 import 'package:aluno_uepb/app/shared/components/empty_content.dart';
 import 'package:aluno_uepb/app/shared/models/task_model.dart';
+import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -246,7 +247,7 @@ class _RemindersPageState
   }
 
   void _showDialog(TaskModel task) {
-    Modular.to.showDialog(
+    asuka.showDialog(
       builder: (context) {
         return AlertDialog(
           contentPadding: EdgeInsets.zero,

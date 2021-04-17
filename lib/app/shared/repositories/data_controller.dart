@@ -190,7 +190,7 @@ abstract class _DataControllerBase with Store {
       _profile = await _scraper.getProfile();
       if (_profile == null) return null;
 
-      if (!ignoreLocalData) Modular.get<IEventLogger>().setData(_profile);
+      Modular.get<IEventLogger>().setData(_profile);
       _storage.saveProfile(_profile);
     } catch (e) {
       loadingData = false;

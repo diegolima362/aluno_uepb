@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -89,36 +89,31 @@ class _FullSchedulePageState
       tooltip: 'Salvar como imagem',
       label: 'Salvar imagem',
       extended: extended,
-      icon: Icon(Icons.image),
+      icon: Icon(Icons.save_outlined),
     );
   }
 
-  Future<void> _requestPermission() async {
+  Future<bool> _requestPermission() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.storage,
     ].request();
 
-    final info = statuses[Permission.storage].isGranted
-        ? 'Acesso permitido'
-        : 'Acesso Negado';
-
-    _showSnackBar(info);
+    final info = statuses[Permission.storage].isGranted;
+    _showSnackBar(info ? 'Acesso permitido' : 'Acesso Negado');
+    return info;
   }
 
   Future<void> _saveScreen() async {
-    await _requestPermission();
+    if (await _requestPermission()) {
+      final File data =
+          File.fromRawPath(await _screenshotController.capture(pixelRatio: 2));
 
-    final File data = await _screenshotController.capture(pixelRatio: 2);
+      await GallerySaver.saveImage(data.path, albumName: 'RDM');
 
-    await ImageGallerySaver.saveImage(
-      data.readAsBytesSync(),
-      name: (DateTime.now().microsecondsSinceEpoch ~/ 6000).toString(),
-      quality: 100,
-    );
+      _showSnackBar('Imagem salva na galeria');
 
-    _showSnackBar('Imagem salva na galeria');
-
-    Modular.get<IEventLogger>().logEvent('logSaveImageFullSchedule');
+      Modular.get<IEventLogger>().logEvent('logSaveImageFullSchedule');
+    }
   }
 
   void _showSnackBar(String text) {
