@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class AboutAppPage extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -20,28 +21,51 @@ class AboutAppPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               subtitle: Text(
-                'Versão 1.1.0_b',
+                'Versão 1.1.1_b',
                 textAlign: TextAlign.center,
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(20),
-              child: Image(image: AssetImage('images/icon.png')),
-              height: 125,
-            ),
+            _buildLogo(),
             SizedBox(height: 20),
             Text(
-              'Feito com ❤️ por Diego Lima\n' + '#Flutter',
+              '© 2021 362Devs',
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 50),
             Text(
-              '© 2020-2021 362Devs',
+              'Feito com ❤️ por Diego Lima\n' + '#Flutter',
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    final colors = [
+      Color(0xff1a1a1a),
+      Color(0xffb30000),
+      Color(0xffb3b3b3),
+    ];
+
+    return Container(
+      height: 125,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(
+          3,
+          (index) => Container(
+            margin: EdgeInsets.symmetric(horizontal: 4),
+            width: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: colors[index],
+            ),
+          ),
         ),
       ),
     );

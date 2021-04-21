@@ -1,19 +1,16 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:aluno_uepb/app/modules/home_content/full_schedule/components/week_day_schedule_card.dart';
-import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
-import 'package:aluno_uepb/app/utils/format.dart';
-import 'package:file_saver/file_saver.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
+import 'package:path_provider/path_provider.dart' as pp;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
-
-import '../controllers/full_schedule_controller.dart';
+import 'package:asuka/asuka.dart' as asuka;
 
 class FullSchedulePage extends StatefulWidget {
   final String title;
@@ -51,15 +48,10 @@ class _FullSchedulePageState
 
       for (int i = 1; i < 6; i++) {
         list.add(
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: WeekDayScheduleCard(
-                courses: controller.classesAtDay(i),
-                showCurrentClass: false,
-                weekDay: i,
-              ),
-            ),
+          WeekDayScheduleCard(
+            courses: controller.classesAtDay(i),
+            showCurrentClass: false,
+            weekDay: i,
           ),
         );
       }
@@ -95,46 +87,37 @@ class _FullSchedulePageState
     ].request();
 
     final info = status[Permission.storage]?.isGranted ?? false;
-    _showSnackBar(info ? 'Acesso permitido' : 'Acesso Negado');
     return info;
   }
 
   Future<void> _saveScreen() async {
     if (await _requestPermission()) {
-      final Uint8List? data =
-          await _screenshotController.capture(pixelRatio: 2);
+      final image = await _screenshotController.capture(pixelRatio: 2);
 
-      if (data != null) {
-        if (Platform.isIOS || Platform.isAndroid) {
-          bool status = await Permission.storage.isGranted;
-          print(status);
-          if (!status) await Permission.storage.request();
+      if (image != null) {
+        final path = (await pp.getApplicationDocumentsDirectory()).path;
+        final file = File('$path/${DateTime.now().microsecondsSinceEpoch}.jpg');
+        file.writeAsBytes(image);
+
+        final result =
+            await GallerySaver.saveImage(file.path, albumName: 'RDM');
+
+        if (result ?? false) {
+          asuka.showDialog(builder: (_) {
+            final navigator = Navigator.of(_);
+            return AlertDialog(
+              title: Text('Sucesso'),
+              content: Text('Imagem Salva'),
+              actions: [
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () => navigator.pop(true),
+                ),
+              ],
+            );
+          });
         }
-        MimeType type = MimeType.JPEG;
-        final val = await FileSaver.instance.saveFile(
-          Format.simpleDate(DateTime.now()),
-          data,
-          "jpg",
-          mimeType: type,
-        );
-        print(val);
-
-        _showSnackBar('Imagem salva na galeria');
-        Modular.get<IEventLogger>().logEvent('logSaveImageFullSchedule');
       }
     }
-  }
-
-  void _showSnackBar(String text) {
-    final snackBar = SnackBar(
-      content: Text(
-        text,
-        style: TextStyle(color: Theme.of(context).backgroundColor),
-        textAlign: TextAlign.center,
-      ),
-      backgroundColor: Theme.of(context).accentColor,
-      duration: Duration(seconds: 1),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

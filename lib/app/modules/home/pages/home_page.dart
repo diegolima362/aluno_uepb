@@ -1,13 +1,8 @@
-import 'package:aluno_uepb/app/modules/home_content/home_content_page.dart';
-import 'package:aluno_uepb/app/modules/profile/profile_page.dart';
-import 'package:aluno_uepb/app/modules/rdm/rdm_page.dart';
-import 'package:aluno_uepb/app/modules/reminders/reminders_page.dart';
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/repositories/local_storage/interfaces/local_storage_interface.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import '../controllers/home_controller.dart';
 
 class HomePage extends StatefulWidget {
   final String title;
@@ -19,80 +14,70 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends ModularState<HomePage, HomeController> {
-  final _pages = [
-    HomeContentPage(),
-    RdmPage(),
-    RemindersPage(),
-    ProfilePage(),
-  ];
-
-  final _items = [
+  final _navbarItems = [
     BottomNavigationBarItem(
       label: 'Home',
       icon: Icon(Icons.home_outlined),
       activeIcon: Icon(Icons.home),
+      tooltip: 'Home',
     ),
     BottomNavigationBarItem(
       label: 'RDM',
       icon: Icon(Icons.menu_outlined),
       activeIcon: Icon(Icons.menu),
+      tooltip: 'RDM',
     ),
     BottomNavigationBarItem(
       label: 'Lembretes',
       icon: Icon(Icons.assignment_outlined),
       activeIcon: Icon(Icons.assignment),
+      tooltip: 'Lembretes',
     ),
     BottomNavigationBarItem(
       label: 'Perfil',
       icon: Icon(Icons.person_outlined),
       activeIcon: Icon(Icons.person),
+      tooltip: 'Perfil',
     ),
   ];
 
-  PageController? _pageController;
-
-  List<CourseModel>? courses;
-
   @override
   Widget build(BuildContext context) {
-    final storage = Modular.get<ILocalStorage>();
-
-    storage.getCourses().then((value) => setState(() {
-          courses = value;
-        }));
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Home')),
-      body: ListView.builder(
-        itemCount: courses?.length ?? 0,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(courses![index].name),
-          );
-        },
-      ),
+    return WillPopScope(
+      onWillPop: () => Future.sync(controller.onWillPop),
+      child: Observer(builder: (_) {
+        if (controller.loading) return LoadingPage();
+        return Scaffold(
+          body: RouterOutlet(),
+          bottomNavigationBar: _bottomNavigationBar(),
+        );
+      }),
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    _pageController = PageController(
-      initialPage: controller.currentIndex,
-    );
-  }
-
-  bool _onWillPop() {
-    if (_pageController!.page!.round() == _pageController!.initialPage)
-      return true;
-    else {
-      _pageController!.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+  Widget _bottomNavigationBar() {
+    return Observer(builder: (_) {
+      return Container(
+        decoration: BoxDecoration(
+          border: BorderDirectional(
+            top: BorderSide(
+              color: Theme.of(context).dividerColor,
+              width: .4,
+            ),
+          ),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: controller.currentIndex,
+          items: _navbarItems,
+          onTap: controller.onTap,
+          elevation: 20,
+          selectedItemColor: Theme.of(context).iconTheme.color,
+          unselectedItemColor: Theme.of(context).disabledColor,
+          showUnselectedLabels: false,
+          showSelectedLabels: false,
+          iconSize: 28,
+        ),
       );
-
-      return false;
-    }
+    });
   }
 }

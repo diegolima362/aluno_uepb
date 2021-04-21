@@ -1,11 +1,11 @@
-import 'package:aluno_uepb/app/modules/reminders/reminders_controller.dart';
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
-part 'details_controller.g.dart';
+import 'controllers.dart';
+
+part 'tasks_details_controller.g.dart';
 
 @Injectable()
 class TaskDetailsController = _TaskDetailsControllerBase
@@ -13,7 +13,7 @@ class TaskDetailsController = _TaskDetailsControllerBase
 
 abstract class _TaskDetailsControllerBase with Store {
   @observable
-  late TaskModel task;
+  TaskModel task = Modular.args!.data;
 
   @observable
   bool done = false;
@@ -32,8 +32,6 @@ abstract class _TaskDetailsControllerBase with Store {
   Future<void> delete() async {
     await _storage.deleteTask(task.id);
 
-    Modular.get<IEventLogger>().logEvent('logRemoveTask');
-
     final RemindersController controller = Modular.get();
     await controller.loadData();
 
@@ -42,8 +40,7 @@ abstract class _TaskDetailsControllerBase with Store {
 
   @action
   void edit() {
-    Modular.to.pushNamed('/task/edit', arguments: task);
-    Modular.get<IEventLogger>().logEvent('logEditTask');
+    Modular.to.pushNamed('/home/reminders/task/edit', arguments: task);
   }
 
   @action
@@ -55,8 +52,6 @@ abstract class _TaskDetailsControllerBase with Store {
     await _storage.addTask(task);
 
     await Modular.get<RemindersController>().loadData();
-
-    Modular.get<IEventLogger>().logEvent('logMarkTaskCompleted');
 
     done = value;
   }

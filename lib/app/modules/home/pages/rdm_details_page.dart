@@ -1,28 +1,22 @@
-import 'package:aluno_uepb/app/modules/rdm/components/course_full_info_card.dart';
-import 'package:aluno_uepb/app/modules/reminders/notifications/components/notification_info_card.dart';
-import 'package:aluno_uepb/app/modules/reminders/tasks/components/task_info_card.dart';
-import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'details_controller.dart';
-
-class DetailsPage extends StatefulWidget {
+class RDMDetailsPage extends StatefulWidget {
   @override
   _DetailsPageState createState() => _DetailsPageState();
 }
 
-class _DetailsPageState extends ModularState<DetailsPage, DetailsController> {
+class _DetailsPageState
+    extends ModularState<RDMDetailsPage, RDMDetailsController> {
   ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    final _height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -34,11 +28,11 @@ class _DetailsPageState extends ModularState<DetailsPage, DetailsController> {
         child: Column(
           children: [
             _buildDetails(),
-            SizedBox(height: _height * .03),
+            SizedBox(height: 50),
             Observer(builder: (_) => _buildTasks()),
-            SizedBox(height: _height * .01),
+            SizedBox(height: 20),
             Observer(builder: (_) => _buildReminders()),
-            SizedBox(height: _height * .05),
+            SizedBox(height: 50),
           ],
         ),
       ),
@@ -59,7 +53,7 @@ class _DetailsPageState extends ModularState<DetailsPage, DetailsController> {
 
   Widget _buildDetails() {
     final c = controller.course;
-    final h = MediaQuery.of(context).size.height;
+    // final h = MediaQuery.of(context).size.height;
     // final w = MediaQuery.of(context).size.width;
     // final portrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
@@ -67,7 +61,6 @@ class _DetailsPageState extends ModularState<DetailsPage, DetailsController> {
       children: [
         Container(
           child: CourseFullInfoCard(
-            height: h,
             course: c,
             context: context,
             elevation: 0,

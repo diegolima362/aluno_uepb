@@ -1,6 +1,7 @@
-import 'package:aluno_uepb/app/modules/rdm/components/course_info_card.dart';
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets.dart';
 
 final weekDaysMap = {
   1: 'Segunda-feira',
@@ -44,8 +45,9 @@ class WeekDayScheduleCard extends StatelessWidget {
         .toList();
 
     return Container(
-      width: _width * (_portrait ? .9 : .5),
+      width: _width * (_portrait ? 1 : .5),
       height: _height * .8,
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,

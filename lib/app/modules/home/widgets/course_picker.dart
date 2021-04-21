@@ -1,4 +1,4 @@
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/utils/format.dart';
 import 'package:flutter/material.dart';
 

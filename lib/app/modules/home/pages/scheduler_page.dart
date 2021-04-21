@@ -1,11 +1,8 @@
-import 'package:aluno_uepb/app/shared/components/custom_raised_button.dart';
-import 'package:aluno_uepb/app/shared/components/input_dropdown.dart';
-import 'package:aluno_uepb/app/shared/components/selectable_item.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import '../rdm/details/details_controller.dart';
 
 class SchedulerPage extends StatefulWidget {
   @override
@@ -13,7 +10,7 @@ class SchedulerPage extends StatefulWidget {
 }
 
 class _SchedulerPageState
-    extends ModularState<SchedulerPage, DetailsController> {
+    extends ModularState<SchedulerPage, SchedulerController> {
   late TextEditingController _titleController;
   late FocusNode _titleFocus;
 
@@ -82,8 +79,11 @@ class _SchedulerPageState
                     borderRadius: BorderRadius.circular(0.0),
                     side: BorderSide(color: accent),
                   ),
-                  color: Theme.of(context).cardColor,
-                  child: Text('Salvar'),
+                  color: accent,
+                  child: Text(
+                    'Salvar',
+                    style: TextStyle(color: Theme.of(context).cardColor),
+                  ),
                   onPressed: () {
                     controller.scheduleReminder();
                     Modular.to.pop(true);

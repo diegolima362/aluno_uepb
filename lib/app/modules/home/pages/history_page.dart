@@ -1,13 +1,10 @@
-import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
-import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
-import 'package:aluno_uepb/app/shared/components/empty_content.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import 'history_entry_card.dart';
-import 'history_controller.dart';
 
 class HistoryPage extends StatefulWidget {
   final String title;
@@ -44,8 +41,9 @@ class _HistoryPageState extends ModularState<HistoryPage, HistoryController> {
   }
 
   Widget _buildContent() {
+    print('loading: ${controller.isLoading}');
     if (controller.isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return LoadingIndicator(text: 'Carregando');
     } else if (controller.history.isEmpty) {
       return EmptyContent(
         title: 'Nada por aqui',

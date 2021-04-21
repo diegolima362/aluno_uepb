@@ -1,34 +1,17 @@
-import 'dart:convert';
-
-import 'package:aluno_uepb/app/modules/rdm/details/scheduler_page.dart';
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/models/notification_model.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/notifications/interfaces/notifications_manager_interface.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
-part 'details_controller.g.dart';
+part 'rdm_details_controller.g.dart';
 
 @Injectable()
-class DetailsController = _DetailsControllerBase with _$DetailsController;
+class RDMDetailsController = _DetailsControllerBase with _$RDMDetailsController;
 
 abstract class _DetailsControllerBase with Store {
-  final Map<int, String> weekDaysMap = {
-    0: 'Dom',
-    1: 'Seg',
-    2: 'Ter',
-    3: 'Qua',
-    4: 'Qui',
-    5: 'Sex',
-    6: 'Sab',
-  };
-
   @observable
-  late CourseModel course;
+  CourseModel course = Modular.args!.data;
 
   @observable
   ObservableList<NotificationModel> reminders =
@@ -40,31 +23,25 @@ abstract class _DetailsControllerBase with Store {
   @observable
   bool isLoading = true;
 
-  late final INotificationsManager _manager;
-
-  late final DataController _storage;
-
   @observable
   String title = '';
 
   @observable
   bool extended = true;
 
-  @observable
-  ObservableList<bool> selectedDays = ObservableList<bool>()
-    ..addAll(List.filled(7, false));
+  late final INotificationsManager _manager;
 
-  @observable
-  TimeOfDay dueTime = TimeOfDay(hour: 23, minute: 59);
+  late final DataController _storage;
 
   _DetailsControllerBase() {
-    final CourseModel r = Modular.args!.data;
-
     _manager = Modular.get();
     _storage = Modular.get();
 
+    final CourseModel r = Modular.args!.data;
+    print(r);
+
+    course = r;
     setExtended(true);
-    setCourse(r);
     loadData();
   }
 
@@ -77,8 +54,12 @@ abstract class _DetailsControllerBase with Store {
   @action
   Future<void> deleteReminder(NotificationModel notification) async {
     await _manager.cancelNotification(notification.id);
-    Modular.get<IEventLogger>().logEvent('logRemoveReminder');
-    await loadData();
+    final data = await _manager.getAllNotifications();
+    reminders.clear();
+    reminders.addAll(data
+        .cast<NotificationModel>()
+        .where((x) => x.courseId == course.id && !x.taskReminder)
+        .toList());
   }
 
   @action
@@ -89,6 +70,9 @@ abstract class _DetailsControllerBase with Store {
       _manager.getAllNotifications(),
       _storage.getTasks(),
     ]);
+
+    reminders.clear();
+    tasks.clear();
 
     reminders.addAll(data[0]
         .cast<NotificationModel>()
@@ -104,75 +88,18 @@ abstract class _DetailsControllerBase with Store {
   }
 
   @action
-  Future<void> scheduleReminder() async {
-    final _title = title.isEmpty ? 'Sem Título' : title;
-
-    for (int i = 0, l = selectedDays.length; i < l; i++) {
-      if (selectedDays[i]) {
-        final date = DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          DateTime.now().day,
-          dueTime.hour,
-          dueTime.minute,
-        );
-        final payload = {
-          'title': _title,
-          'date': date.millisecondsSinceEpoch.toString(),
-          'text': course.name,
-          'courseId': course.id,
-          'courseName': course.name,
-          'type': 'weekly',
-          'weekDay': i == 0 ? 7 : i,
-        };
-
-        final notification = NotificationModel(
-          id: (DateTime.now().millisecondsSinceEpoch ~/ 6000) + i,
-          title: _title,
-          body: course.name,
-          payload: json.encode(payload),
-          dateTime: date,
-          weekday: i == 0 ? 7 : i,
-        );
-
-        await _manager.scheduleWeeklyNotification(notification);
-        Modular.get<IEventLogger>().logEvent('logAddReminder');
-        await loadData();
-      }
-    }
-  }
-
-  @action
-  void setCourse(CourseModel value) {
-    course = value;
-  }
-
-  @action
-  void setDay(int day) {
-    selectedDays[day] = !selectedDays[day];
-  }
-
-  @action
-  void setDueTime(TimeOfDay value) => dueTime = value;
-
-  @action
   void setExtended(bool value) {
     extended = value;
   }
 
   @action
-  void setTitle(String value) => title = value;
-
-  @action
   Future<void> showDetails(TaskModel task) async {
-    await Modular.to.pushNamed('reminders/task/details', arguments: task);
+    await Modular.to.pushNamed('/home/reminders/task/details', arguments: task);
     await loadData();
   }
 
   @action
   Future<void> showScheduler() async {
-    await Modular.to.push(MaterialPageRoute(
-      builder: (_) => SchedulerPage(),
-    ));
+    await Modular.to.pushNamed('details/scheduler', arguments: course);
   }
 }

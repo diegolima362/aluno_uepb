@@ -1,13 +1,11 @@
-import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
-import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import '../controllers/profile_controller.dart';
 
 class ProfilePage extends StatefulWidget {
   final String title;
@@ -33,16 +31,7 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     return Observer(
       builder: (_) {
         if (controller.profile == null) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 20.0),
-                Text('Carregando ...'),
-              ],
-            ),
-          );
+          return LoadingIndicator(text: 'Carregando');
         } else {
           return _buildUserInfoSection();
         }
@@ -187,24 +176,28 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     final title = 'Sair';
     final content = 'Tem certeza que quer sair?';
 
-    await asuka.showDialog(
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(
-            child: Text('Cancelar'),
-            onPressed: () => Modular.to.pop(false),
-          ),
-          TextButton(
-            child: Text('Sair'),
-            onPressed: () async {
-              Modular.to.pop(true);
-              await controller.logout();
-            },
-          )
-        ],
-      ),
+    await showDialog(
+      context: context,
+      builder: (_) {
+        final navigator = Navigator.of(_);
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () => navigator.pop(false),
+            ),
+            TextButton(
+              child: Text('Sair'),
+              onPressed: () async {
+                navigator.pop(true);
+                await controller.logout();
+              },
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -216,8 +209,10 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     final h = MediaQuery.of(context).size.height * .6;
     controller.setTempAccent(controller.accentCode);
 
-    await asuka.showDialog(
+    await showDialog(
+      context: context,
       builder: (_) {
+        final navigator = Navigator.of(_);
         return AlertDialog(
           title: Observer(builder: (_) {
             return Container(
@@ -242,14 +237,13 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
           actions: [
             TextButton(
               child: Text('Cancelar'),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => navigator.pop(),
             ),
             TextButton(
               child: Text('OK'),
               onPressed: () {
                 controller.setAccent(controller.tempAccentCode);
-                controller.logAccentColor();
-                Navigator.of(context).pop();
+                navigator.pop();
               },
             ),
           ],
@@ -291,25 +285,27 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileController> {
     if (controller.darkMode) colors = colors.reversed.toList();
 
     controller.setTempAccent(controller.accentCode);
-    return await asuka.showDialog(
+    return await showDialog(
+      context: context,
       builder: (_) {
+        final navigator = Navigator.of(_);
+
         return AlertDialog(
           title: Text('Cor de destaque'),
           actions: [
-            TextButton(
-              child: Text('Mais cores'),
-              onPressed: () async => Navigator.of(context).pop(false),
-            ),
+            // TextButton(
+            //   child: Text('Mais cores'),
+            //   onPressed: () async => navigator.pop(false),
+            // ),
             TextButton(
               child: Text('Cancelar'),
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => navigator.pop(true),
             ),
             TextButton(
               child: Text('OK'),
               onPressed: () {
                 controller.setAccent(controller.tempAccentCode);
-                controller.logAccentColor();
-                Navigator.of(context).pop(true);
+                navigator.pop(true);
               },
             ),
           ],

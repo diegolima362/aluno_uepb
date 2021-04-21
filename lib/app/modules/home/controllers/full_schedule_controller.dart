@@ -58,7 +58,7 @@ abstract class _FullScheduleBase with Store {
   }
 
   @action
-  void showDetails(CourseModel course) {
-    Modular.to.pushNamed('rdm/details', arguments: course);
+  Future<void> showDetails(CourseModel course) async {
+    await Modular.to.pushReplacementNamed('rdm/details', arguments: course);
   }
 }

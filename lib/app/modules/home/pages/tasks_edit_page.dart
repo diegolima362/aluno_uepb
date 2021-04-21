@@ -1,19 +1,19 @@
-import 'package:aluno_uepb/app/modules/rdm/components/course_picker.dart';
-import 'package:aluno_uepb/app/shared/components/input_dropdown.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:aluno_uepb/app/utils/format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../reminders/tasks/edit/edit_controller.dart';
-
 class TaskEditPage extends StatefulWidget {
   @override
   _TaskEditPageState createState() => _TaskEditPageState();
 }
 
-class _TaskEditPageState extends ModularState<TaskEditPage, EditController> {
+class _TaskEditPageState
+    extends ModularState<TaskEditPage, TasksEditController> {
   late final TextEditingController _textController;
   late final TextEditingController _titleController;
   FocusNode _textFocus = FocusNode();
@@ -22,23 +22,7 @@ class _TaskEditPageState extends ModularState<TaskEditPage, EditController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        actions: [
-          Observer(
-            builder: (_) => TextButton(
-              child: Text(
-                'Salvar',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Theme.of(context).accentColor,
-                ),
-              ),
-              onPressed: () => controller.save(),
-            ),
-          )
-        ],
-      ),
+      appBar: AppBar(elevation: 0),
       body: SingleChildScrollView(
         child: Card(
           elevation: 2.0,
@@ -63,7 +47,9 @@ class _TaskEditPageState extends ModularState<TaskEditPage, EditController> {
                 const SizedBox(height: 20.0),
                 Observer(builder: (_) => _buildSetReminder()),
                 Observer(builder: (_) => _buildMarkAsNotDone()),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: 20.0),
+                _buildSubmitButton(),
+                const SizedBox(height: 20.0),
               ],
             ),
           ),
@@ -200,6 +186,25 @@ class _TaskEditPageState extends ModularState<TaskEditPage, EditController> {
         final newFocus = controller.title.isNotEmpty ? _textFocus : _titleFocus;
         FocusScope.of(context).requestFocus(newFocus);
       },
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    final accent = Theme.of(context).accentColor;
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: CustomRaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.0),
+          side: BorderSide(color: accent),
+        ),
+        color: accent,
+        child: Text(
+          'Salvar',
+          style: TextStyle(color: Theme.of(context).cardColor),
+        ),
+        onPressed: () async => await controller.save(),
+      ),
     );
   }
 

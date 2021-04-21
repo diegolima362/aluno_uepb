@@ -1,9 +1,8 @@
-import 'package:aluno_uepb/app/modules/reminders/tasks/components/task_info_card.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import 'details_controller.dart';
 
 class TaskDetailsPage extends StatefulWidget {
   @override

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../shared/components/loading_indicator.dart';
+
 class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -10,12 +12,7 @@ class LoadingPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(child: SizedBox()),
-            CircularProgressIndicator(),
-            const SizedBox(height: 40),
-            Text(
-              'Carregando suas informações ...',
-              style: TextStyle(fontSize: 16),
-            ),
+            LoadingIndicator(text: 'Carregando'),
             Expanded(child: SizedBox()),
             Text(
               'Salvando seus dados offline\npara os próximos acessos',

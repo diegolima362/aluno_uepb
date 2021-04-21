@@ -28,5 +28,28 @@ abstract class _HomeControllerBase with Store {
   void setLoading(bool value) => loading = value;
 
   @action
-  void updateCurrentIndex(int index) => this.currentIndex = index;
+  void updateIndex(int value) => currentIndex = value;
+
+  void onTap(int id) {
+    updateIndex(id);
+    if (id == 0) {
+      Modular.to.navigate('content');
+    } else if (id == 1) {
+      Modular.to.navigate('rdm');
+    } else if (id == 2) {
+      Modular.to.navigate('reminders');
+    } else if (id == 3) {
+      Modular.to.navigate('profile');
+    }
+  }
+
+  bool onWillPop() {
+    if (currentIndex == 0)
+      return true;
+    else {
+      Modular.to.navigate('content');
+      updateIndex(0);
+      return false;
+    }
+  }
 }

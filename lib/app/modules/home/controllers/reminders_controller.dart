@@ -1,13 +1,16 @@
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/notifications/interfaces/notifications_manager_interface.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
-import 'sort_by.dart';
-
 part 'reminders_controller.g.dart';
+
+enum SortBy {
+  COURSE,
+  DATE,
+  TITLE,
+}
 
 @Injectable()
 class RemindersController = _RemindersControllerBase with _$RemindersController;
@@ -57,8 +60,8 @@ abstract class _RemindersControllerBase with Store {
   bool get hasTasksToDelete => deleteList.isNotEmpty;
 
   @action
-  Future<void> addTask() async {
-    await Modular.to.pushNamed('reminders/task/edit', arguments: null);
+  void addTask() {
+    Modular.to.pushNamed('reminders/task/edit', arguments: null);
   }
 
   @action
@@ -85,8 +88,8 @@ abstract class _RemindersControllerBase with Store {
   }
 
   @action
-  Future<void> edit(TaskModel task) async {
-    await Modular.to.pushNamed('reminders/task/edit', arguments: task);
+  void edit(TaskModel task) {
+    Modular.to.pushNamed('reminders/task/edit', arguments: task);
   }
 
   @action
@@ -165,8 +168,8 @@ abstract class _RemindersControllerBase with Store {
   }
 
   @action
-  Future<void> showDetails(TaskModel task) async {
-    await Modular.to.pushNamed('reminders/task/details', arguments: task);
+  void showDetails(TaskModel task) {
+    Modular.to.pushNamed('reminders/task/details', arguments: task);
   }
 
   @action

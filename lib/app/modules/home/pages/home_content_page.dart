@@ -1,14 +1,11 @@
-import 'package:aluno_uepb/app/modules/rdm/components/course_info_card.dart';
-import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
-import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
-import 'package:aluno_uepb/app/shared/components/empty_content.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:aluno_uepb/app/utils/format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import '../controllers/home_content_controller.dart';
 
 class HomeContentPage extends StatefulWidget {
   final String title;
@@ -49,7 +46,7 @@ class _HomeContentPageState
 
   Widget _buildContent() {
     if (controller.isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return LoadingIndicator(text: 'Carregando');
     } else if (controller.courses.isEmpty) {
       return EmptyContent(
         title: 'Nada por aqui',
@@ -66,7 +63,7 @@ class _HomeContentPageState
           return CourseInfoCard(
             course: course,
             weekDay: DateTime.now().weekday,
-            onTap: () async => await controller.showDetails(course),
+            onTap: () => controller.showDetails(course),
           );
         },
       );

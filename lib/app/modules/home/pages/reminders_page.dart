@@ -1,16 +1,12 @@
-import 'package:aluno_uepb/app/modules/reminders/tasks/components/task_info_card.dart';
-import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
-import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
-import 'package:aluno_uepb/app/shared/components/empty_content.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import '../controllers/reminders_controller.dart';
-import '../reminders/sort_by.dart';
 
 class RemindersPage extends StatefulWidget {
   final String title;
@@ -83,13 +79,13 @@ class _RemindersPageState
     if (!controller.hasCourses) {
       _showSnackBar('Sem cursos registrados');
     } else {
-      await controller.addTask();
+      controller.addTask();
     }
   }
 
   Widget _buildContent() {
     if (controller.isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return LoadingIndicator(text: 'Carregando');
     } else if (controller.tasks.isEmpty && controller.completedTasks.isEmpty) {
       return EmptyContent(
         title: 'Nada por aqui',
@@ -164,7 +160,7 @@ class _RemindersPageState
                   ? controller.removeFromDeleteList(task)
                   : controller.addToDelete(task);
             } else {
-              onTap = () async => await controller.showDetails(task);
+              onTap = () => controller.showDetails(task);
             }
 
             return TaskInfoCard(
@@ -264,7 +260,7 @@ class _RemindersPageState
               Divider(height: 0),
               TextButton(
                 onPressed: () async {
-                  await controller.edit(task);
+                  controller.edit(task);
                   Modular.to.pop();
                 },
                 child: Text('Editar'),

@@ -1,22 +1,18 @@
 import 'dart:convert';
 
-import 'package:aluno_uepb/app/modules/reminders/tasks/details/details_controller.dart';
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/models/notification_model.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/notifications/interfaces/notifications_manager_interface.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
-import '../../../controllers/reminders_controller.dart';
+import 'controllers.dart';
 
-part 'edit_controller.g.dart';
+part 'tasks_edit_controller.g.dart';
 
 @Injectable()
-class EditController = _EditControllerBase with _$EditController;
+class TasksEditController = _EditControllerBase with _$TasksEditController;
 
 abstract class _EditControllerBase with Store {
   @observable
@@ -47,7 +43,7 @@ abstract class _EditControllerBase with Store {
   TaskModel? task;
 
   @observable
-  late CourseModel course;
+  CourseModel? course;
 
   @observable
   ObservableList<CourseModel> courses = ObservableList<CourseModel>();
@@ -57,11 +53,10 @@ abstract class _EditControllerBase with Store {
   late final DataController _storage;
 
   _EditControllerBase() {
-    final TaskModel task = Modular.args!.data;
     _manager = Modular.get();
     _storage = Modular.get();
 
-    setTask(task);
+    setTask(Modular.args?.data);
     setUndone(false);
 
     loadData();
@@ -102,7 +97,6 @@ abstract class _EditControllerBase with Store {
 
     if (_active && !t.setReminder && _hasReminder) {
       await _manager.cancelNotification(task!.reminder!.id);
-      Modular.get<IEventLogger>().logEvent('logDeleteTaskReminder');
     }
 
     if (t.setReminder && !t.dueDate.isBefore(DateTime.now())) {
@@ -110,9 +104,9 @@ abstract class _EditControllerBase with Store {
       final payload = {
         'title': t.title,
         'date': date,
-        'text': course.name,
-        'courseId': course.id,
-        'courseName': course.name,
+        'text': course!.name,
+        'courseId': course!.id,
+        'courseName': course!.name,
         'type': 'task'
       };
 
@@ -128,12 +122,9 @@ abstract class _EditControllerBase with Store {
       t.reminder = notification;
 
       await _manager.scheduleNotification(notification);
-      Modular.get<IEventLogger>().logEvent('logAddTaskReminder');
     }
 
     await _storage.addTask(t);
-
-    Modular.get<IEventLogger>().logEvent('logAddTask');
 
     if (task != null) {
       Modular.get<TaskDetailsController>().setTask(t);
@@ -222,8 +213,8 @@ abstract class _EditControllerBase with Store {
     return TaskModel(
       id: _id,
       title: title.isEmpty ? 'Sem título' : title,
-      courseId: course.id,
-      courseTitle: course.name,
+      courseId: course!.id,
+      courseTitle: course!.name,
       createdDate: _createdDate,
       dueDate: _dueDate,
       text: text,

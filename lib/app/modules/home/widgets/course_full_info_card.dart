@@ -1,4 +1,4 @@
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class CourseFullInfoCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final Color? color;
-  final double? height;
+  // final double? height;
   final double elevation;
   final bool showChart;
 
@@ -26,7 +26,6 @@ class CourseFullInfoCard extends StatelessWidget {
     required this.context,
     this.onTap,
     this.color,
-    this.height,
     this.elevation: 2.0,
     this.showChart: true,
     this.onLongPress,
@@ -54,7 +53,7 @@ class CourseFullInfoCard extends StatelessWidget {
               _buildChart(),
               const SizedBox(height: 10.0),
               _buildSchedule(),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 20.0),
               _buildGrades(),
             ],
           ),
@@ -64,6 +63,8 @@ class CourseFullInfoCard extends StatelessWidget {
   }
 
   List<PieChartSectionData> _buildCharSections() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     double current = course.absences.toDouble();
     double limit = course.absencesLimit.toDouble();
 
@@ -76,7 +77,7 @@ class CourseFullInfoCard extends StatelessWidget {
       final over = current > limit;
 
       final sectionA = over ? area : area * (current / limit);
-      final sectionB = over ? 0.0 : area - sectionA;
+      final sectionB = over ? 0.01 : area - sectionA;
 
       switch (i) {
         case 0:
@@ -84,14 +85,14 @@ class CourseFullInfoCard extends StatelessWidget {
             showTitle: false,
             title: '$current',
             color: over ? Color(0xfff05454) : accent,
-            value: sectionA,
+            value: sectionA != 0 ? sectionA : 0.01,
             radius: radius,
           );
         case 1:
           return PieChartSectionData(
             showTitle: false,
             title: '$limit',
-            color: accent.withAlpha(50),
+            color: isDark ? Colors.white.withAlpha(50) : accent.withAlpha(50),
             value: sectionB,
             radius: radius,
           );
@@ -114,9 +115,8 @@ class CourseFullInfoCard extends StatelessWidget {
   }
 
   Widget _buildChart() {
-    final h = height ?? MediaQuery.of(context).size.height * .6;
     return Container(
-      height: h * .3,
+      height: 150,
       child: PieChart(
         PieChartData(
           pieTouchData: PieTouchData(touchCallback: (_) {}),
@@ -204,15 +204,15 @@ class CourseFullInfoCard extends StatelessWidget {
         title: Text(
           course.name.toUpperCase(),
           style: TextStyle(
-            color: accent,
             fontWeight: FontWeight.w500,
-            fontSize: 18.0,
+            fontSize: course.name.length > 30 ? 16.0 : 18.0,
           ),
         ),
         subtitle: Text(
           course.professor.toUpperCase(),
           style: TextStyle(
-            fontSize: 16.0,
+            fontSize: course.professor.length > 20 ? 15.0 : 16.0,
+            color: accent,
           ),
         ),
       ),
@@ -237,6 +237,7 @@ class CourseFullInfoCard extends StatelessWidget {
 
   Widget _buildSchedule() {
     final accent = Theme.of(context).accentColor;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -251,10 +252,15 @@ class CourseFullInfoCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    '${s.local}',
+                    style: TextStyle(
+                      fontSize: 12,
                       color: accent,
                     ),
                   ),
-                  Text('${s.local}', style: TextStyle(fontSize: 12)),
                 ],
               ),
             ),

@@ -1,14 +1,11 @@
-import 'package:aluno_uepb/app/shared/components/custom_fab.dart';
-import 'package:aluno_uepb/app/shared/components/custom_scaffold.dart';
-import 'package:aluno_uepb/app/shared/components/empty_content.dart';
+import 'package:aluno_uepb/app/modules/home/controllers/controllers.dart';
+import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-import '../rdm/components/course_full_info_card.dart';
-import '../rdm/rdm_controller.dart';
 
 class RdmPage extends StatefulWidget {
   final String title;
@@ -47,15 +44,12 @@ class _RdmPageState extends ModularState<RdmPage, RdmController> {
   }
 
   Widget _buildContent() {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    final portrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    final aspect = portrait ? width / (height * .6) : height / (width * .5);
+    // final aspect = portrait ? width / (height * .6) : height / (width * .5);
 
     return Observer(
       builder: (_) {
         if (controller.isLoading) {
-          return Center(child: CircularProgressIndicator());
+          return LoadingIndicator(text: 'Carregando');
         } else if (controller.courses.isEmpty) {
           return Center(
             child: EmptyContent(
@@ -64,23 +58,34 @@ class _RdmPageState extends ModularState<RdmPage, RdmController> {
             ),
           );
         } else {
-          final _length = controller.courses.length;
+          // final h = MediaQuery.of(context).size.height;
+          final w = MediaQuery.of(context).size.width;
 
-          return GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: portrait ? 1 : 2,
-              childAspectRatio: aspect,
-            ),
+          final portrait =
+              MediaQuery.of(context).orientation == Orientation.portrait;
+
+          final _length = controller.courses.length + 1;
+          final padding = w * (portrait ? 0 : 0.15);
+
+          return ListView.builder(
+            padding: EdgeInsets.zero,
             itemCount: _length,
             itemBuilder: (context, index) {
+              if (index == _length - 1) return SizedBox(height: 75.0);
               final course = controller.courses[index];
               final _key = GlobalKey();
               return RepaintBoundary(
                 key: _key,
-                child: CourseFullInfoCard(
-                  course: course,
-                  context: context,
-                  onTap: () async => await controller.showDetails(course),
+                child: Container(
+                  padding: EdgeInsets.only(left: padding, right: padding),
+                  width: w * (portrait ? 1 : .6),
+                  height: 400,
+                  child: CourseFullInfoCard(
+                    // height: 300,
+                    course: course,
+                    context: context,
+                    onTap: () => controller.showDetails(course),
+                  ),
                 ),
               );
             },

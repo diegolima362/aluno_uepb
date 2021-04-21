@@ -1,5 +1,4 @@
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
@@ -58,13 +57,12 @@ abstract class _HomeContentBase with Store {
   void setExtended(bool value) => extended = value;
 
   @action
-  Future<void> showDetails(CourseModel course) async {
-    await Modular.to.pushNamed('rdm/details', arguments: course);
+  void showDetails(CourseModel course) {
+    Modular.to.pushNamed('rdm/details', arguments: course);
   }
 
   @action
-  Future<void> showFullSchedule() async {
-    Modular.get<IEventLogger>().logEvent('logViewFullSchedule');
-    await Modular.to.pushNamed('content/all');
+  void showFullSchedule() {
+    Modular.to.pushNamed('content/details');
   }
 }
