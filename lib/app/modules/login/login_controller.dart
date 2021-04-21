@@ -9,18 +9,9 @@ part 'login_controller.g.dart';
 class LoginController = _LoginControllerBase with _$LoginController;
 
 abstract class _LoginControllerBase with Store {
-  _LoginControllerBase() {
-    final auth = Modular.get<AuthController>();
-
-    auth.onAuthStateChanged.listen((e) {
-      if (e != null && auth.status == AuthStatus.loggedOn)
-        Modular.to.pushReplacementNamed('/home');
-    });
-  }
-
   final FormErrorState error = FormErrorState();
 
-  AuthController _auth = Modular.get();
+  final AuthController _auth = Modular.get();
 
   // @observable
   // CustomColor color;
@@ -34,17 +25,32 @@ abstract class _LoginControllerBase with Store {
   @observable
   String password = '';
 
-  @computed
-  bool get idIdValid => id != null && id.isNotEmpty;
+  _LoginControllerBase() {
+    final auth = Modular.get<AuthController>();
+
+    auth.onAuthStateChanged.listen((e) {
+      if (e != null && auth.status == AuthStatus.loggedOn)
+        Modular.to.navigate('/home/content');
+    });
+  }
+
+  @action
+  void editId(String value) => id = value;
+
+  @action
+  void editPassword(String value) => password = value;
 
   @computed
-  bool get isPasswordValid => password != null && password.length >= 6;
+  bool get idIdValid => id.isNotEmpty;
+
+  @computed
+  bool get isPasswordValid => password.length >= 6;
 
   @computed
   bool get canSubmit =>
       id.isNotEmpty && password.isNotEmpty && !error.hasErrors && !loading;
 
-  List<ReactionDisposer> _disposers;
+  late final List<ReactionDisposer> _disposers;
 
   void setupValidations() {
     _disposers = [
@@ -55,12 +61,12 @@ abstract class _LoginControllerBase with Store {
 
   @action
   void validatePassword(String value) {
-    error.password = value == null || value.isEmpty ? 'Senha inválida' : null;
+    error.password = value.isEmpty ? 'Senha inválida' : '';
   }
 
   @action
   void validateId(String value) {
-    error.id = value == null || value.isEmpty ? 'Matrícula inválida' : null;
+    error.id = value.isEmpty ? 'Matrícula inválida' : '';
   }
 
   void dispose() {
@@ -74,9 +80,9 @@ abstract class _LoginControllerBase with Store {
     validateId(id);
   }
 
-  Future<void> close() async {
+  void close() {
     print('> LoginController: close login page');
-    await Modular.to.pushReplacementNamed('/');
+    Modular.to.navigate('/');
   }
 
   @action
@@ -111,11 +117,11 @@ class FormErrorState = _FormErrorState with _$FormErrorState;
 
 abstract class _FormErrorState with Store {
   @observable
-  String id;
+  String id = '';
 
   @observable
-  String password;
+  String password = '';
 
   @computed
-  bool get hasErrors => id != null || password != null;
+  bool get hasErrors => id.isNotEmpty || password.isNotEmpty;
 }

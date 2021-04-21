@@ -1,41 +1,34 @@
-import 'package:flutter/foundation.dart';
-
 class UserModel {
   final String id;
   final String password;
-  final String photoURL;
-  final String displayName;
   final DateTime accessed;
-
+  final String? photoURL;
+  final String? displayName;
   final bool logged;
 
   UserModel({
-    @required this.id,
-    @required this.password,
-    @required this.logged,
-    this.accessed,
+    required this.id,
+    required this.password,
+    required this.logged,
+    required this.accessed,
     this.photoURL,
     this.displayName,
   });
 
   factory UserModel.fromMap(Map<dynamic, dynamic> map) {
-    if (map == null || map.isEmpty)
-      return null;
-    else {
-      String dateString =
-          map['accessed'] ?? DateTime.now().microsecondsSinceEpoch.toString();
-      final _date =
-          DateTime.fromMicrosecondsSinceEpoch(int.tryParse(dateString));
+    String dateString =
+        map['accessed'] ?? DateTime.now().microsecondsSinceEpoch.toString();
+    final _date =
+        DateTime.fromMicrosecondsSinceEpoch(int.tryParse(dateString)!);
 
-      return UserModel(
-        id: map['id'],
-        password: map['password'],
-        photoURL: map['photoURL'],
-        displayName: map['displayName'],
-        logged: map['logged'],
-        accessed: _date,
-      );
-    }
+    return UserModel(
+      id: map['id'],
+      password: map['password'],
+      photoURL: map['photoURL'],
+      displayName: map['displayName'],
+      logged: map['logged'],
+      accessed: _date,
+    );
   }
 
   Map<dynamic, dynamic> toMap() => {

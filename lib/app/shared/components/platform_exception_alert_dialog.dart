@@ -1,12 +1,11 @@
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 import 'platform_alert_dialog.dart';
 
 class PlatformExceptionAlertDialog extends PlatformAlertDialog {
   PlatformExceptionAlertDialog({
-    @required String title,
-    @required PlatformException exception,
+    required String title,
+    required PlatformException exception,
   }) : super(
           title: title,
           content: _message(exception),
@@ -15,13 +14,13 @@ class PlatformExceptionAlertDialog extends PlatformAlertDialog {
 
   static String _message(PlatformException exception) {
     if (exception.code == 'Error performing setData') {
-      if (exception.message.split(': ')[0] == 'PERMISSION_DENIED') {
+      if (exception.message?.split(': ')[0] == 'PERMISSION_DENIED') {
         return 'Missing or insufficient permissions';
       }
     }
 
 //    if (exception.message == '')
-    return _errors[exception.code] ?? exception.message;
+    return _errors[exception.code] ?? exception.message ?? '';
   }
 
   static Map<String, String> _errors = {

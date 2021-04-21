@@ -62,11 +62,15 @@ class ProfileModel {
   }
 
   DateTime get birthDate {
-    if (birthDateString.isEmpty) {
-      return DateTime.now();
-    } else {
-      return DateTime.fromMicrosecondsSinceEpoch(int.tryParse(birthDateString));
-    }
+    final now = DateTime.now();
+
+    if (birthDateString.isEmpty) return now;
+
+    final date = int.tryParse(birthDateString);
+
+    if (date != null) return DateTime.fromMicrosecondsSinceEpoch(date);
+
+    return now;
   }
 
   String get fBirthDate => Format.dateFirebase(birthDate).toString();

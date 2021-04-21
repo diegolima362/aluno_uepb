@@ -7,11 +7,16 @@ import 'package:hive/hive.dart';
 
 import 'interfaces/auth_repository_interface.dart';
 
+part 'auth_repository.g.dart';
+
 @Injectable()
 class AuthRepository implements IAuthRepository {
-  AuthRepository() {
-    _box = Hive.box(LOGIN_BOX);
+  final Box _box = Hive.box(LOGIN_BOX);
+  static const LOGIN_BOX = 'login';
 
+  UserModel? _user;
+
+  AuthRepository() {
     Future.sync(_localLogin);
   }
 
@@ -56,16 +61,11 @@ class AuthRepository implements IAuthRepository {
     }
   }
 
-  Box _box;
-  static const LOGIN_BOX = 'login';
-
-  UserModel _user;
-
   @override
-  UserModel get currentUser {
+  UserModel? get currentUser {
     if (_user == null) {
       final map = _box.get('user');
-      if (map == null) return null;
+      if (map == null || map['id'] == null) return null;
       _user = UserModel.fromMap({
         'id': map['id'],
         'password': map['password'],
@@ -78,8 +78,9 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Stream<UserModel> get onAuthStateChanged =>
-      _box.watch(key: 'user').map((e) => _userFromDatabase(e.value));
+  Stream<UserModel?> get onAuthStateChanged => _box
+      .watch(key: 'user')
+      .map((e) => e.value != null ? _userFromDatabase(e.value) : null);
 
   @override
   Future<UserModel> signInWithIdPassword(String id, String password) async {
@@ -134,35 +135,25 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<void> signOut() async {
-    final map = {
-      'logged': false,
-      'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
-    };
-
-    final user = UserModel.fromMap(map);
-
     await _box.delete('user');
-
     await _box.put('user', {
       'logged': false,
       'accessed': DateTime.now().microsecondsSinceEpoch.toString(),
     });
 
-    _box.get('user', defaultValue: null);
-    _user = user;
+    _user = null;
   }
 
-  UserModel _userFromDatabase(Map user) {
-    return user == null
-        ? null
-        : UserModel.fromMap({
-            'id': user['id'],
-            'password': user['password'],
-            'logged': user['logged'],
-          });
+  UserModel? _userFromDatabase(Map user) {
+    if (user['id'] == null) return null;
+    return UserModel.fromMap({
+      'id': user['id'],
+      'password': user['password'],
+      'logged': user['logged'],
+    });
   }
 
-  UserModel getCurrentUser() {
+  UserModel? getCurrentUser() {
     final user = _box.get('user');
     return _userFromDatabase(user);
   }

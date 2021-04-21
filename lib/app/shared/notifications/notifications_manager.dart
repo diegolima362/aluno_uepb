@@ -13,7 +13,7 @@ class NotificationsManager implements INotificationsManager {
 
   final _pluginManager = FlutterLocalNotificationsPlugin();
 
-  InitializationSettings _initializationSettings;
+  late final InitializationSettings _initializationSettings;
 
   NotificationsManager() {
     _init();
@@ -73,7 +73,7 @@ class NotificationsManager implements INotificationsManager {
       notification.id,
       notification.title,
       notification.body,
-      tz.TZDateTime.from(notification.dateTime, await _location()),
+      tz.TZDateTime.from(notification.dateTime!, await _location()),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           '001',
@@ -102,8 +102,8 @@ class NotificationsManager implements INotificationsManager {
 
   tz.TZDateTime _nextInstanceOfDayAndTime(NotificationModel notification) {
     tz.TZDateTime scheduledDate = _nextInstanceOfTime(
-      notification.dateTime.hour,
-      notification.dateTime.minute,
+      notification.dateTime!.hour,
+      notification.dateTime!.minute,
     );
     while (scheduledDate.weekday != notification.weekday) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
@@ -173,38 +173,47 @@ class NotificationsManager implements INotificationsManager {
   Future<void> showWeeklyAtDayTime(NotificationModel notification) async {}
 
   Future<void> _init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
+    const initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
 
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
+    _initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
-    await _pluginManager.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {
-      if (payload != null) {
-        print('> NotificationManager: notification payload = $payload');
-      }
-      _selectNotificationSubject.add(payload);
-    });
+    await _pluginManager.initialize(
+      _initializationSettings,
+      onSelectNotification: (String? payload) async {
+        if (payload != null) {
+          print('> NotificationManager: notification payload = $payload');
+          _selectNotificationSubject.add(payload);
+        }
+      },
+    );
   }
 
   Future<tz.Location> _location() async {
-    final currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
-    return tz.getLocation(currentTimeZone);
+    tz.Location location;
+    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    try {
+      location = tz.getLocation(timeZoneName);
+    } catch (e) {
+      const String fallback = 'America/Recife';
+      location = tz.getLocation(fallback);
+    }
+
+    return location;
   }
 
   NotificationModel _modelFromRequest(PendingNotificationRequest n) =>
       NotificationModel(
         id: n.id,
-        title: n.title,
-        body: n.body,
-        payload: n.payload,
+        title: n.title ?? '',
+        body: n.body ?? '',
+        payload: n.payload ?? '',
       );
 
   @override
-  Future<NotificationAppLaunchDetails> get appLaunchDetails async {
+  Future<NotificationAppLaunchDetails?> get appLaunchDetails async {
     return await _pluginManager.getNotificationAppLaunchDetails();
   }
 }

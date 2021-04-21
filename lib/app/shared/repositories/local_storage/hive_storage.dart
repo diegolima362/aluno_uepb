@@ -10,6 +10,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'interfaces/local_storage_interface.dart';
 
+part 'hive_storage.g.dart';
+
 @Injectable()
 class HiveStorage implements ILocalStorage {
   static const PREFERENCES_BOX = 'preferences';
@@ -18,23 +20,26 @@ class HiveStorage implements ILocalStorage {
   static const PROFILE_BOX = 'profile';
   static const HISTORY_BOX = 'history';
 
+  static const int _defaultDarkAccent = 0xfff2f2f7;
+  static const int _defaultAccent = 0xff1c1c1e;
+
   @override
   int get darkAccentColorCode => Hive.box(PREFERENCES_BOX)
-      .get('darkAccentColorCode', defaultValue: 0xfff0f0f0);
+      .get('darkAccentColorCode', defaultValue: _defaultDarkAccent);
 
   @override
   int get lightAccentColorCode => Hive.box(PREFERENCES_BOX)
-      .get('lightAccentColorCode', defaultValue: 0xff121212);
+      .get('lightAccentColorCode', defaultValue: _defaultAccent);
 
   @override
   Stream<int> get onDarkAccentChanged => Hive.box(PREFERENCES_BOX)
       .watch(key: 'darkAccentColorCode')
-      .map((e) => e.value);
+      .map((e) => e.value ?? _defaultDarkAccent);
 
   @override
   Stream<int> get onLightAccentChanged => Hive.box(PREFERENCES_BOX)
       .watch(key: 'lightAccentColorCode')
-      .map((e) => e.value);
+      .map((e) => e.value ?? _defaultAccent);
 
   @override
   Stream<bool> get onThemeChanged => Hive.box(PREFERENCES_BOX)
@@ -73,7 +78,7 @@ class HiveStorage implements ILocalStorage {
   }
 
   @override
-  Future<List<CourseModel>> getCourses() async {
+  Future<List<CourseModel>?> getCourses() async {
     final coursesBox = Hive.box(COURSES_BOX);
 
     final coursesMap = coursesBox.get('courses');
@@ -86,7 +91,7 @@ class HiveStorage implements ILocalStorage {
   }
 
   @override
-  Future<List<HistoryEntryModel>> getHistory() async {
+  Future<List<HistoryEntryModel>?> getHistory() async {
     final historyBox = Hive.box(HISTORY_BOX);
 
     final historyMap = historyBox.get('history');
@@ -99,7 +104,7 @@ class HiveStorage implements ILocalStorage {
   }
 
   @override
-  Future<ProfileModel> getProfile() async {
+  Future<ProfileModel?> getProfile() async {
     final box = Hive.box(PROFILE_BOX);
 
     final data = box.get('profile');

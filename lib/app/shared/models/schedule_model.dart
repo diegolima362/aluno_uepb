@@ -13,9 +13,9 @@ class ScheduleModel {
   final String time;
   final String local;
 
-  ScheduleModel({this.day, this.time, this.local});
+  ScheduleModel({this.day: 'seg', this.time: 'time', this.local: 'local'});
 
-  int get weekDay => _weekDaysMap[this.day.substring(0, 3).toLowerCase()];
+  int get weekDay => _weekDaysMap[this.day.substring(0, 3).toLowerCase()] ?? 1;
 
   Map<String, dynamic> toMap() => {
         'day': this.day,

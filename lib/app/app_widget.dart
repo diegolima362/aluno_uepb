@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
 import 'package:aluno_uepb/app/shared/models/notification_model.dart';
 import 'package:aluno_uepb/app/shared/notifications/interfaces/notifications_manager_interface.dart';
 import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
@@ -10,21 +9,18 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import 'app_controller.dart';
 
 class AppWidget extends StatefulWidget {
-  final AppController controller;
-
-  const AppWidget({Key key, this.controller}) : super(key: key);
-
   @override
   _AppWidgetState createState() => _AppWidgetState();
 }
 
-class _AppWidgetState extends State<AppWidget> {
+class _AppWidgetState extends ModularState<AppWidget, AppController> {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: analytics);
@@ -38,21 +34,29 @@ class _AppWidgetState extends State<AppWidget> {
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness:
-              widget.controller.isDark ? Brightness.light : Brightness.dark,
+              controller.darkMode ? Brightness.light : Brightness.dark,
         ));
 
-        ThemeData _theme = widget.controller.darkMode
-            ? themes.getDark(colorValue: widget.controller.darkAccent)
-            : themes.getLight(colorValue: widget.controller.lightAccent);
+        final themeMode =
+            controller.darkMode ? ThemeMode.dark : ThemeMode.light;
 
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Aluno UEPB',
-          navigatorObservers: <NavigatorObserver>[observer],
-          builder: asuka.builder,
-          themeMode: widget.controller.themeMode,
-          theme: _theme,
-        ).modular();
+        return NotificationListener<OverscrollIndicatorNotification>(
+          child: MaterialApp(
+            localizationsDelegates: [GlobalMaterialLocalizations.delegate],
+            supportedLocales: [const Locale('en'), const Locale('pt', 'BR')],
+            debugShowCheckedModeBanner: false,
+            title: 'Aluno UEPB',
+            navigatorObservers: <NavigatorObserver>[observer],
+            builder: asuka.builder,
+            themeMode: themeMode,
+            theme: themes.getLight(colorValue: controller.lightAccent),
+            darkTheme: themes.getDark(colorValue: controller.darkAccent),
+          ).modular(),
+          onNotification: (overScroll) {
+            overScroll.disallowGlow();
+            return false;
+          },
+        );
       },
     );
   }
@@ -72,12 +76,8 @@ class _AppWidgetState extends State<AppWidget> {
       await showDialog(
         context: context,
         builder: (context) => CupertinoAlertDialog(
-          title: receivedNotification.title != null
-              ? Text(receivedNotification.title)
-              : null,
-          content: receivedNotification.body != null
-              ? Text(receivedNotification.body)
-              : null,
+          title: Text(receivedNotification.title),
+          content: Text(receivedNotification.body),
           actions: [
             CupertinoDialogAction(
               isDefaultAction: true,
@@ -101,8 +101,6 @@ class _AppWidgetState extends State<AppWidget> {
         .selectNotificationSubject
         .stream
         .listen((payload) async {
-      Modular.get<IEventLogger>().logEvent('logLaunchByReminder');
-
       final notification = NotificationModel(
         id: 1,
         title: '',

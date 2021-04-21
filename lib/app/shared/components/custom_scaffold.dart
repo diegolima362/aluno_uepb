@@ -3,17 +3,16 @@ import 'package:flutter/rendering.dart';
 
 class CustomScaffold extends StatefulWidget {
   final Widget body;
-  final Widget floatingActionButton;
-  final String textTitle;
-  final String subtitleText;
-  final ScrollController scrollController;
-  final Widget title;
-
-  final List<Widget> actions;
+  final Widget? floatingActionButton;
+  final String? textTitle;
+  final String? subtitleText;
+  final ScrollController? scrollController;
+  final Widget? title;
+  final List<Widget>? actions;
 
   const CustomScaffold({
-    Key key,
-    this.body,
+    Key? key,
+    required this.body,
     this.floatingActionButton,
     this.textTitle,
     this.scrollController,
@@ -76,7 +75,7 @@ class _CustomScaffoldState extends State<CustomScaffold> {
                       Text(
                         _subTitle,
                         style: TextStyle(
-                          color: Theme.of(context).textTheme.caption.color,
+                          color: Theme.of(context).textTheme.caption!.color,
                           fontSize: 16,
                         ),
                       ),

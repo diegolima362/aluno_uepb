@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class HistoryEntryModel {
   final String id;
   final String name;
@@ -11,14 +9,14 @@ class HistoryEntryModel {
   final String observation;
 
   HistoryEntryModel({
-    @required this.id,
-    @required this.name,
-    this.semester,
-    this.grade,
-    this.status,
-    this.ch,
-    this.absences,
-    this.observation,
+    required this.id,
+    required this.name,
+    required this.semester,
+    required this.grade,
+    required this.status,
+    required this.ch,
+    required this.absences,
+    required this.observation,
   });
 
   factory HistoryEntryModel.fromMap(Map<dynamic, dynamic> map) {

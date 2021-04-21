@@ -1,37 +1,38 @@
 import 'package:flutter/material.dart';
 
 class CustomThemes {
+  static const Color white = Color(0xfff2f2f7);
+  static const Color black = Color(0xff1c1c1e);
+
   List<Color> get darkAccentColors => [
-        const Color(0xfff0f0f0),
-        const Color(0xffe43f5a),
-        const Color(0xff77e2c3),
-        const Color(0xffffaf7b),
-        const Color(0xfff8ca4d),
-        const Color(0xffd9583b),
-        const Color(0xff2a9d8f),
-        const Color(0xff2979ff),
+        const Color(0xfff2f2f7),
+        const Color(0xff0a84ff),
+        const Color(0xff30d158),
+        const Color(0xff5e5ce6),
+        const Color(0xffff9f0a),
+        const Color(0xffff375f),
+        const Color(0xffff453a),
+        const Color(0xff64d2ff),
       ];
 
   List<Color> get lightAccentColors => [
-        const Color(0xff141414),
-        const Color(0xffe43f5a),
-        const Color(0xff24314d),
-        const Color(0xffd9583b),
-        const Color(0xff2a9d8f),
-        const Color(0xff2979ff),
-        const Color(0xff006d77),
-        const Color(0xff4d194d),
+        const Color(0xff1c1c1e),
+        const Color(0xff007bff),
+        const Color(0xff34c759),
+        const Color(0xff5856d6),
+        const Color(0xffff9500),
+        const Color(0xffff2d55),
+        const Color(0xffff3b30),
+        const Color(0xff5ac8fa),
       ];
 
-  ThemeData getDark({int colorValue}) {
+  ThemeData getDark({int colorValue = 0xfff2f2f7}) {
     Color accent = darkAccentColors[0];
 
-    if (colorValue != null) {
-      final accentColor = Color(colorValue);
+    final accentColor = Color(colorValue);
 
-      if (accentColor.alpha != 0) {
-        accent = accentColor;
-      }
+    if (accentColor.alpha != 0) {
+      accent = accentColor;
     }
 
     final bg = Color(0xff141414);
@@ -44,7 +45,7 @@ class CustomThemes {
     final primary = accent;
     // final disableIcon = primary.withOpacity(0.5);
     final selectedColor = accent;
-    final cardColor = Color(0xff1a1a1a);
+    final cardColor = Color(0xff1c1c1e);
     // final barColor = Color(0xff212121);
     // final bottomBar = Color(0xff1f1f1f);
     final buttonColor = accent;
@@ -125,15 +126,13 @@ class CustomThemes {
     );
   }
 
-  ThemeData getLight({int colorValue}) {
+  ThemeData getLight({int colorValue = 0xff141414}) {
     Color accent = lightAccentColors[0];
 
-    if (colorValue != null) {
-      final accentColor = Color(colorValue);
+    final accentColor = Color(colorValue);
 
-      if (accentColor.alpha != 0) {
-        accent = accentColor;
-      }
+    if (accentColor.alpha != 0) {
+      accent = accentColor;
     }
 
     final bg = Color(0xfffafafa);

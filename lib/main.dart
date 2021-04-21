@@ -9,13 +9,14 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+const bool USE_FIRE_STORE_EMULATOR = false;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initializeDateFormatting("pt_BR", null);
+  // initializeDateFormatting("pt_BR", null);
 
   await Firebase.initializeApp();
 
@@ -23,12 +24,21 @@ Future<void> main() async {
 
   await HiveStorage.initDatabase();
 
-  final currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
-
-  tz.initializeTimeZones();
-  tz.setLocalLocation(tz.getLocation(currentTimeZone));
+  await configureLocalTimeZone();
 
   runApp(ModularApp(module: AppModule(), child: AppWidget()));
 }
 
-const bool USE_FIRE_STORE_EMULATOR = false;
+Future configureLocalTimeZone() async {
+  tz.initializeTimeZones();
+  final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+  print('Timezone: $timeZoneName');
+  try {
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+  } catch (e) {
+    // Failed to get timezone or device is GMT or UTC, assign generic timezone
+    const String fallback = 'America/Recife';
+    print('Could not get a legit timezone, setting as $fallback');
+    tz.setLocalLocation(tz.getLocation(fallback));
+  }
+}

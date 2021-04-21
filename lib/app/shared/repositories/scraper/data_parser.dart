@@ -24,20 +24,20 @@ class DataParser {
     List<Element> data = dom.getElementsByTagName('table > tbody > tr');
     List<Map<String, dynamic>> history = <Map<String, dynamic>>[];
 
-    data.forEach((e) => history.add(_buidHistory(e)));
+    data.forEach((e) => history.add(_buildHistory(e)));
 
     return history;
   }
 
-  Map<String, dynamic> sanitizeProfile(Map<String, Document> dom) {
-    Map<String, String> homeInfo = _sanitizeHomeInfo(dom['home']);
+  Map<String, dynamic> sanitizeProfile(Map<String, Document?> dom) {
+    Map<String, String> homeInfo = _sanitizeHomeInfo(dom['home']!);
     Map<String, dynamic> personalData =
-        _sanitizePersonalData(dom['profile'].body);
+        _sanitizePersonalData(dom['profile']!.body!);
 
     return _buildProfile(personalData, homeInfo);
   }
 
-  Map<String, dynamic> _buidHistory(Element e) {
+  Map<String, dynamic> _buildHistory(Element e) {
     final d = e.getElementsByTagName('td').map((e) => e.text).toList();
 
     return {
@@ -65,7 +65,7 @@ class DataParser {
       courseData.insert(1, Element.html('<p>SEM PROFESSOR</p>'));
     }
 
-    int ch = int.tryParse(courseData[0].text.split(' ')[3]);
+    int ch = int.tryParse(courseData[0].text.split(' ')[3])!;
     String professor = courseData[1].text;
     List<Map<String, dynamic>> schedule = _sanitizeSchedule(courseData[2]);
 
@@ -107,14 +107,16 @@ class DataParser {
     RegExp regExp = new RegExp(r"\(\d\.\d\)");
     RegExp regExp2 = new RegExp(r".\.");
 
-    String scriptTag =
+    String? scriptTag =
         dom.querySelector('#main-content > section > script')?.text;
-    Iterable<RegExpMatch> values = regExp.allMatches(scriptTag);
 
-    values.forEach((element) {
-      absences
-          .add(int.tryParse(regExp2.firstMatch(element.group(0)).group(0)[0]));
-    });
+    if (scriptTag != null) {
+      Iterable<RegExpMatch> values = regExp.allMatches(scriptTag);
+      values.forEach((element) {
+        absences.add(
+            int.tryParse(regExp2.firstMatch(element.group(0)!)!.group(0)![0])!);
+      });
+    }
 
     return absences;
   }
@@ -125,22 +127,24 @@ class DataParser {
     RegExp regExp = new RegExp(r"maxValue = (\d*);");
     RegExp regExp2 = new RegExp(r"\d{1,2}");
 
-    String scriptTag =
+    String? scriptTag =
         dom.querySelector('#main-content > section > script')?.text;
 
-    Iterable<RegExpMatch> values = regExp.allMatches(scriptTag);
+    if (scriptTag != null) {
+      Iterable<RegExpMatch> values = regExp.allMatches(scriptTag);
 
-    values.forEach((e) =>
-        limits.add(int.tryParse(regExp2.firstMatch(e.group(0)).group(0))));
+      values.forEach((e) => limits
+          .add(int.tryParse(regExp2.firstMatch(e.group(0)!)!.group(0)!)!));
+    }
 
     return limits;
   }
 
   Map<String, String> _sanitizeHomeInfo(Document dom) {
-    final map = {
-      'cra': dom.querySelector('.text-purple')?.text,
-      'cumulativeCH': dom.querySelector('.ch')?.text,
-      'building': dom.querySelector('.nome-predio')?.text,
+    Map<String, String> map = {
+      'cra': dom.querySelector('.text-purple')?.text ?? '',
+      'cumulativeCH': dom.querySelector('.ch')?.text ?? '',
+      'building': dom.querySelector('.nome-predio')?.text ?? '',
     };
 
     return map;
@@ -148,8 +152,6 @@ class DataParser {
 
   Map<String, dynamic> _sanitizePersonalData(Element dom) {
     final data = dom.getElementsByClassName('form-control-static');
-
-    if (data == null) return null;
 
     Map<String, dynamic> personalData = Map<String, dynamic>();
 
@@ -160,8 +162,12 @@ class DataParser {
     personalData['campus'] = data[3].text.split('(')[1].split(')')[0];
 
     List<String> date = data[12].text.split('/');
+
     DateTime birthDate = DateTime(
-        int.tryParse(date[2]), int.tryParse(date[1]), int.tryParse(date[0]));
+      int.tryParse(date[2])!,
+      int.tryParse(date[1])!,
+      int.tryParse(date[0])!,
+    );
     personalData['birthDate'] = birthDate.microsecondsSinceEpoch.toString();
 
     personalData['gender'] = data[13].text[0];

@@ -3,11 +3,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class INotificationsManager {
-  BehaviorSubject<NotificationModel> get notificationSubject => null;
+  BehaviorSubject<NotificationModel> get notificationSubject;
 
-  BehaviorSubject<String> get selectNotificationSubject => null;
+  BehaviorSubject<String> get selectNotificationSubject;
 
-  Future<NotificationAppLaunchDetails> get appLaunchDetails => null;
+  Future<NotificationAppLaunchDetails?> get appLaunchDetails;
 
   Future<void> cancelAllNotifications();
 

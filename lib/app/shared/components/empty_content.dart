@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class EmptyContent extends StatelessWidget {
   final String title;
   final String message;
-  final Color titleColor;
-  final Color messageColor;
+  final Color? titleColor;
+  final Color? messageColor;
 
   const EmptyContent({
-    Key key,
+    Key? key,
     this.title = 'Nothing here',
     this.message = 'Add a new item to get started',
     this.titleColor,
@@ -18,7 +18,7 @@ class EmptyContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final _titleColor = titleColor ?? Theme.of(context).accentColor;
     final _messageColor =
-        messageColor ?? Theme.of(context).textTheme.headline6.color;
+        messageColor ?? Theme.of(context).textTheme.headline6!.color;
 
     return Center(
       child: Column(

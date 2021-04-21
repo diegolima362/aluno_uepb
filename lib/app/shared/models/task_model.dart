@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'notification_model.dart';
 
 class TaskModel {
@@ -12,28 +10,30 @@ class TaskModel {
   bool isCompleted;
   bool setReminder;
   String text;
-  NotificationModel reminder;
+  NotificationModel? reminder;
 
   DateTime createdDate = DateTime.now();
 
   TaskModel({
-    @required this.title,
-    @required this.id,
-    @required this.courseId,
-    @required this.courseTitle,
-    @required this.dueDate,
+    required this.title,
+    required this.id,
+    required this.courseId,
+    required this.courseTitle,
+    required this.dueDate,
+    required this.createdDate,
     this.isCompleted = false,
-    this.text,
+    this.text = '',
     this.setReminder = false,
-    this.createdDate,
     this.reminder,
   });
 
   factory TaskModel.fromMap(Map<dynamic, dynamic> value) {
-    final int due = int.tryParse(value['dueDate']);
-    final int created = int.tryParse(value['createdDate']);
+    final int now = DateTime.now().millisecondsSinceEpoch;
 
-    NotificationModel reminder = value['reminder'] != null
+    final int due = int.tryParse(value['dueDate']) ?? now;
+    final int created = int.tryParse(value['createdDate']) ?? now;
+
+    NotificationModel? reminder = value['reminder'] != null
         ? NotificationModel.fromMap(value['reminder'])
         : null;
 

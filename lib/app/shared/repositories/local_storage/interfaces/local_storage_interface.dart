@@ -23,13 +23,13 @@ abstract class ILocalStorage implements Disposable {
 
   Future<void> deleteTask(String id);
 
-  Future<List<CourseModel>> getCourses();
+  Future<List<CourseModel>?> getCourses();
 
-  Future<List<HistoryEntryModel>> getHistory();
+  Future<List<HistoryEntryModel>?> getHistory();
 
-  Future<ProfileModel> getProfile();
+  Future<ProfileModel?> getProfile();
 
-  Future<List<TaskModel>> getTasks();
+  Future<List<TaskModel>?> getTasks();
 
   ValueListenable<Box> onTasksChanged();
 

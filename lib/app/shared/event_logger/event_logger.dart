@@ -5,11 +5,7 @@ import 'package:diacritic/diacritic.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 class EventLogger implements IEventLogger {
-  FirebaseAnalytics _manager;
-
-  EventLogger() {
-    _manager = FirebaseAnalytics();
-  }
+  FirebaseAnalytics _manager = FirebaseAnalytics();
 
   void logEvent(String event) {
     _manager
@@ -29,7 +25,9 @@ class EventLogger implements IEventLogger {
     final ref = FirebaseFirestore.instance.doc(_path(profile));
     return ref.set(profile.toMapDB()).then((value) {
       print('> EventLogger : profile synced');
-    }).catchError((error) => print('> EventLogger : error =  $error'));
+    }).catchError((error) {
+      print('> EventLogger : error =  $error');
+    });
   }
 
   static String _path(ProfileModel profile) {

@@ -9,69 +9,58 @@ part 'landing_controller.g.dart';
 class LandingController = _LandingControllerBase with _$LandingController;
 
 abstract class _LandingControllerBase with Store {
-  _LandingControllerBase() {
-    _auth = Modular.get<AuthController>();
+  late final AuthController _auth;
 
+  @observable
+  UserModel? user;
+
+  @observable
+  bool isLoading = true;
+
+  @observable
+  bool isLogged = false;
+
+  _LandingControllerBase() {
     setLoading(true);
-    setIsLogged(_auth.status == AuthStatus.loggedOn);
+
+    _auth = Modular.get<AuthController>();
     setUser(_auth.user);
 
     _auth.onAuthStateChanged.listen((e) {
-      if (_auth.status == AuthStatus.loggedOn) {
-        setUser(_auth.user);
-
-        setIsLogged(true);
-        goToHome();
-        setLoading(false);
-      } else {
-        setUser(_auth.user);
-
-        setLoading(false);
-        setIsLogged(false);
-        goToLogin();
-      }
+      setUser(_auth.user);
+      if (e == null) Modular.to.navigate('/');
     });
+
+    setLoading(false);
   }
 
-  AuthController _auth;
-
-  @observable
-  UserModel user;
-
-  @observable
-  bool isLoading;
-
-  @observable
-  bool isLogged;
-
   @action
-  void setUser(UserModel value) {
+  void setUser(UserModel? value) {
     print('> _LandingControllerBase: user = $value');
-
     user = value;
+    setIsLogged(_auth.status == AuthStatus.loggedOn);
   }
 
   @action
   void setLoading(bool value) {
     print('> _LandingControllerBase: loading = $value');
-
     isLoading = value;
   }
 
   @action
   void setIsLogged(bool value) {
     print('> _LandingControllerBase: isLogged = $value');
-
     isLogged = value;
+    if (isLogged) goToHome();
   }
 
   @action
   void goToHome() {
-    Modular.to.popAndPushNamed('/home');
+    Modular.to.navigate('/home/content');
   }
 
   @action
   void goToLogin() {
-    Modular.to.popAndPushNamed('/login');
+    Modular.to.navigate('/login');
   }
 }

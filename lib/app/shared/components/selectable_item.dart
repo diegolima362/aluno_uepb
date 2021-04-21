@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 
 class SelectableItem extends StatelessWidget {
-  final Function onTap;
-  final Color bgColor;
-  final Color textColor;
-  final double size;
-  final Widget child;
+  final GestureTapCallback? onTap;
+  final Color? bgColor;
+  final Color? textColor;
+  final double? size;
+  final Widget? child;
   final String text;
   final bool active;
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
 
   const SelectableItem({
-    Key key,
+    Key? key,
+    required this.text,
+    required this.active,
     this.onTap,
     this.bgColor,
     this.textColor,
     this.size,
-    this.text,
     this.child,
-    @required this.active,
     this.margin,
-  })  : assert(text != null || child != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

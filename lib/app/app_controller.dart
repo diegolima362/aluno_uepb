@@ -1,5 +1,4 @@
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
@@ -9,22 +8,16 @@ part 'app_controller.g.dart';
 class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase with Store {
-  DataController storage;
+  late final DataController storage;
 
   @observable
-  ThemeData themeType;
+  bool darkMode = false;
 
   @observable
-  ThemeMode themeMode;
+  int darkAccent = 0xfff2f2f7;
 
   @observable
-  bool darkMode;
-
-  @observable
-  int darkAccent;
-
-  @observable
-  int lightAccent;
+  int lightAccent = 0xff1c1c1e;
 
   _AppControllerBase() {
     storage = Modular.get();
@@ -32,31 +25,23 @@ abstract class _AppControllerBase with Store {
     storage.onThemeChanged.listen((e) => loadTheme());
 
     storage.onDarkAccentChanged.listen((e) {
-      return loadTheme();
+      loadTheme();
     });
 
     storage.onLightAccentChanger.listen((e) {
-      return loadTheme();
+      loadTheme();
     });
 
     loadTheme();
   }
 
-  @computed
-  bool get isDark => themeType.brightness == Brightness.dark;
+  @action
+  void setDarkMode(bool value) => darkMode = value;
 
   @action
   Future<void> loadTheme() async {
     darkMode = storage.themeMode;
     lightAccent = storage.lightAccentColorCode;
     darkAccent = storage.darkAccentColorCode;
-
-    if (darkMode) {
-      themeType = ThemeData.dark();
-      themeMode = ThemeMode.dark;
-    } else {
-      themeType = ThemeData.light();
-      themeMode = ThemeMode.light;
-    }
   }
 }

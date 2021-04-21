@@ -22,31 +22,27 @@ class Scraper {
   String user;
   String password;
 
-  DataParser _parser;
+  DataParser _parser = DataParser();
 
   final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
 
   final String loginURL =
       "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
 
-  Scraper(this.user, this.password) {
-    _parser = DataParser();
-  }
+  Scraper(this.user, this.password);
 
   Map<String, String> get formData {
     UserModel _user;
 
-    if (user == null || password == null) {
-      _user = Modular.get<AuthController>().user;
-      this.user = _user.id;
-      this.password = _user.password;
-    }
+    _user = Modular.get<AuthController>().user!;
+    this.user = _user.id;
+    this.password = _user.password;
 
     return {'nome_usuario': user, 'senha_usuario': password};
   }
 
   Future<Map<String, dynamic>> getAllData() async {
-    Map<String, Document> _dom;
+    Map<String, Document?> _dom;
 
     updatingCourses = true;
     updatingProfile = true;
@@ -63,15 +59,17 @@ class Scraper {
       rethrow;
     }
 
-    if (_dom == null) return null;
+    final data = Map<String, dynamic>();
 
-    final coursesData = _parser.sanitizeCourses(_dom['courses']);
-    final profileData = _parser.sanitizeProfile(_dom);
+    if (_dom['courses'] != null) {
+      final courses = _parser.sanitizeCourses(_dom['courses']!);
+      data['courses'] = courses.map((map) => CourseModel.fromMap(map)).toList();
+    }
 
-    final data = {
-      'profile': ProfileModel.fromMap(profileData),
-      'courses': coursesData.map((map) => CourseModel.fromMap(map)).toList(),
-    };
+    if (_dom['profile'] != null && _dom['home'] != null) {
+      final profile = _parser.sanitizeProfile(_dom);
+      data['profile'] = ProfileModel.fromMap(profile);
+    }
 
     updatingCourses = false;
     updatingProfile = false;
@@ -81,14 +79,14 @@ class Scraper {
     return data;
   }
 
-  Future<List<CourseModel>> getCourses() async {
+  Future<List<CourseModel>?> getCourses() async {
     if (updatingCourses) {
       print('> Scraper: already updating');
       return null;
     }
     updatingCourses = true;
 
-    Document _dom;
+    Document? _dom;
 
     try {
       _dom = await _requestDOMCourses();
@@ -109,14 +107,14 @@ class Scraper {
     return courses;
   }
 
-  Future<List<HistoryEntryModel>> getHistory() async {
+  Future<List<HistoryEntryModel>?> getHistory() async {
     if (updatingHistory) {
       print('> Scraper: already updating');
       return null;
     }
     updatingHistory = true;
 
-    Document _dom;
+    Document? _dom;
 
     try {
       _dom = await _requestDOMHistory();
@@ -136,7 +134,7 @@ class Scraper {
     return history;
   }
 
-  Future<ProfileModel> getProfile() async {
+  Future<ProfileModel?> getProfile() async {
     if (updatingProfile) {
       print('> Scraper: already updating');
       return null;
@@ -144,7 +142,7 @@ class Scraper {
 
     updatingProfile = true;
 
-    Map<String, Document> _dom;
+    Map<String, Document?>? _dom;
 
     try {
       _dom = await _requestDOMProfile();
@@ -153,7 +151,7 @@ class Scraper {
       rethrow;
     }
 
-    if (_dom == null) return null;
+    if (_dom.isEmpty) return null;
 
     final data = _parser.sanitizeProfile(_dom);
 
@@ -164,12 +162,12 @@ class Scraper {
     return profile;
   }
 
-  Future<Map<String, Document>> _requestDOM() async {
+  Future<Map<String, Document?>> _requestDOM() async {
     Session client = Session();
 
-    Document home;
-    Document profile;
-    Document courses;
+    Document? home;
+    Document? profile;
+    Document? courses;
 
     home = await client.get(baseURL + '/index');
 
@@ -183,21 +181,21 @@ class Scraper {
       rethrow;
     }
 
-    final data = {
-      'home': home,
-      'profile': profile,
-      'courses': courses,
+    final Map<String, Document?> data = {
+      if (home != null) 'home': home,
+      if (profile != null) 'profile': profile,
+      if (courses != null) 'courses': courses,
     };
 
     return data;
   }
 
-  Future<Document> _requestDOMCourses() async {
+  Future<Document?> _requestDOMCourses() async {
     print('> _requestDOMCourses');
 
     Session client = Session();
 
-    Document rdm;
+    Document? rdm;
 
     // Start cookies
     await client.get(baseURL + '/index');
@@ -213,10 +211,10 @@ class Scraper {
     return rdm;
   }
 
-  Future<Document> _requestDOMHistory() async {
+  Future<Document?> _requestDOMHistory() async {
     Session client = Session();
 
-    Document history;
+    Document? history;
 
     // Start cookies
     await client.get(baseURL + '/index');
@@ -232,11 +230,11 @@ class Scraper {
     return history;
   }
 
-  Future<Map<String, Document>> _requestDOMProfile() async {
+  Future<Map<String, Document?>> _requestDOMProfile() async {
     Session client = Session();
 
-    Document profile;
-    Document home;
+    Document? profile;
+    Document? home;
 
     // Start cookies
     await client.get(baseURL + '/index');

@@ -1,49 +1,35 @@
+import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 
 class CustomFAB extends StatelessWidget {
   final bool extended;
-  final String tooltip;
+  final String? tooltip;
   final Icon icon;
   final String label;
-  final Function onPressed;
-  final Color color;
+  final VoidCallback? onPressed;
+  final Color? color;
 
-  const CustomFAB(
-      {Key key,
-      this.extended,
-      this.tooltip,
-      this.icon,
-      this.label,
-      this.onPressed,
-      this.color})
-      : super(key: key);
+  const CustomFAB({
+    Key? key,
+    required this.icon,
+    required this.label,
+    this.extended = true,
+    this.tooltip,
+    this.onPressed,
+    this.color,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: Duration(milliseconds: 1),
-      transitionBuilder: (child, animation) {
-        return ScaleTransition(child: child, scale: animation);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 2,
-            color: Theme.of(context).accentColor,
-          ),
-          borderRadius: extended ? BorderRadius.circular(50) : null,
-          shape: extended ? BoxShape.rectangle : BoxShape.circle,
-        ),
-        child: FloatingActionButton.extended(
-          backgroundColor: color ?? Theme.of(context).canvasColor,
-          foregroundColor: Theme.of(context).accentColor,
-          onPressed: onPressed,
-          tooltip: tooltip,
-          label: extended ? Text(label) : icon,
-          isExtended: extended,
-          icon: extended ? icon : null,
-        ),
-      ),
+    final accent = Theme.of(context).accentColor;
+    final fg = accent == CustomThemes.white ? null : Colors.white;
+    return FloatingActionButton.extended(
+      onPressed: onPressed,
+      tooltip: tooltip,
+      label: extended ? Text(label) : icon,
+      isExtended: extended,
+      foregroundColor: fg,
+      icon: extended ? icon : null,
     );
   }
 }

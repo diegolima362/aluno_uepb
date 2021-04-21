@@ -7,9 +7,9 @@ class CourseModel {
   final String name;
   final String professor;
   final int ch;
-  int absences;
-  int absencesLimit;
-  List<ScheduleModel> schedule;
+  final int absences;
+  final int absencesLimit;
+  List<ScheduleModel> schedule = <ScheduleModel>[];
   final String und1Grade;
   final String und2Grade;
   final String finalTest;
@@ -24,13 +24,13 @@ class CourseModel {
     this.und1Grade: '',
     this.und2Grade: '',
     this.finalTest: '',
-    this.schedule,
+    List<ScheduleModel>? schedule,
   }) {
-    if (schedule == null) schedule = <ScheduleModel>[];
+    if (schedule != null) this.schedule = schedule;
   }
 
   factory CourseModel.fromMap(Map<dynamic, dynamic> map) {
-    List scheduleMap = map['schedule'] as List;
+    List? scheduleMap = map['schedule'] as List?;
 
     if (scheduleMap == null) scheduleMap = [];
 
@@ -60,11 +60,11 @@ class CourseModel {
     final now = DateTime.now();
     final today = weekDay == now.weekday;
 
-    final schedule = scheduleAtDay(weekDay);
+    final result = scheduleAtDay(weekDay);
 
-    if (schedule != null) {
+    if (result != null) {
       final currentHour = int.tryParse(DateFormat('H').format(now)) ?? 0;
-      final classTime = int.tryParse(schedule.time.split(':')[0]) ?? 0;
+      final classTime = int.tryParse(result.time.split(':')[0]) ?? 0;
 
       _isCurrentClass =
           today && (currentHour == classTime || currentHour == classTime + 1);
@@ -72,14 +72,14 @@ class CourseModel {
     return _isCurrentClass;
   }
 
-  ScheduleModel scheduleAtDay(int day) {
+  ScheduleModel? scheduleAtDay(int day) {
     final schedules = this.schedule.where((e) => e.weekDay == day).toList();
     return schedules.isNotEmpty ? schedules[0] : null;
   }
 
-  String startTimeAtDay(int day) {
-    final schedule = scheduleAtDay(day);
-    return schedule?.time ?? null;
+  String? startTimeAtDay(int day) {
+    final s = scheduleAtDay(day);
+    return s?.time ?? null;
   }
 
   Map<String, dynamic> toMap() {

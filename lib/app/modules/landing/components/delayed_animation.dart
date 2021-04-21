@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class DelayedAnimation extends StatefulWidget {
   final Widget child;
-  final int delay;
+  final int? delay;
 
-  DelayedAnimation({@required this.child, this.delay});
+  DelayedAnimation({required this.child, this.delay});
 
   @override
   _DelayedAnimationState createState() => _DelayedAnimationState();
@@ -14,8 +14,8 @@ class DelayedAnimation extends StatefulWidget {
 
 class _DelayedAnimationState extends State<DelayedAnimation>
     with TickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<Offset> _animOffset;
+  late final AnimationController _controller;
+  late final Animation<Offset> _animOffset;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _DelayedAnimationState extends State<DelayedAnimation>
     if (widget.delay == null) {
       _controller.forward();
     } else {
-      Timer(Duration(milliseconds: widget.delay), () {
+      Timer(Duration(milliseconds: widget.delay!), () {
         _controller.forward();
       });
     }

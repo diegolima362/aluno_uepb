@@ -1,4 +1,4 @@
-import 'package:aluno_uepb/app/shared/components/custom_raised_button.dart';
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:aluno_uepb/app/shared/components/platform_exception_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +10,7 @@ import 'login_controller.dart';
 class LoginPage extends StatefulWidget {
   final String title;
 
-  const LoginPage({Key key, this.title = 'Entrar'}) : super(key: key);
+  const LoginPage({Key? key, this.title = 'Entrar'}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -44,7 +44,9 @@ class _LoginPageState extends ModularState<LoginPage, LoginController> {
         body: Observer(
           builder: (_) {
             if (controller.loading) {
-              return _buildLoading();
+              return LoadingIndicator(
+                text: 'Entrando',
+              );
             } else {
               if (MediaQuery.of(context).orientation == Orientation.landscape)
                 return Center(child: _buildContent());
@@ -99,7 +101,6 @@ class _LoginPageState extends ModularState<LoginPage, LoginController> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w300,
-                    color: bgColor,
                     fontSize: 24.0,
                   ),
                 ),
@@ -117,54 +118,47 @@ class _LoginPageState extends ModularState<LoginPage, LoginController> {
   }
 
   Observer _buildIdTextField() {
-    final label = 'Matricula';
-    final hint = 'Insira sua Matricula';
+    final label = 'Matrícula';
+    final hint = 'Insira sua Matrícula';
 
     return Observer(
       builder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-        child: TextField(
-          enabled: !controller.loading,
-          controller: _idController,
-          focusNode: _idFocusNode,
-          autocorrect: false,
-          autofocus: false,
-          enableSuggestions: false,
-          keyboardType: TextInputType.number,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            labelText: label,
-            hintText: hint,
-            errorText: controller.error.id,
-            enabled: controller.loading == false,
-            border: InputBorder.none,
-            icon: Icon(Icons.person),
+        child: Container(
+          width: 300,
+          child: TextField(
+            enabled: !controller.loading,
+            controller: _idController,
+            focusNode: _idFocusNode,
+            autocorrect: false,
+            autofocus: false,
+            enableSuggestions: true,
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: label,
+              hintText: hint,
+              enabled: controller.loading == false,
+              prefixIcon: Icon(Icons.person_outlined),
+              errorText:
+                  controller.error.id.isEmpty ? null : controller.error.id,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(2),
+                borderSide: BorderSide(width: 3),
+              ),
+            ),
+            onChanged: (value) => controller.editId(value.trim()),
+            onEditingComplete: () {
+              FocusNode newFocus;
+              if (controller.idIdValid) {
+                newFocus = _passwordFocusNode;
+              } else {
+                newFocus = _idFocusNode;
+              }
+              FocusScope.of(context).requestFocus(newFocus);
+            },
           ),
-          onChanged: (value) => controller.id = value.trim(),
-          onEditingComplete: () {
-            var newFocus;
-            if (controller.idIdValid) {
-              newFocus = _passwordFocusNode;
-            } else {
-              newFocus = _idFocusNode;
-            }
-            FocusScope.of(context).requestFocus(newFocus);
-          },
         ),
-      ),
-    );
-  }
-
-  Widget _buildLoading() {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 20),
-          Text('Entrando ...', style: TextStyle(color: bgColor)),
-        ],
       ),
     );
   }
@@ -173,23 +167,34 @@ class _LoginPageState extends ModularState<LoginPage, LoginController> {
     return Observer(
       builder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-        child: TextField(
-          enabled: !controller.loading,
-          controller: _passwordController,
-          focusNode: _passwordFocusNode,
-          onChanged: (value) => controller.password = value,
-          decoration: InputDecoration(
-            labelText: 'Senha',
-            hintText: 'Insira uma senha',
-            errorText: controller.error.password,
-            enabled: controller.loading == false,
-            icon: Icon(Icons.lock),
-            border: InputBorder.none,
+        child: Container(
+          width: 300,
+          child: TextField(
+            enabled: !controller.loading,
+            controller: _passwordController,
+            focusNode: _passwordFocusNode,
+            onChanged: (value) => controller.editPassword(value.trim()),
+            decoration: InputDecoration(
+              labelText: 'Senha',
+              hintText: 'Insira sua senha',
+              errorText: controller.error.password.isEmpty
+                  ? null
+                  : controller.error.password,
+              enabled: controller.loading == false,
+              prefixIcon: Icon(Icons.lock_outline),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(2),
+                borderSide: BorderSide(
+                  width: 3,
+                  color: bgColor,
+                ),
+              ),
+            ),
+            autocorrect: false,
+            obscureText: true,
+            textInputAction: TextInputAction.done,
+            onEditingComplete: () async => await _submit(),
           ),
-          autocorrect: false,
-          obscureText: true,
-          textInputAction: TextInputAction.done,
-          onEditingComplete: _submit,
         ),
       ),
     );
@@ -199,22 +204,16 @@ class _LoginPageState extends ModularState<LoginPage, LoginController> {
     return Observer(
       builder: (_) {
         return Container(
-          padding: EdgeInsets.all(20),
-          child: CustomRaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              side: BorderSide(color: bgColor),
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          height: 50,
+          width: 300,
+          child: ElevatedButton(
             child: Text(
               'Entrar',
-              style: TextStyle(
-                fontSize: 24,
-                color: bgColor,
-              ),
+              style: TextStyle(color: const Color(0xffffffff)),
             ),
-            borderRadius: 40,
-            color: Theme.of(context).canvasColor,
-            onPressed: controller.canSubmit ? _submit : null,
+            onPressed:
+                controller.canSubmit ? () async => await _submit() : null,
           ),
         );
       },

@@ -1,26 +1,25 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 class NotificationModel {
   final int id;
   final String title;
   final String body;
   final String payload;
-  final DateTime dateTime;
-  final int weekday;
+  final DateTime? dateTime;
+  final int? weekday;
 
   NotificationModel({
-    @required this.id,
-    @required this.title,
-    @required this.body,
-    @required this.payload,
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.payload,
     this.weekday,
     this.dateTime,
   });
 
   factory NotificationModel.fromMap(Map<dynamic, dynamic> value) {
-    final int date = int.tryParse(value['dateTime']);
+    final int date = int.tryParse(value['dateTime']) ??
+        DateTime.now().millisecondsSinceEpoch;
 
     return NotificationModel(
       id: value['id'],
@@ -51,7 +50,8 @@ class NotificationModel {
   factory NotificationModel.fromPendingNotification(
       Map<dynamic, dynamic> value) {
     Map map = json.decode(value['payload']);
-    int dateValue = int.tryParse(map['date']);
+    int dateValue =
+        int.tryParse(map['date']) ?? DateTime.now().millisecondsSinceEpoch;
     final date = DateTime.fromMillisecondsSinceEpoch(dateValue);
 
     int _weekDay = value['weekDay'] ?? map['weekDay'];
@@ -77,7 +77,7 @@ class NotificationModel {
       'title': title,
       'body': body,
       'payload': payload,
-      'dateTime': dateTime.millisecondsSinceEpoch.toString(),
+      'dateTime': dateTime?.millisecondsSinceEpoch.toString(),
       'weekday': weekday,
     };
   }

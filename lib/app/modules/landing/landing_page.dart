@@ -9,7 +9,7 @@ import 'landing_controller.dart';
 class LandingPage extends StatefulWidget {
   final String title;
 
-  const LandingPage({Key key, this.title = 'Landing'}) : super(key: key);
+  const LandingPage({Key? key, this.title = 'Landing'}) : super(key: key);
 
   @override
   _LandingPageState createState() => _LandingPageState();
@@ -17,8 +17,6 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends ModularState<LandingPage, LandingController>
     with SingleTickerProviderStateMixin {
-  //use 'controller' variable to access controller
-
   final delayedAmount = 100;
   final accent = Colors.white;
   final bgColor = Color(0xff141414);
@@ -36,11 +34,7 @@ class _LandingPageState extends ModularState<LandingPage, LandingController>
         builder: (context) {
           debugPrint('> LandingPage: isLogged = ${controller.isLogged}');
           debugPrint('> LandingPage: user = ${controller.user}');
-
-          final showLoading =
-              controller.user == null || (controller.user?.logged ?? false);
-
-          if (showLoading) {
+          if (controller.isLoading) {
             return Center(
               child: CircularProgressIndicator(
                 backgroundColor: Colors.white,
@@ -124,15 +118,13 @@ class _LandingPageState extends ModularState<LandingPage, LandingController>
                       'Entrar',
                       style: TextStyle(
                         fontSize: 24,
-                        color: accent,
+                        color: bgColor,
                       ),
                     ),
-                    color: bgColor,
-                    onPressed: controller.goToLogin,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      side: BorderSide(color: accent),
-                    ),
+                    color: accent,
+                    onPressed: () {
+                      controller.goToLogin();
+                    },
                   ),
                 ),
                 delay: delayedAmount + 2500,

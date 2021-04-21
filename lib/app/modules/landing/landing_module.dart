@@ -11,6 +11,6 @@ class LandingModule extends Module {
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute('/login', child: (_, __) => LandingPage()),
+    ChildRoute('/', child: (_, __) => LandingPage()),
   ];
 }

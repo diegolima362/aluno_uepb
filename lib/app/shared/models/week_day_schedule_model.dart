@@ -4,7 +4,7 @@ class WeekDayScheduleModel {
   final List<CourseModel> courses;
   final int weekDay;
 
-  WeekDayScheduleModel({this.courses, this.weekDay});
+  WeekDayScheduleModel({required this.courses, required this.weekDay});
 
   @override
   String toString() {

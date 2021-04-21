@@ -1,6 +1,5 @@
 import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
 import 'package:aluno_uepb/app/shared/models/user_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
@@ -15,9 +14,15 @@ enum AuthStatus { waiting, loggedOn, loggedOut }
 class AuthController = _AuthControllerBase with _$AuthController;
 
 abstract class _AuthControllerBase with Store {
-  _AuthControllerBase() {
-    status = AuthStatus.waiting;
+  late final IAuthRepository _authRepository;
 
+  @observable
+  AuthStatus status = AuthStatus.waiting;
+
+  @observable
+  UserModel? user;
+
+  _AuthControllerBase() {
     _authRepository = Modular.get();
 
     _authRepository.onAuthStateChanged.listen((u) => setUser(u));
@@ -25,23 +30,15 @@ abstract class _AuthControllerBase with Store {
     setUser(_authRepository.currentUser);
   }
 
-  IAuthRepository _authRepository;
-
-  @observable
-  AuthStatus status;
-
-  @observable
-  UserModel user;
-
-  Stream<UserModel> get onAuthStateChanged =>
+  Stream<UserModel?> get onAuthStateChanged =>
       _authRepository.onAuthStateChanged;
 
   @action
-  void setUser(UserModel value) {
+  void setUser(UserModel? value) {
     print('> _AuthControllerBase: set user: $value');
 
     user = value;
-    if (value == null || !(value?.logged ?? false))
+    if (value == null || !value.logged)
       status = AuthStatus.loggedOut;
     else
       status = AuthStatus.loggedOn;
@@ -51,10 +48,8 @@ abstract class _AuthControllerBase with Store {
   void alertHandled() => status = AuthStatus.loggedOut;
 
   @action
-  Future signInWithIdPassword({
-    @required String id,
-    @required String password,
-  }) async {
+  Future signInWithIdPassword(
+      {required String id, required String password}) async {
     status = AuthStatus.waiting;
 
     try {
@@ -78,7 +73,7 @@ abstract class _AuthControllerBase with Store {
       await _authRepository.signOut();
       status = AuthStatus.loggedOut;
 
-      Modular.get<IEventLogger>().logEvent('logSignOut');
+
     } on PlatformException {
       status = AuthStatus.loggedOut;
       rethrow;
