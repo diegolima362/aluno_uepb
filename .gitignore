@@ -1,5 +1,7 @@
 # Slidy History Files
 .slidy/
+debug.keystore
+local.properties
 
 *.g.dart
 
