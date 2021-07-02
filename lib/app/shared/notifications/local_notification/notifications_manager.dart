@@ -15,7 +15,14 @@ class NotificationsManager implements INotificationsManager {
 
   late final InitializationSettings _initializationSettings;
 
-  NotificationsManager() {
+  static final NotificationsManager _singleton =
+      NotificationsManager._internal();
+
+  factory NotificationsManager() {
+    return _singleton;
+  }
+
+  NotificationsManager._internal() {
     _init();
   }
 
@@ -153,21 +160,51 @@ class NotificationsManager implements INotificationsManager {
 
   Future<void> showDailyAtTime(NotificationModel notification) async {}
 
-  Future<void> showNotification(NotificationModel notification) async {}
+  Future<void> showNotification(NotificationModel notification) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      '003',
+      'Alert Notifications Channel',
+      'Alert Notifications Channel',
+      icon: 'app_icon',
+      importance: Importance.max,
+      priority: Priority.max,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _pluginManager.show(
+      notification.id,
+      notification.title,
+      notification.body,
+      platformChannelSpecifics,
+      payload: notification.payload,
+    );
+  }
 
   @override
   Future<void> showSample() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-            'your channel id', 'your channel name', 'your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
+      'your channel id',
+      'your channel name',
+      'your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      icon: 'app_icon',
+    );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await _pluginManager.show(
-        0, 'plain title', 'plain body', platformChannelSpecifics,
-        payload: 'item x');
+      0,
+      'plain title',
+      'plain body',
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
   }
 
   Future<void> showWeeklyAtDayTime(NotificationModel notification) async {}
@@ -184,7 +221,6 @@ class NotificationsManager implements INotificationsManager {
       _initializationSettings,
       onSelectNotification: (String? payload) async {
         if (payload != null) {
-          print('> NotificationManager: notification payload = $payload');
           _selectNotificationSubject.add(payload);
         }
       },

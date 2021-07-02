@@ -94,7 +94,7 @@ class DataParser {
       'cumulativeCH': homeInfo['cumulativeCH'],
       'building': homeInfo['building'],
       'viewName': personalData['viewName'],
-      'birthDate': personalData['birthDate'],
+      'birthDateEpoch': personalData['birthDateEpoch'],
       'campus': personalData['campus'],
       'gender': personalData['gender'],
       'program': personalData['program'],
@@ -168,7 +168,7 @@ class DataParser {
       int.tryParse(date[1])!,
       int.tryParse(date[0])!,
     );
-    personalData['birthDate'] = birthDate.microsecondsSinceEpoch.toString();
+    personalData['birthDateEpoch'] = birthDate.microsecondsSinceEpoch.toString();
 
     personalData['gender'] = data[13].text[0];
 

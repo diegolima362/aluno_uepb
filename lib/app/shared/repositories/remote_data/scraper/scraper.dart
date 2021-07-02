@@ -1,18 +1,13 @@
-import 'package:aluno_uepb/app/shared/auth/auth_controller.dart';
 import 'package:aluno_uepb/app/shared/models/course_model.dart';
 import 'package:aluno_uepb/app/shared/models/history_entry_model.dart';
 import 'package:aluno_uepb/app/shared/models/profile_model.dart';
-import 'package:aluno_uepb/app/shared/models/user_model.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:html/dom.dart';
 
 import 'data_parser.dart';
 import 'session.dart';
 
 class Scraper {
-  static const BASE_URL = 'https://academico.uepb.edu.br/ca/index.php/alunos';
-
-  // static const BASE_URL = 'http://localhost:8000';
+  bool debugMode = false;
 
   bool updatingCourses = false;
   bool updatingProfile = false;
@@ -24,20 +19,18 @@ class Scraper {
 
   DataParser _parser = DataParser();
 
-  final String baseURL = "https://academico.uepb.edu.br/ca/index.php/alunos";
+  String baseURL = "";
 
   final String loginURL =
       "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
 
-  Scraper(this.user, this.password);
+  Scraper(this.user, this.password, {this.debugMode: false}) {
+    this.baseURL = debugMode
+        ? 'http://localhost:8000'
+        : 'https://academico.uepb.edu.br/ca/index.php/alunos';
+  }
 
   Map<String, String> get formData {
-    UserModel _user;
-
-    _user = Modular.get<AuthController>().user!;
-    this.user = _user.id;
-    this.password = _user.password;
-
     return {'nome_usuario': user, 'senha_usuario': password};
   }
 
@@ -92,7 +85,6 @@ class Scraper {
       _dom = await _requestDOMCourses();
     } catch (e) {
       updatingCourses = false;
-
       rethrow;
     }
 
@@ -172,7 +164,7 @@ class Scraper {
     home = await client.get(baseURL + '/index');
 
     try {
-      await client.post(loginURL, formData);
+      if (!debugMode) await client.post(loginURL, formData);
       profile = await client.get(baseURL + '/cadastro');
       home = await client.get(baseURL + '/index');
       courses = await client.get(baseURL + '/rdm');
@@ -201,7 +193,7 @@ class Scraper {
     await client.get(baseURL + '/index');
 
     try {
-      await client.post(loginURL, formData);
+      if (!debugMode) await client.post(loginURL, formData);
       rdm = await client.get(baseURL + '/rdm');
       client.clean();
     } catch (e) {
@@ -220,7 +212,7 @@ class Scraper {
     await client.get(baseURL + '/index');
 
     try {
-      await client.post(loginURL, formData);
+      if (!debugMode) await client.post(loginURL, formData);
       history = await client.get(baseURL + '/historico');
       client.clean();
     } catch (e) {
@@ -240,10 +232,10 @@ class Scraper {
     await client.get(baseURL + '/index');
 
     try {
-      await client.post(loginURL, formData);
+      if (!debugMode) await client.post(loginURL, formData);
 
-      home = await client.get(BASE_URL + '/index');
-      profile = await client.get(BASE_URL + '/cadastro');
+      home = await client.get(baseURL + '/index');
+      profile = await client.get(baseURL + '/cadastro');
 
       client.clean();
     } catch (e) {
