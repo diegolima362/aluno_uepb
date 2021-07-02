@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +12,8 @@ class Session {
 
   bool waiting = false;
 
+  bool multipleRequest = false;
+
   factory Session() => _singleton;
 
   Session._internal();
@@ -20,17 +22,29 @@ class Session {
     _headers.clear();
   }
 
-  Future<Document?> get(String url) async {
-    if (waiting) return null;
+  void enableMultipleRequest(bool value) {
+    multipleRequest = value;
+  }
+
+  Future<http.Response?> _get(String url) async {
+    if (waiting && !multipleRequest) return null;
 
     waiting = true;
-    final timer = Timer(Duration(seconds: 20), () {
+    final timer = Timer(Duration(seconds: 45), () {
       print('> Session: timeout');
       waiting = false;
       return null;
     });
 
-    http.Response response = await http.get(Uri.parse(url), headers: _headers);
+    http.Response response =
+        await http.get(Uri.parse(url), headers: _headers).timeout(
+      Duration(seconds: 30),
+      onTimeout: () {
+        waiting = false;
+        throw TimeoutException('Controle Acadêmico indisponivel');
+      },
+    );
+
     if (_headers.isEmpty) {
       updateCookie(response);
     }
@@ -38,7 +52,25 @@ class Session {
     waiting = false;
     timer.cancel();
 
-    return parse(response.body);
+    return response;
+  }
+
+  Future<Document?> get(String url) async {
+    try {
+      final response = await _get(url);
+      return response == null ? null : parse(response.body);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Uint8List?> getBytes(String url) async {
+    try {
+      final response = await _get(url);
+      return response == null ? null : response.bodyBytes;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Document?> post(String url, Map<String, String> data) async {
@@ -60,27 +92,6 @@ class Session {
       body: data,
       headers: _headers,
     );
-
-    final str = response.body.toString();
-
-    final error1 = '<p>Usuário ou senha não conferem.</p>';
-    final error2 = '<p>Matrícula ou senha não conferem.</p>';
-    final error3 = '<p>Erro inesperado na autenticação do aluno.</p>';
-
-    if (str.contains(error3)) {
-      waiting = false;
-      throw PlatformException(
-        message: 'Sistema de Controle Acadêmico está indisponivel',
-        code: 'error_login',
-      );
-    }
-
-    if (str.contains(error1) || str.contains(error2)) {
-      waiting = false;
-
-      throw PlatformException(
-          message: 'Matrícula ou senha não conferem', code: 'error_login');
-    }
 
     waiting = false;
     timer.cancel();

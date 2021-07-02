@@ -19,9 +19,7 @@ abstract class _AppControllerBase with Store {
   @observable
   int lightAccent = 0xff1c1c1e;
 
-  _AppControllerBase() {
-    storage = Modular.get();
-
+  _AppControllerBase(this.storage) {
     storage.onThemeChanged.listen((e) => loadTheme());
 
     storage.onDarkAccentChanged.listen((e) {

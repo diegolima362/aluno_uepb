@@ -1,9 +1,6 @@
-import 'dart:convert';
-
-import 'package:aluno_uepb/app/shared/models/notification_model.dart';
-import 'package:aluno_uepb/app/shared/notifications/interfaces/notifications_manager_interface.dart';
+import 'package:aluno_uepb/app/modules/routes.dart';
+import 'package:aluno_uepb/app/shared/notifications/local_notification/notifications_manager.dart';
 import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
-import 'package:asuka/asuka.dart' as asuka;
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,9 +18,20 @@ class AppWidget extends StatefulWidget {
 }
 
 class _AppWidgetState extends ModularState<AppWidget, AppController> {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
+  @override
+  void initState() {
+    super.initState();
+    _configureSelectNotificationSubject();
+  }
+
+  @override
+  void dispose() {
+    NotificationsManager().selectNotificationSubject.close();
+    super.dispose();
+  }
+
+  static final analytics = FirebaseAnalytics();
+  static final observer = FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +55,6 @@ class _AppWidgetState extends ModularState<AppWidget, AppController> {
             debugShowCheckedModeBanner: false,
             title: 'Aluno UEPB',
             navigatorObservers: <NavigatorObserver>[observer],
-            builder: asuka.builder,
             themeMode: themeMode,
             theme: themes.getLight(colorValue: controller.lightAccent),
             darkTheme: themes.getDark(colorValue: controller.darkAccent),
@@ -61,63 +68,12 @@ class _AppWidgetState extends ModularState<AppWidget, AppController> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _config();
-    _configureSelectNotificationSubject();
-  }
-
-  Future<void> _config() async {
-    Modular.get<INotificationsManager>()
-        .notificationSubject
-        .stream
-        .listen((receivedNotification) async {
-      await showDialog(
-        context: context,
-        builder: (context) => CupertinoAlertDialog(
-          title: Text(receivedNotification.title),
-          content: Text(receivedNotification.body),
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop();
-                Modular.to.pushNamed(
-                  'reminders/notifications/details',
-                  arguments: receivedNotification,
-                );
-              },
-              child: const Text('Ok'),
-            )
-          ],
-        ),
-      );
-    });
-  }
-
   void _configureSelectNotificationSubject() {
-    Modular.get<INotificationsManager>()
+    NotificationsManager()
         .selectNotificationSubject
         .stream
         .listen((payload) async {
-      final notification = NotificationModel(
-        id: 1,
-        title: '',
-        body: '',
-        payload: payload,
-      );
-
-      await asuka.showDialog(
-        builder: (context) {
-          final map = json.decode(notification.payload);
-
-          return AlertDialog(
-            title: Text(map['title']),
-            content: Text(map['courseName']),
-          );
-        },
-      );
+      await Modular.to.pushNamed(NOTIFICATION, arguments: payload);
     });
   }
 }
