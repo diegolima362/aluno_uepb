@@ -104,8 +104,8 @@ class DataParser {
   List<int> _sanitizeAbsences(Document dom) {
     List<int> absences = <int>[];
 
-    RegExp regExp = new RegExp(r"\(\d\.\d\)");
-    RegExp regExp2 = new RegExp(r".\.");
+    RegExp regExp = new RegExp(r"\(\d+\.\d+\)");
+    RegExp regExp2 = new RegExp(r"\d+\.");
 
     String? scriptTag =
         dom.querySelector('#main-content > section > script')?.text;
@@ -113,8 +113,12 @@ class DataParser {
     if (scriptTag != null) {
       Iterable<RegExpMatch> values = regExp.allMatches(scriptTag);
       values.forEach((element) {
-        absences.add(
-            int.tryParse(regExp2.firstMatch(element.group(0)!)!.group(0)![0])!);
+        final str = regExp2
+            .firstMatch(element.group(0)!)!
+            .group(0)!
+            .replaceFirst('.', '');
+
+        absences.add(int.tryParse(str) ?? 0);
       });
     }
 
@@ -168,7 +172,8 @@ class DataParser {
       int.tryParse(date[1])!,
       int.tryParse(date[0])!,
     );
-    personalData['birthDateEpoch'] = birthDate.microsecondsSinceEpoch.toString();
+    personalData['birthDateEpoch'] =
+        birthDate.microsecondsSinceEpoch.toString();
 
     personalData['gender'] = data[13].text[0];
 

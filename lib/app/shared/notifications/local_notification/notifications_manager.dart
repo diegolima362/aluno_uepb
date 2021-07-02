@@ -4,7 +4,7 @@ import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-import 'interfaces/notifications_manager_interface.dart';
+import '../interfaces/notifications_manager_interface.dart';
 
 class NotificationsManager implements INotificationsManager {
   final _selectNotificationSubject = BehaviorSubject<String>();
@@ -50,7 +50,7 @@ class NotificationsManager implements INotificationsManager {
     _notificationSubject.close();
     _selectNotificationSubject.close();
   }
-
+ 
   Future<List<NotificationModel>> getAllNotifications() async {
     return (await _pluginManager.pendingNotificationRequests())
         .map((e) => NotificationModel.fromPendingNotification({

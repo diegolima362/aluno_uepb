@@ -7,7 +7,7 @@ import 'platform_widget.dart';
 
 class PlatformAlertDialog extends PlatformWidget {
   final String title;
-  final String content;
+  final Widget content;
   final String? cancelActionText;
   final String defaultActionText;
 
@@ -35,7 +35,7 @@ class PlatformAlertDialog extends PlatformWidget {
   Widget buildCupertinoWidget(BuildContext context) {
     return CupertinoAlertDialog(
       title: Text(title),
-      content: Text(content),
+      content: content,
       actions: _buildActions(context),
     );
   }
@@ -47,7 +47,7 @@ class PlatformAlertDialog extends PlatformWidget {
         title,
         style: TextStyle(color: Theme.of(context).accentColor),
       ),
-      content: Text(content),
+      content: content,
       actions: _buildActions(context),
     );
   }

@@ -1,7 +1,5 @@
-import 'package:flutter_modular/flutter_modular.dart';
-
-abstract class IAuthRepository implements Disposable {
-  Map<String, dynamic>? get currentUser;
+abstract class IAuthRepository {
+  Future<Map<String, dynamic>?> getCurrentUser();
 
   Future<void> clearAuthData();
 

@@ -6,7 +6,9 @@ class CustomRaisedButton extends StatelessWidget {
   final double borderRadius;
   final ShapeBorder? shape;
   final double height;
+  final double width;
   final VoidCallback? onPressed;
+  final ButtonStyle? style;
 
   const CustomRaisedButton({
     Key? key,
@@ -14,8 +16,10 @@ class CustomRaisedButton extends StatelessWidget {
     this.color,
     this.borderRadius: 2.0,
     this.height: 50.0,
+    this.width: 100,
     this.onPressed,
     this.shape,
+    this.style,
   }) : super(key: key);
 
   @override
@@ -27,11 +31,13 @@ class CustomRaisedButton extends StatelessWidget {
       child: ElevatedButton(
         child: child,
         onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(color ?? Colors.blue),
-        ),
+        style: style ??
+            ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(color ?? Colors.blue),
+            ),
       ),
       height: height,
+      width: width,
     );
   }
 }

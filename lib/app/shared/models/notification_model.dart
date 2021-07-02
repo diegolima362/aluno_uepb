@@ -50,11 +50,11 @@ class NotificationModel {
   factory NotificationModel.fromPendingNotification(
       Map<dynamic, dynamic> value) {
     Map map = json.decode(value['payload']);
-    int dateValue =
-        int.tryParse(map['date']) ?? DateTime.now().millisecondsSinceEpoch;
+    int dateValue = int.tryParse(map['date'] ?? '0') ??
+        DateTime.now().millisecondsSinceEpoch;
     final date = DateTime.fromMillisecondsSinceEpoch(dateValue);
 
-    int _weekDay = value['weekDay'] ?? map['weekDay'];
+    int _weekDay = value['weekDay'] ?? map['weekDay'] ?? 1;
 
     return NotificationModel(
       id: value['id'],

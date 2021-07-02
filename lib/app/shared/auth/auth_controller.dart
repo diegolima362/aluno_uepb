@@ -1,9 +1,9 @@
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
 import 'package:aluno_uepb/app/shared/models/user_model.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
+import 'authenticator/interfaces/authenticator_interface.dart';
 import 'repositories/interfaces/auth_repository_interface.dart';
 
 part 'auth_controller.g.dart';
@@ -14,54 +14,53 @@ enum AuthStatus { waiting, loggedOn, loggedOut }
 class AuthController = _AuthControllerBase with _$AuthController;
 
 abstract class _AuthControllerBase with Store {
-  late final IAuthRepository _authRepository;
+  final IAuthRepository authRepository;
+  final IAuthenticator authenticator;
 
-  @observable
-  AuthStatus status = AuthStatus.waiting;
-
-  @observable
   UserModel? user;
 
-  _AuthControllerBase() {
-    _authRepository = Modular.get();
+  final status = Observable<AuthStatus>(AuthStatus.waiting);
 
-    _authRepository.onAuthStateChanged.listen((u) => setUser(u));
-
-    setUser(_authRepository.currentUser);
+  _AuthControllerBase(this.authRepository, this.authenticator) {
+    authRepository
+        .getCurrentUser()
+        .then((u) => setUser(u != null ? UserModel.fromMap(u) : null));
   }
-
-  Stream<UserModel?> get onAuthStateChanged =>
-      _authRepository.onAuthStateChanged;
 
   @action
   void setUser(UserModel? value) {
-    print('> _AuthControllerBase: set user: $value');
+    status.value = AuthStatus.waiting;
 
-    user = value;
-    if (value == null || !value.logged)
-      status = AuthStatus.loggedOut;
-    else
-      status = AuthStatus.loggedOn;
+    if (value != null) {
+      status.value = AuthStatus.loggedOn;
+      user = value;
+    } else {
+      status.value = AuthStatus.loggedOut;
+    }
   }
 
-  @action
-  void alertHandled() => status = AuthStatus.loggedOut;
+  Future<UserModel?> getUser() async {
+    if (user != null) return user;
+    final result = await authRepository.getCurrentUser();
+    final u = result != null ? UserModel.fromMap(result) : null;
+    setUser(u);
+    return u;
+  }
 
-  @action
-  Future signInWithIdPassword(
-      {required String id, required String password}) async {
-    status = AuthStatus.waiting;
+  Future signInWithIdPassword({
+    required String id,
+    required String password,
+  }) async {
+    status.value = AuthStatus.waiting;
 
     try {
-      user = await _authRepository.signInWithIdPassword(id, password);
-
-      print('> _AuthControllerBase: returned user: $user');
-
-      status = AuthStatus.loggedOn;
-      setUser(user);
-      Modular.get<IEventLogger>().logSignIn();
-    } on PlatformException {
-      status = AuthStatus.loggedOut;
+      final result = await authenticator.signIn(id, password);
+      if (result != null) {
+        await authRepository.storeAuthData(result.toMap());
+      }
+      setUser(result);
+    } catch (e) {
+      status.value = AuthStatus.loggedOut;
       rethrow;
     }
   }
@@ -69,13 +68,12 @@ abstract class _AuthControllerBase with Store {
   @action
   Future<void> signOut() async {
     try {
-      status = AuthStatus.waiting;
-      await _authRepository.signOut();
-      status = AuthStatus.loggedOut;
-
-
+      status.value = AuthStatus.waiting;
+      await authRepository.clearAuthData();
+      setUser(null);
+      status.value = AuthStatus.loggedOut;
     } on PlatformException {
-      status = AuthStatus.loggedOut;
+      status.value = AuthStatus.loggedOut;
       rethrow;
     }
   }

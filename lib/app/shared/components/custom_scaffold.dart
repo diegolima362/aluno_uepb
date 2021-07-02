@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 class CustomScaffold extends StatefulWidget {
   final Widget body;
   final Widget? floatingActionButton;
-  final String? textTitle;
+  final String? titleText;
   final String? subtitleText;
   final ScrollController? scrollController;
   final Widget? title;
@@ -14,12 +14,12 @@ class CustomScaffold extends StatefulWidget {
     Key? key,
     required this.body,
     this.floatingActionButton,
-    this.textTitle,
+    this.titleText,
     this.scrollController,
     this.actions,
     this.title,
     this.subtitleText,
-  })  : assert(title != null || textTitle != null),
+  })  : assert(title != null || titleText != null),
         super(key: key);
 
   @override
@@ -39,7 +39,7 @@ class _CustomScaffoldState extends State<CustomScaffold> {
           controller: _scrollController,
           headerSliverBuilder: _buildHeader,
           body: Padding(
-            padding: const EdgeInsets.only(bottom: 10.0),
+            padding: const EdgeInsets.only(bottom: 1.0),
             child: widget.body,
           ),
         ),
@@ -48,7 +48,7 @@ class _CustomScaffoldState extends State<CustomScaffold> {
   }
 
   List<Widget> _buildHeader(BuildContext context, bool _) {
-    final _title = widget.textTitle ?? 'Page';
+    final _title = widget.titleText ?? 'Page';
     final _subTitle = widget.subtitleText;
 
     return [
@@ -66,7 +66,6 @@ class _CustomScaffoldState extends State<CustomScaffold> {
                     Text(
                       _title,
                       style: TextStyle(
-                        color: Theme.of(context).accentColor,
                         fontSize: 28,
                         fontWeight: FontWeight.w600,
                       ),

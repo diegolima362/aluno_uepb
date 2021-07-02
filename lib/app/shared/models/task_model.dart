@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'notification_model.dart';
 
 class TaskModel {
@@ -73,7 +75,5 @@ class TaskModel {
   }
 
   @override
-  String toString() {
-    return 'id: $id courseId: $courseId dueDate: $dueDate text: $text';
-  }
+  String toString() => json.encode(this.toMap());
 }

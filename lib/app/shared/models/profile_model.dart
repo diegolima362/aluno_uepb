@@ -7,7 +7,7 @@ class ProfileModel {
   String cumulativeCh;
 
   String viewName;
-  final String birthDateString;
+  final String birthDate;
 
   String program;
   String campus;
@@ -21,7 +21,7 @@ class ProfileModel {
     this.cra: '-',
     this.cumulativeCh: '-',
     this.viewName: '',
-    this.birthDateString: '',
+    this.birthDate: '',
     this.campus: '',
     this.gender: '',
     this.program: '',
@@ -35,7 +35,7 @@ class ProfileModel {
       cra: map['cra'] as String,
       cumulativeCh: map['cumulativeCH'] as String,
       viewName: map['viewName'] as String,
-      birthDateString: map['birthDate'],
+      birthDate: map['birthDateEpoch'],
       campus: map['campus'] as String,
       gender: map['gender'] as String,
       program: map['program'] as String,
@@ -45,14 +45,14 @@ class ProfileModel {
 
   int get age {
     DateTime currentDate = DateTime.now();
-    int age = currentDate.year - birthDate.year;
+    int age = currentDate.year - birthDateObj.year;
     int month1 = currentDate.month;
-    int month2 = birthDate.month;
+    int month2 = birthDateObj.month;
     if (month2 > month1) {
       age--;
     } else if (month1 == month2) {
       int day1 = currentDate.day;
-      int day2 = birthDate.day;
+      int day2 = birthDateObj.day;
       if (day2 > day1) {
         age--;
       }
@@ -61,19 +61,19 @@ class ProfileModel {
     return age;
   }
 
-  DateTime get birthDate {
+  DateTime get birthDateObj {
     final now = DateTime.now();
 
-    if (birthDateString.isEmpty) return now;
+    if (birthDate.isEmpty) return now;
 
-    final date = int.tryParse(birthDateString);
+    final date = int.tryParse(birthDate);
 
     if (date != null) return DateTime.fromMicrosecondsSinceEpoch(date);
 
     return now;
   }
 
-  String get fBirthDate => Format.dateFirebase(birthDate).toString();
+  String get fBirthDate => Format.dateFirebase(birthDateObj).toString();
 
   Map<String, dynamic> toMap() {
     return {
@@ -84,6 +84,7 @@ class ProfileModel {
       'cumulativeCH': this.cumulativeCh,
       'viewName': this.viewName,
       'birthDate': this.fBirthDate,
+      'birthDateEpoch': this.birthDateObj.microsecondsSinceEpoch.toString(),
       'campus': this.campus,
       'gender': this.gender,
       'program': this.program,

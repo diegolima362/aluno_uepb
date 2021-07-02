@@ -1,49 +1,53 @@
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/models/history_entry_model.dart';
-import 'package:aluno_uepb/app/shared/models/profile_model.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:hive/hive.dart';
+import 'dart:async';
 
-abstract class ILocalStorage implements Disposable {
-  int get darkAccentColorCode;
-
+abstract class ILocalStorage {
   int get lightAccentColorCode;
 
-  Stream<int> get onDarkAccentChanged;
-
-  Stream<int> get onLightAccentChanged;
-
-  Stream<bool> get onThemeChanged;
+  int get darkAccentColorCode;
 
   bool get themeMode;
 
-  Future<void> clearDatabase();
+  bool get backgroundTaskActivated;
 
-  Future<void> deleteTask(String id);
+  Stream<int> get onLightAccentChanged;
 
-  Future<List<CourseModel>?> getCourses();
+  Stream<int> get onDarkAccentChanged;
 
-  Future<List<HistoryEntryModel>?> getHistory();
+  Stream<bool> get onThemeChanged;
 
-  Future<ProfileModel?> getProfile();
+  FutureOr<Map<String, dynamic>?> getProfile();
 
-  Future<List<TaskModel>?> getTasks();
+  FutureOr<List<Map<String, dynamic>>?> getTasks();
 
-  ValueListenable<Box> onTasksChanged();
+  FutureOr<List<Map<String, dynamic>>?> getHistory();
 
-  Future<void> saveCourses(List<CourseModel> courses);
+  FutureOr<List<Map<String, dynamic>>?> getCourses();
 
-  Future<void> saveHistory(List<HistoryEntryModel> history);
+  FutureOr<String?> getAlerts();
 
-  Future<void> saveProfile(ProfileModel profile);
-
-  Future<void> saveTask(TaskModel task);
-
-  Future<void> setDarkAccentColorCode(int value);
+  Future<void> setThemeMode(bool value);
 
   Future<void> setLightAccentColorCode(int value);
 
-  Future<void> setThemeMode(bool value);
+  Future<void> setDarkAccentColorCode(int value);
+
+  Future<void> setBackgroundTaskActivated(bool value);
+
+  Future<void> saveTask(Map<String, dynamic> task);
+
+  Future<void> saveProfile(Map<String, dynamic> profile);
+
+  Future<void> saveHistory(List<Map<String, dynamic>> history);
+
+  Future<void> saveCourses(List<Map<String, dynamic>> courses);
+
+  Future<void> saveAlerts(String alerts);
+
+  Future<void> dispose();
+
+  Future<void> deleteTask(String id);
+
+  Future<void> deleteAlerts();
+
+  Future<void> clearDatabase();
 }

@@ -3,9 +3,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class INotificationsManager {
-  BehaviorSubject<NotificationModel> get notificationSubject;
+  BehaviorSubject<NotificationModel?> get notificationSubject;
 
-  BehaviorSubject<String> get selectNotificationSubject;
+  BehaviorSubject<String?> get selectNotificationSubject;
 
   Future<NotificationAppLaunchDetails?> get appLaunchDetails;
 

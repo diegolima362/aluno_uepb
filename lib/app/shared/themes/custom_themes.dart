@@ -6,9 +6,9 @@ class CustomThemes {
 
   List<Color> get darkAccentColors => [
         const Color(0xfff2f2f7),
-        const Color(0xff0a84ff),
+        const Color(0xff2196f3),
         const Color(0xff30d158),
-        const Color(0xff5e5ce6),
+        const Color(0xffbf5af2),
         const Color(0xffff9f0a),
         const Color(0xffff375f),
         const Color(0xffff453a),
@@ -35,7 +35,7 @@ class CustomThemes {
       accent = accentColor;
     }
 
-    final bg = Color(0xff141414);
+    final bg = Color(0xff111111);
 
     // final otherWhite = Color(0xFFFEFEFE);
     final textColor = Color(0xffe8e8e8);
@@ -45,7 +45,7 @@ class CustomThemes {
     final primary = accent;
     // final disableIcon = primary.withOpacity(0.5);
     final selectedColor = accent;
-    final cardColor = Color(0xff1c1c1e);
+    final cardColor = black;
     // final barColor = Color(0xff212121);
     // final bottomBar = Color(0xff1f1f1f);
     final buttonColor = accent;
@@ -56,6 +56,7 @@ class CustomThemes {
     final swash = MaterialColor(accent.value, _getSwash(accent));
 
     return ThemeData(
+
       primarySwatch: swash,
       brightness: Brightness.dark,
       accentColorBrightness: Brightness.dark,
@@ -135,7 +136,7 @@ class CustomThemes {
       accent = accentColor;
     }
 
-    final bg = Color(0xfffafafa);
+    final bg = Color(0xfffbfbfb);
 
     // final otherWhite = Color(0xFFFEFEFE);
     final textColor = Color(0xff141414);

@@ -1,14 +1,13 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:aluno_uepb/app/shared/auth/auth_controller.dart';
-import 'package:aluno_uepb/app/shared/event_logger/event_logger.dart';
-import 'package:aluno_uepb/app/shared/event_logger/interfaces/event_logger_interface.dart';
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/models/history_entry_model.dart';
-import 'package:aluno_uepb/app/shared/models/profile_model.dart';
-import 'package:aluno_uepb/app/shared/models/task_model.dart';
-import 'package:aluno_uepb/app/shared/repositories/local_storage/interfaces/local_storage_interface.dart';
-import 'package:aluno_uepb/app/shared/repositories/scraper/scraper.dart';
+import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
+
+import 'local_storage/interfaces/local_storage_interface.dart';
+import 'remote_data/interfaces/remote_data_interface.dart';
 
 part 'data_controller.g.dart';
 
@@ -16,41 +15,44 @@ part 'data_controller.g.dart';
 class DataController = _DataControllerBase with _$DataController;
 
 abstract class _DataControllerBase with Store {
-  late final Scraper _scraper;
-  late final ILocalStorage _storage;
+  final IRemoteData remoteData;
+  final ILocalStorage storage;
+  final AuthController auth;
 
   ProfileModel? _profile;
   List<CourseModel>? _courses;
   List<HistoryEntryModel>? _history;
   bool loadingData = false;
+  String? alerts;
 
   final List<TaskModel> _tasks = <TaskModel>[];
 
-  _DataControllerBase() {
-    final user = Modular.get<AuthController>().user;
+  _DataControllerBase({
+    required this.auth,
+    required this.storage,
+    required this.remoteData,
+  });
 
-    _scraper = Scraper(user?.id ?? '', user?.password ?? '');
-    _storage = Modular.get();
-  }
+  bool get backgroundTaskActivated => storage.backgroundTaskActivated;
 
-  int get darkAccentColorCode => _storage.darkAccentColorCode;
+  Future<void> setBackgroundTaskActivated(bool value) async =>
+      await storage.setBackgroundTaskActivated(value);
 
-  int get lightAccentColorCode => _storage.lightAccentColorCode;
+  int get darkAccentColorCode => storage.darkAccentColorCode;
 
-  Stream<int> get onDarkAccentChanged => _storage.onDarkAccentChanged;
+  int get lightAccentColorCode => storage.lightAccentColorCode;
 
-  Stream<int> get onLightAccentChanger => _storage.onLightAccentChanged;
+  Stream<int> get onDarkAccentChanged => storage.onDarkAccentChanged;
 
-  Stream<bool> get onThemeChanged => _storage.onThemeChanged;
+  Stream<int> get onLightAccentChanger => storage.onLightAccentChanged;
 
-  bool get themeMode => _storage.themeMode;
+  Stream<bool> get onThemeChanged => storage.onThemeChanged;
+
+  bool get themeMode => storage.themeMode;
 
   Future<void> addTask(TaskModel task) async {
-    await _storage.saveTask(task);
-    print('> DataController : save task');
-    _tasks.clear();
-    final result = await _storage.getTasks();
-    if (result != null) _tasks.addAll(result);
+    await storage.saveTask(task.toMap());
+    await _updateTasks();
   }
 
   Future<void> clearDatabase() async {
@@ -58,14 +60,23 @@ abstract class _DataControllerBase with Store {
     _tasks.clear();
     _history = null;
     _profile = null;
-    await _storage.clearDatabase();
+    await storage.clearDatabase();
   }
 
   Future<void> deleteTask(String id) async {
-    await _storage.deleteTask(id);
+    await storage.deleteTask(id);
+    await _updateTasks();
+  }
+
+  Future<void> deleteAlerts() async {
+    alerts = '';
+    await storage.deleteAlerts();
+  }
+
+  Future<void> _updateTasks() async {
     _tasks.clear();
-    final result = await _storage.getTasks();
-    if (result != null) _tasks.addAll(result);
+    final result = await storage.getTasks();
+    if (result != null) _tasks.addAll(_tasksFromMap(result));
   }
 
   Future<bool> getAllData() async {
@@ -77,65 +88,82 @@ abstract class _DataControllerBase with Store {
       return false;
     }
 
-    _profile = await _storage.getProfile();
-    _courses = await _storage.getCourses();
+    final profile = await storage.getProfile();
+    final courses = await storage.getCourses();
 
-    if (_profile != null && _courses != null) {
+    if (profile != null && courses != null) {
       print('> DataController : return local data');
+      _profile = ProfileModel.fromMap(profile);
+      _courses = _coursesFromMap(courses);
       loadingData = false;
       return false;
     }
 
-    Map<String, dynamic> data;
+    Map<String, dynamic>? data;
+
+    final user = await auth.getUser();
+    if (user == null) return false;
 
     try {
-      data = await _scraper.getAllData();
+      remoteData.setAuth(user.id, user.password);
+      data = await remoteData.getAllData();
     } catch (e) {
-      print('> DataController : error');
-      print(e);
       loadingData = false;
-      return false;
+      rethrow;
     }
 
+    if (data == null) return false;
+
     if (data.isNotEmpty) {
-      _profile = data['profile'];
-      _courses = data['courses'];
+      _profile = ProfileModel.fromMap(data['profile']);
+      _courses = _coursesFromMap(data['courses']);
     }
 
     if (_profile != null && _courses != null) {
       print('> DataController : return remote data');
-      await _storage.saveProfile(_profile!);
-      await _storage.saveCourses(_courses!);
-      Modular.get<EventLogger>().setData(_profile!);
+      await storage.saveProfile(_profile!.toMap());
+      await storage.saveCourses(_courses!.map((c) => c.toMap()).toList());
     }
 
     loadingData = false;
+
     return false;
+  }
+
+  Future<String?> getAlerts() async {
+    if (alerts != null) return alerts;
+    alerts = await storage.getAlerts();
+    return alerts;
   }
 
   Future<List<CourseModel>?> getCourses({bool ignoreLocalData: false}) async {
     loadingData = true;
 
-    if (!ignoreLocalData && !_scraper.updatingCourses) {
+    if (!ignoreLocalData && !remoteData.updatingCourses) {
       if (_courses != null) {
         print('> _DataControllerBase: returning cached data');
         loadingData = false;
         return _courses;
       }
-      _courses = await _storage.getCourses();
 
-      if (_courses != null) {
+      final result = await storage.getCourses();
+      if (result != null) {
         print('> _DataControllerBase: returning local data');
+        _courses = result.map((c) => CourseModel.fromMap(c)).toList();
         loadingData = false;
         return _courses;
       }
     }
 
+    final user = await auth.getUser();
+    if (user == null) return null;
+
     try {
-      final result = await _scraper.getCourses();
+      remoteData.setAuth(user.id, user.password);
+      final result = await remoteData.getCourses();
       if (result == null) return null;
-      _courses = result;
-      await _storage.saveCourses(result);
+      _courses = result.map((c) => CourseModel.fromMap(c)).toList();
+      await storage.saveCourses(result);
     } catch (e) {
       loadingData = false;
       rethrow;
@@ -148,25 +176,27 @@ abstract class _DataControllerBase with Store {
   }
 
   Future<List<HistoryEntryModel>?> getHistory({bool remote: false}) async {
-    if (!remote && !_scraper.updatingHistory) {
+    if (!remote && !remoteData.updatingHistory) {
       if (_history != null) {
         print('> _DataControllerBase: returning cached data');
         return _history;
       }
-      final result = await _storage.getHistory();
+
+      final result = await storage.getHistory();
+
       if (result != null) {
         print('> _DataControllerBase: returning local data');
-
-        _history = result;
-        return result;
+        _history = result.map((h) => HistoryEntryModel.fromMap(h)).toList();
+        return _history;
       }
     }
-
+    final user = await auth.getUser();
+    if (user == null) return null;
     try {
-      final result = await _scraper.getHistory();
+      final result = await remoteData.getHistory();
       if (result == null) return <HistoryEntryModel>[];
-      _history = result;
-      await _storage.saveHistory(result);
+      _history = _historyFromMap(result);
+      await storage.saveHistory(result);
       print('> _DataControllerBase: returning remote data');
       return _history;
     } catch (e) {
@@ -176,35 +206,38 @@ abstract class _DataControllerBase with Store {
 
   Future<ProfileModel?> getProfile({bool remote: false}) async {
     loadingData = true;
-    if (!remote && !_scraper.updatingProfile) {
+    if (!remote && !remoteData.updatingProfile) {
       if (_profile != null) {
         print('> _DataControllerBase: returning cached data');
         loadingData = false;
         return _profile;
       }
-      _profile = await _storage.getProfile();
 
-      if (_profile != null) {
+      final result = await storage.getProfile();
+
+      if (result != null) {
         print('> _DataControllerBase: returning local data');
-
+        _profile = ProfileModel.fromMap(result);
         loadingData = false;
         return _profile;
       }
     }
 
+    final user = await auth.getUser();
+    if (user == null) return null;
+
     try {
-      final result = await _scraper.getProfile();
+      final result = await remoteData.getProfile();
 
       if (result == null) return null;
 
-      _profile = result;
-      Modular.get<IEventLogger>().setData(result);
-      _storage.saveProfile(result);
+      _profile = ProfileModel.fromMap(result);
+      storage.saveProfile(result);
 
       loadingData = false;
 
       print('> _DataControllerBase: returning remote data');
-      return result;
+      return _profile;
     } catch (e) {
       loadingData = false;
       rethrow;
@@ -214,20 +247,36 @@ abstract class _DataControllerBase with Store {
   Future<List<TaskModel>> getTasks() async {
     if (_tasks.isEmpty) {
       print('> DataController : get local tasks');
-      final result = await _storage.getTasks();
-      if (result != null) _tasks.addAll(result);
+      final result = await storage.getTasks();
+      if (result != null) _tasks.addAll(_tasksFromMap(result));
     }
     return _tasks;
   }
 
+  Future<Uint8List?> downloadRDM() async {
+    final user = await auth.getUser();
+    if (user == null) return null;
+
+    remoteData.setAuth(user.id, user.password);
+
+    try {
+      print('DataController > download file ...');
+      return await remoteData.downloadRDM();
+    } catch (e) {
+      print('DataController > download file ERROR');
+      print(e);
+      rethrow;
+    }
+  }
+
   Future<void> setDarkAccentColor(int code) async =>
-      await _storage.setDarkAccentColorCode(code);
+      await storage.setDarkAccentColorCode(code);
 
   Future<void> setLightAccentColor(int code) async =>
-      await _storage.setLightAccentColorCode(code);
+      await storage.setLightAccentColorCode(code);
 
   Future<void> setThemeMode(bool value) async {
-    await _storage.setThemeMode(value);
+    await storage.setThemeMode(value);
   }
 
   Future<List<CourseModel>?> updateCourses() async {
@@ -244,4 +293,14 @@ abstract class _DataControllerBase with Store {
     _profile = null;
     return await getProfile(remote: true);
   }
+
+  List<TaskModel> Function(List<Map<String, dynamic>> ts) _tasksFromMap =
+      (ts) => ts.map((t) => TaskModel.fromMap(t)).toList();
+
+  List<CourseModel> Function(List<Map<String, dynamic>> cs) _coursesFromMap =
+      (cs) => cs.map((c) => CourseModel.fromMap(c)).toList();
+
+  List<HistoryEntryModel> Function(List<Map<String, dynamic>> hs)
+      _historyFromMap =
+      (hs) => hs.map((h) => HistoryEntryModel.fromMap(h)).toList();
 }

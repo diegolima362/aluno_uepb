@@ -1,4 +1,3 @@
-import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 
 class CustomFAB extends StatelessWidget {
@@ -22,8 +21,16 @@ class CustomFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).accentColor;
-    final fg = accent == CustomThemes.white ? null : Colors.white;
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+    final fg = const Color(0xfffbfbfb);
+    final cardColor = Theme.of(context).cardTheme.color!;
+    final bg = darkMode ? cardColor : accent;
+
     return FloatingActionButton.extended(
+      shape: darkMode
+          ? StadiumBorder(side: BorderSide(color: const Color(0xff303030), width: 1))
+          : null,
+      backgroundColor: bg,
       onPressed: onPressed,
       tooltip: tooltip,
       label: extended ? Text(label) : icon,

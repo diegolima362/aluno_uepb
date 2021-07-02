@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:intl/intl.dart';
 
 import 'schedule_model.dart';
@@ -101,6 +103,5 @@ class CourseModel {
   }
 
   @override
-  String toString() =>
-      '{ ${this.name}, ${this.professor}, ${this.ch}, ${this.absences}/${this.absencesLimit}, ${this.schedule} }';
+  String toString() => json.encode(this.toMap());
 }

@@ -1,117 +1,114 @@
-import 'package:aluno_uepb/app/shared/models/course_model.dart';
-import 'package:aluno_uepb/app/shared/models/history_entry_model.dart';
-import 'package:aluno_uepb/app/shared/models/profile_model.dart';
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:aluno_uepb/app/utils/session.dart';
 import 'package:html/dom.dart';
 
+import '../interfaces/remote_data_interface.dart';
 import 'data_parser.dart';
-import 'session.dart';
 
-class Scraper {
+class Scraper implements IRemoteData {
   bool debugMode = false;
 
-  bool updatingCourses = false;
-  bool updatingProfile = false;
-  bool updatingHistory = false;
-  bool updatingAllData = false;
+  bool _updatingCourses = false;
+  bool _updatingProfile = false;
+  bool _updatingHistory = false;
+  bool _updatingAllData = false;
 
   String user;
   String password;
 
-  DataParser _parser = DataParser();
+  final DataParser _parser = DataParser();
 
-  String baseURL = "";
+  String _baseURL = '';
 
   final String loginURL =
-      "https://academico.uepb.edu.br/ca/index.php/usuario/autenticar";
+      'https://academico.uepb.edu.br/ca/index.php/usuario/autenticar';
 
-  Scraper(this.user, this.password, {this.debugMode: false}) {
-    this.baseURL = debugMode
-        ? 'http://localhost:8000'
+  Scraper({this.user = '', this.password = '', this.debugMode = false}) {
+    _baseURL = debugMode
+        ? 'http://192.168.0.111:8000'
         : 'https://academico.uepb.edu.br/ca/index.php/alunos';
   }
 
-  Map<String, String> get formData {
+  void setAuth(String id, String password) {
+    this.user = id;
+    this.password = password;
+  }
+
+  Map<String, String> get _formData {
     return {'nome_usuario': user, 'senha_usuario': password};
   }
 
   Future<Map<String, dynamic>> getAllData() async {
     Map<String, Document?> _dom;
-
-    updatingCourses = true;
-    updatingProfile = true;
-    updatingHistory = true;
-    updatingAllData = true;
+    _setAllWaiting(true);
 
     try {
       _dom = await _requestDOM();
     } catch (e) {
-      updatingCourses = false;
-      updatingProfile = false;
-      updatingHistory = false;
-      updatingAllData = false;
+      _setAllWaiting(false);
       rethrow;
     }
 
-    final data = Map<String, dynamic>();
+    final data = <String, dynamic>{};
 
     if (_dom['courses'] != null) {
       final courses = _parser.sanitizeCourses(_dom['courses']!);
-      data['courses'] = courses.map((map) => CourseModel.fromMap(map)).toList();
+      data['courses'] = courses;
     }
 
     if (_dom['profile'] != null && _dom['home'] != null) {
       final profile = _parser.sanitizeProfile(_dom);
-      data['profile'] = ProfileModel.fromMap(profile);
+      data['profile'] = profile;
     }
 
-    updatingCourses = false;
-    updatingProfile = false;
-    updatingHistory = false;
-    updatingAllData = false;
-
+    _setAllWaiting(false);
     return data;
   }
 
-  Future<List<CourseModel>?> getCourses() async {
-    if (updatingCourses) {
+  Future<List<Map<String, dynamic>>?> getCourses() async {
+    if (_updatingCourses) {
       print('> Scraper: already updating');
+      _startTimer();
       return null;
     }
-    updatingCourses = true;
+    _updatingCourses = true;
 
     Document? _dom;
 
     try {
       _dom = await _requestDOMCourses();
     } catch (e) {
-      updatingCourses = false;
+      _setAllWaiting(false);
       rethrow;
     }
 
-    if (_dom == null) return null;
-
-    final data = _parser.sanitizeCourses(_dom);
-
-    final courses = data.map((map) => CourseModel.fromMap(map)).toList();
-
-    updatingCourses = false;
-
-    return courses;
+    try {
+      if (_dom == null) return null;
+      final data = _parser.sanitizeCourses(_dom);
+      _updatingCourses = false;
+      return data;
+    } catch (e) {
+      _setAllWaiting(false);
+      rethrow;
+    }
   }
 
-  Future<List<HistoryEntryModel>?> getHistory() async {
-    if (updatingHistory) {
+  Future<List<Map<String, dynamic>>?> getHistory() async {
+    if (_updatingHistory) {
       print('> Scraper: already updating');
+      _startTimer();
       return null;
     }
-    updatingHistory = true;
+    _updatingHistory = true;
 
     Document? _dom;
 
     try {
       _dom = await _requestDOMHistory();
     } catch (e) {
-      updatingHistory = false;
+      _setAllWaiting(false);
       rethrow;
     }
 
@@ -119,27 +116,26 @@ class Scraper {
 
     final data = _parser.sanitizeHistory(_dom);
 
-    final history = data.map((map) => HistoryEntryModel.fromMap(map)).toList();
+    _updatingHistory = false;
 
-    updatingHistory = false;
-
-    return history;
+    return data;
   }
 
-  Future<ProfileModel?> getProfile() async {
-    if (updatingProfile) {
+  Future<Map<String, dynamic>?> getProfile() async {
+    if (_updatingProfile) {
       print('> Scraper: already updating');
+      _startTimer();
       return null;
     }
 
-    updatingProfile = true;
+    _updatingProfile = true;
 
     Map<String, Document?>? _dom;
 
     try {
       _dom = await _requestDOMProfile();
     } catch (e) {
-      updatingProfile = false;
+      _setAllWaiting(false);
       rethrow;
     }
 
@@ -147,33 +143,43 @@ class Scraper {
 
     final data = _parser.sanitizeProfile(_dom);
 
-    final profile = ProfileModel.fromMap(data);
+    _updatingProfile = false;
 
-    updatingProfile = false;
-
-    return profile;
+    return data;
   }
 
   Future<Map<String, Document?>> _requestDOM() async {
-    Session client = Session();
+    final client = Session();
 
     Document? home;
     Document? profile;
     Document? courses;
 
-    home = await client.get(baseURL + '/index');
-
     try {
-      if (!debugMode) await client.post(loginURL, formData);
-      profile = await client.get(baseURL + '/cadastro');
-      home = await client.get(baseURL + '/index');
-      courses = await client.get(baseURL + '/rdm');
+      home = await client.get(_baseURL + '/index');
+
+      if (!debugMode) await client.post(loginURL, _formData);
+
+      client.enableMultipleRequest(true);
+      final data = await Future.wait([
+        client.get(_baseURL + '/cadastro'),
+        client.get(_baseURL + '/index'),
+        client.get(_baseURL + '/rdm'),
+      ]);
+      client.enableMultipleRequest(true);
+
+      profile = data[0];
+      home = data[1];
+      courses = data[2];
+
       client.clean();
     } catch (e) {
+      client.clean();
+      _setAllWaiting(false);
       rethrow;
     }
 
-    final Map<String, Document?> data = {
+    final data = <String, Document?>{
       if (home != null) 'home': home,
       if (profile != null) 'profile': profile,
       if (courses != null) 'courses': courses,
@@ -182,21 +188,48 @@ class Scraper {
     return data;
   }
 
-  Future<Document?> _requestDOMCourses() async {
-    print('> _requestDOMCourses');
+  Future<Uint8List?> downloadRDM() async {
+    final url = 'https://academico.uepb.edu.br/ca/index.php/alunos/imprimirRDM';
 
-    Session client = Session();
+    // final url = _baseURL + '/print/rdm.pdf';
 
-    Document? rdm;
-
-    // Start cookies
-    await client.get(baseURL + '/index');
+    print('> _requestFile');
+    final client = Session();
+    Uint8List? data;
 
     try {
-      if (!debugMode) await client.post(loginURL, formData);
-      rdm = await client.get(baseURL + '/rdm');
+      // Start cookies
+      await client.get(loginURL);
+
+      await client.post(loginURL, _formData);
+
+      data = await client.getBytes(url);
+
       client.clean();
     } catch (e) {
+      client.clean();
+      _setAllWaiting(false);
+      rethrow;
+    }
+
+    return data;
+  }
+
+  Future<Document?> _requestDOMCourses() async {
+    print('> _requestDOMCourses');
+    final client = Session();
+    Document? rdm;
+
+    try {
+      // Start cookies
+      await client.get(_baseURL + '/index');
+
+      if (!debugMode) await client.post(loginURL, _formData);
+      rdm = await client.get(_baseURL + '/rdm');
+      client.clean();
+    } catch (e) {
+      client.clean();
+      _setAllWaiting(false);
       rethrow;
     }
 
@@ -204,18 +237,20 @@ class Scraper {
   }
 
   Future<Document?> _requestDOMHistory() async {
-    Session client = Session();
+    final client = Session();
 
     Document? history;
 
-    // Start cookies
-    await client.get(baseURL + '/index');
-
     try {
-      if (!debugMode) await client.post(loginURL, formData);
-      history = await client.get(baseURL + '/historico');
+      // Start cookies
+      await client.get(_baseURL + '/index');
+
+      if (!debugMode) await client.post(loginURL, _formData);
+      history = await client.get(_baseURL + '/historico');
       client.clean();
     } catch (e) {
+      client.clean();
+      _setAllWaiting(false);
       rethrow;
     }
 
@@ -223,22 +258,24 @@ class Scraper {
   }
 
   Future<Map<String, Document?>> _requestDOMProfile() async {
-    Session client = Session();
+    final client = Session();
 
     Document? profile;
     Document? home;
 
-    // Start cookies
-    await client.get(baseURL + '/index');
-
     try {
-      if (!debugMode) await client.post(loginURL, formData);
+      // Start cookies
+      await client.get(_baseURL + '/index');
 
-      home = await client.get(baseURL + '/index');
-      profile = await client.get(baseURL + '/cadastro');
+      if (!debugMode) await client.post(loginURL, _formData);
+
+      home = await client.get(_baseURL + '/index');
+      profile = await client.get(_baseURL + '/cadastro');
 
       client.clean();
     } catch (e) {
+      client.clean();
+      _setAllWaiting(false);
       rethrow;
     }
 
@@ -248,5 +285,29 @@ class Scraper {
     };
 
     return data;
+  }
+
+  void _setAllWaiting(bool val) {
+    _updatingCourses = val;
+    _updatingProfile = val;
+    _updatingHistory = val;
+    _updatingAllData = val;
+  }
+
+  bool get updatingAllData => _updatingAllData;
+
+  bool get updatingCourses => _updatingCourses;
+
+  bool get updatingHistory => _updatingHistory;
+
+  bool get updatingProfile => _updatingProfile;
+
+  void _startTimer() {
+    print('Scraper > starting timer to avoid lock scraper');
+    Timer(Duration(seconds: 20), () {
+      print('> Session: timeout');
+      _setAllWaiting(false);
+      return null;
+    });
   }
 }
