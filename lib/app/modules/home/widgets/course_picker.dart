@@ -1,5 +1,4 @@
 import 'package:aluno_uepb/app/shared/models/models.dart';
-import 'package:aluno_uepb/app/utils/format.dart';
 import 'package:flutter/material.dart';
 
 class CoursePicker extends StatefulWidget {
@@ -47,7 +46,7 @@ class _CoursePickerState extends State<CoursePicker> {
             Text('Curso: ', style: TextStyle(fontSize: 20)),
             Expanded(
               child: Text(
-                Format.capitalString(_courses[_selectedIndex].name),
+                _courses[_selectedIndex].name.toUpperCase(),
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 20.0),
               ),
@@ -120,7 +119,7 @@ class _CoursePickerState extends State<CoursePicker> {
                         return ListTile(
                           onTap: () => innerSetState(() => _tempIndex = index),
                           title: Text(
-                            Format.capitalString(c.name),
+                            c.name.toUpperCase(),
                             maxLines: 2,
                             textAlign: TextAlign.center,
                             style: TextStyle(

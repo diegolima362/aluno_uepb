@@ -1,4 +1,3 @@
-export 'course_full_info_card.dart';
 export 'course_info_card.dart';
 export 'course_picker.dart';
 export 'history_entry_card.dart';

@@ -1,6 +1,5 @@
+import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:flutter/material.dart';
-
-import '../../../shared/components/loading_indicator.dart';
 
 class LoadingPage extends StatelessWidget {
   @override

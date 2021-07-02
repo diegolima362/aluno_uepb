@@ -34,8 +34,6 @@ class WeekDayScheduleCard extends StatelessWidget {
     final _portrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
 
-    final accent = Theme.of(context).accentColor;
-
     final _courses = courses
         .map((c) => CourseInfoCard(
               course: c,
@@ -46,21 +44,19 @@ class WeekDayScheduleCard extends StatelessWidget {
 
     return Container(
       width: _width * (_portrait ? 1 : .5),
-      height: _height * .8,
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Center(
-            child: Text(
-              weekDaysMap[weekDay]!,
-              style: TextStyle(fontSize: 20, color: accent),
-            ),
+          SizedBox(height: 5),
+          Text(
+            weekDaysMap[weekDay]!,
+            style: TextStyle(fontSize: 24),
           ),
-          SizedBox(height: _height * .01),
+          SizedBox(height: 5),
           Container(
-            height: _height * (_portrait ? .75 : .65),
+            height: _height * (_portrait ? .70 : .50),
             child: SingleChildScrollView(
               child: courses.isEmpty
                   ? Card(
@@ -75,10 +71,7 @@ class WeekDayScheduleCard extends StatelessWidget {
                         child: Center(
                           child: Text(
                             'Sem aulas nesse dia',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: accent,
-                            ),
+                            style: TextStyle(fontSize: 24),
                           ),
                         ),
                       ),
@@ -86,7 +79,7 @@ class WeekDayScheduleCard extends StatelessWidget {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: [..._courses],
+                      children: _courses,
                     ),
             ),
           ),

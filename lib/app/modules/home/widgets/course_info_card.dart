@@ -39,13 +39,7 @@ class CourseInfoCard extends StatelessWidget {
                 title: Text(
                   course.name,
                   maxLines: 2,
-                  style: TextStyle(
-                    fontWeight: isCurrentClass && showCurrentClass
-                        ? FontWeight.bold
-                        : null,
-                    color: isCurrentClass ? accent : textColor,
-                    fontSize: 16.0,
-                  ),
+                  style: TextStyle(fontSize: 16.0, color: textColor),
                 ),
                 subtitle: Text(
                   course.professor,
