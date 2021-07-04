@@ -96,9 +96,7 @@ class ProfileModel {
     return {
       'name': this.name,
       'register': this.register,
-      'cra': this.cra,
       'age': this.age,
-      'cumulativeCH': this.cumulativeCh,
       'campus': this.campus,
       'gender': this.gender,
       'program': this.program,

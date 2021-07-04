@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:aluno_uepb/app/shared/auth/repositories/interfaces/auth_repository_interface.dart';
@@ -86,7 +87,7 @@ void showNotification(
     'Atualização de RDM',
     'Seu RDM foi atualizado!',
     platform,
-    payload: message,
+    payload: json.encode({'title': message}),
   );
 }
 
@@ -137,10 +138,10 @@ Future<void> _compareData(
         }
       }
 
-      final text = message.fold<String>('', (a, b) => a + b + '\n');
+      var text = message.fold<String>('', (a, b) => a + b + '\n');
 
       await Hive.openBox(HiveStorage.ALERTS_BOX);
-      await storage.saveAlerts(text);
+      await storage.saveAlerts(message);
       Hive.box(HiveStorage.ALERTS_BOX).close();
       showNotification(flp, text);
     }

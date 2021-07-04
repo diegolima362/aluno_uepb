@@ -23,7 +23,7 @@ abstract class ILocalStorage {
 
   FutureOr<List<Map<String, dynamic>>?> getCourses();
 
-  FutureOr<String?> getAlerts();
+  FutureOr<List<String>?> getAlerts();
 
   Future<void> setThemeMode(bool value);
 
@@ -41,7 +41,7 @@ abstract class ILocalStorage {
 
   Future<void> saveCourses(List<Map<String, dynamic>> courses);
 
-  Future<void> saveAlerts(String alerts);
+  Future<void> saveAlerts(List<String> alerts);
 
   Future<void> dispose();
 

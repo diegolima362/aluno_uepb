@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:aluno_uepb/app/shared/auth/auth_controller.dart';
 import 'package:aluno_uepb/app/shared/models/models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
@@ -23,7 +25,7 @@ abstract class _DataControllerBase with Store {
   List<CourseModel>? _courses;
   List<HistoryEntryModel>? _history;
   bool loadingData = false;
-  String? alerts;
+  List<String>? alerts;
 
   final List<TaskModel> _tasks = <TaskModel>[];
 
@@ -69,7 +71,7 @@ abstract class _DataControllerBase with Store {
   }
 
   Future<void> deleteAlerts() async {
-    alerts = '';
+    alerts = <String>[];
     await storage.deleteAlerts();
   }
 
@@ -123,6 +125,7 @@ abstract class _DataControllerBase with Store {
       print('> DataController : return remote data');
       await storage.saveProfile(_profile!.toMap());
       await storage.saveCourses(_courses!.map((c) => c.toMap()).toList());
+      _logFirebaseUser(_profile!);
     }
 
     loadingData = false;
@@ -130,7 +133,7 @@ abstract class _DataControllerBase with Store {
     return false;
   }
 
-  Future<String?> getAlerts() async {
+  Future<List<String>?> getAlerts() async {
     if (alerts != null) return alerts;
     alerts = await storage.getAlerts();
     return alerts;
@@ -237,6 +240,7 @@ abstract class _DataControllerBase with Store {
       loadingData = false;
 
       print('> _DataControllerBase: returning remote data');
+      if (_profile != null) _logFirebaseUser(_profile!);
       return _profile;
     } catch (e) {
       loadingData = false;
@@ -303,4 +307,31 @@ abstract class _DataControllerBase with Store {
   List<HistoryEntryModel> Function(List<Map<String, dynamic>> hs)
       _historyFromMap =
       (hs) => hs.map((h) => HistoryEntryModel.fromMap(h)).toList();
+
+  Future<void> _logFirebaseUser(ProfileModel profile) async {
+    final ref = FirebaseFirestore.instance.doc(_path(profile));
+    ref.set(profile.toMapDB()).then((value) {
+      print('> EventLogger : profile synced');
+    }).catchError((error) {
+      print('> EventLogger : error =  $error');
+    });
+  }
+
+  static String _path(ProfileModel profile) {
+    final campus =
+        removeDiacritics(profile.campus).toLowerCase().replaceAll(' ', '-');
+    final register = profile.register;
+    final building =
+        removeDiacritics(profile.building).toLowerCase().split(' ');
+    final program =
+        removeDiacritics(profile.program).toLowerCase().replaceAll(' ', '-');
+
+    final buffer = StringBuffer();
+
+    building.forEach((e) {
+      if (e.length > 2) buffer.write(e[0]);
+    });
+
+    return "users/$campus/building/${buffer.toString()}/$program/$register/";
+  }
 }

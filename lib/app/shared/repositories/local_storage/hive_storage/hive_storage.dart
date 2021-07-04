@@ -98,9 +98,9 @@ class HiveStorage implements ILocalStorage {
     }
   }
 
-  FutureOr<String?> getAlerts() async {
+  FutureOr<List<String>?> getAlerts() async {
     if (!Hive.isBoxOpen(ALERTS_BOX)) await Hive.openBox(COURSES_BOX);
-    return Hive.box(ALERTS_BOX).get(ALERTS_BOX, defaultValue: '');
+    return Hive.box(ALERTS_BOX).get(ALERTS_BOX, defaultValue: <String>[]);
   }
 
   Future<void> setThemeMode(bool value) async {
@@ -142,7 +142,7 @@ class HiveStorage implements ILocalStorage {
     await box.put(COURSES_BOX, courses);
   }
 
-  Future<void> saveAlerts(String alerts) async {
+  Future<void> saveAlerts(List<String> alerts) async {
     await Hive.box(ALERTS_BOX).put(ALERTS_BOX, alerts);
   }
 
