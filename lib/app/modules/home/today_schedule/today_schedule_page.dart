@@ -36,7 +36,7 @@ class _TodaySchedulePageState
           tooltip: 'Ver alertas',
           onPressed: () => Modular.to.pushNamed(
             NOTIFICATION,
-            arguments: controller.alerts,
+            arguments: controller.formatedAlerts,
           ),
         )
     ];

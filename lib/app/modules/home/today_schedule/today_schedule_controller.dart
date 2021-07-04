@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -25,7 +27,7 @@ abstract class _TodayScheduleControllerBase with Store {
   var hasAlerts = false;
 
   @observable
-  var alerts = '';
+  var alerts = ObservableList<String>();
 
   _TodayScheduleControllerBase(this.storage) {
     print('TodayScheduleControllerBase > created');
@@ -68,10 +70,14 @@ abstract class _TodayScheduleControllerBase with Store {
 
   Future<void> _loadAlerts() async {
     final _alerts = await storage.getAlerts();
-    if (_alerts != null) alerts = _alerts;
+    if (_alerts != null) alerts.addAll(_alerts);
     hasAlerts = alerts.isNotEmpty;
   }
 
   @action
   void setIsLoading(bool value) => isLoading = value;
+
+  String get formatedAlerts => json.encode({
+        'title': alerts.fold<String>('', (a, b) => a + b + '\n'),
+      });
 }

@@ -47,7 +47,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
         onWillPop: () => Future.sync(onWillPop),
         child: Scaffold(
           bottomNavigationBar: _bottomNavigationBar(),
-          body: _buildBody(),
+          body: SafeArea(child: _buildBody()),
         ),
       );
     });

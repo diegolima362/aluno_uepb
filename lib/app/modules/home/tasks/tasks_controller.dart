@@ -82,7 +82,18 @@ abstract class _TasksControllerBase with Store {
       isLoading = true;
 
       hasCourses = ((await storage.getCourses())?.length ?? 0) > 0;
-      setTasks(await storage.getTasks());
+      final result = await storage.getTasks();
+
+      result.forEach((t) {
+        if (t.reminder != null) {
+          if (t.dueDate.isBefore(DateTime.now())) {
+            manager.cancelNotification(t.reminder!.id);
+            t.reminder = null;
+          }
+        }
+      });
+
+      setTasks(result);
 
       isLoading = false;
     } catch (e) {

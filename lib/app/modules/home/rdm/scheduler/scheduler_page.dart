@@ -1,5 +1,4 @@
 import 'package:aluno_uepb/app/modules/home/rdm/details/rdm_details_controller.dart';
-import 'package:aluno_uepb/app/modules/home/routes.dart';
 import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -57,10 +56,7 @@ class _SchedulerPageState
                 SaveButton(onSave: () async {
                   await controller.scheduleReminder();
                   await Modular.get<RDMDetailsController>().loadData();
-                  Modular.to.popAndPushNamed(
-                    COURSE_DETAILS,
-                    arguments: controller.course,
-                  );
+                  Navigator.of(context).pop();
                 }),
               ],
             ),

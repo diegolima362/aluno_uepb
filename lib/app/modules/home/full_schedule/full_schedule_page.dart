@@ -48,14 +48,17 @@ class _FullSchedulePageState
 
         final height = MediaQuery.of(context).size.height * .85;
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: RepaintBoundary(
-            key: _globalKey,
-            child: Container(
-              color: Theme.of(context).canvasColor,
-              height: height,
-              child: _buildCards(),
+        return Scrollbar(
+          showTrackOnHover: true,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: RepaintBoundary(
+              key: _globalKey,
+              child: Container(
+                color: Theme.of(context).canvasColor,
+                height: height,
+                child: _buildCards(),
+              ),
             ),
           ),
         );

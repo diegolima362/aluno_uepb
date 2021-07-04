@@ -6,7 +6,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../routes.dart';
-import '../components/header.dart';
 
 class AlertsPage extends StatefulWidget {
   @override
