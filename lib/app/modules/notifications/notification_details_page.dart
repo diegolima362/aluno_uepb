@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:aluno_uepb/app/modules/home/today_schedule/today_schedule_controller.dart';
 import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
@@ -29,7 +31,13 @@ class _NotificationDetailsPageState extends State<NotificationDetailsPage> {
   }
 
   ListView _buildBody() {
-    final text = widget.payload.trim().split('\n');
+    print(widget.payload);
+
+    final map = json.decode(widget.payload) as Map<String, dynamic>;
+
+    print(map);
+    final text = (map['title'] ?? '').trim().split('\n');
+    print(text);
 
     return ListView.builder(
       padding: EdgeInsets.all(2),
@@ -43,7 +51,7 @@ class _NotificationDetailsPageState extends State<NotificationDetailsPage> {
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             child: Text(
-              text[index],
+              text[index] ?? '',
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontSize: 18,

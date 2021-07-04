@@ -22,7 +22,7 @@ class _LoginPageState extends ModularState<LoginPage, LoginController> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
       ),
       body: Observer(
         builder: (_) {

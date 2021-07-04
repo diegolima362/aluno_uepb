@@ -31,10 +31,9 @@ class _LandingPageState extends State<LandingPage>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: LoadingIndicator(text: 'Carregando'),
-      ),
+    return Scaffold(
+      appBar: AppBar(elevation: 0),
+      body: LoadingIndicator(text: 'Carregando'),
     );
   }
 }
