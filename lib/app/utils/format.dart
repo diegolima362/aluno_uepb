@@ -48,11 +48,15 @@ class Format {
 
       return s.toString().substring(0, s.length - 1).trim();
     } else {
-      str.toLowerCase().split(' ').forEach((i) => s.write(i.length == 1
-          ? i.toUpperCase() + ' '
-          : i.length > 2
-              ? i[0].toUpperCase() + i.substring(1) + ' '
-              : i + ' '));
+      str.toLowerCase().split(' ').forEach(
+            (i) => s.write(
+              i.length == 1
+                  ? i.toUpperCase() + ' '
+                  : i.length > 2
+                      ? i[0].toUpperCase() + i.substring(1) + ' '
+                      : i + ' ',
+            ),
+          );
 
       return s.toString().trim();
     }
