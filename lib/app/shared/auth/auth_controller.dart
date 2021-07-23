@@ -22,9 +22,7 @@ abstract class _AuthControllerBase with Store {
   final status = Observable<AuthStatus>(AuthStatus.waiting);
 
   _AuthControllerBase(this.authRepository, this.authenticator) {
-    authRepository
-        .getCurrentUser()
-        .then((u) => setUser(u != null ? UserModel.fromMap(u) : null));
+    loadUser();
   }
 
   @action
@@ -41,10 +39,14 @@ abstract class _AuthControllerBase with Store {
 
   Future<UserModel?> getUser() async {
     if (user != null) return user;
+    await loadUser();
+    return user;
+  }
+
+  Future<UserModel?> loadUser() async {
     final result = await authRepository.getCurrentUser();
     final u = result != null ? UserModel.fromMap(result) : null;
     setUser(u);
-    return u;
   }
 
   Future signInWithIdPassword({

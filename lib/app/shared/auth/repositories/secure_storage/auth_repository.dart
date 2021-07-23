@@ -1,27 +1,34 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../interfaces/auth_repository_interface.dart';
 
-class FlutterSecureStorageRepository implements IAuthRepository {
-  late final FlutterSecureStorage storage;
+class SharedPreferencesRepository implements IAuthRepository {
+  static SharedPreferences? _storage;
 
-  FlutterSecureStorageRepository() {
-    storage = FlutterSecureStorage();
+  SharedPreferencesRepository() {
+    init();
+  }
+
+  static Future<void> init() async {
+    _storage = await SharedPreferences.getInstance();
   }
 
   Future<void> clearAuthData() async {
-    if (await storage.containsKey(key: 'user')) {
-      await storage.delete(key: 'user');
-    }
+    if (_storage == null) await init();
+    if ((_storage!.getKeys().contains('user'))) await _storage?.remove('user');
   }
 
   Future<Map<String, dynamic>?> getCurrentUser() async {
-    final data = await storage.read(key: 'user');
-    return data == null ? null : json.decode(data);
+    if (_storage == null) await init();
+    final data = _storage!.getString('user');
+    return data == null || data.isEmpty ? null : json.decode(data);
   }
 
   Future<void> storeAuthData(Map<String, dynamic> data) async {
+    if (_storage == null) await init();
     final parsedData = json.encode(data);
-    await storage.write(key: 'user', value: parsedData);
+    await _storage!.setString('user', parsedData);
   }
 }
