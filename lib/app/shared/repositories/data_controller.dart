@@ -4,10 +4,9 @@ import 'dart:typed_data';
 import 'package:aluno_uepb/app/shared/auth/auth_controller.dart';
 import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diacritic/diacritic.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
-
+import 'package:aluno_uepb/app/utils/extensions.dart';
 import 'local_storage/interfaces/local_storage_interface.dart';
 import 'remote_data/interfaces/remote_data_interface.dart';
 
@@ -196,6 +195,7 @@ abstract class _DataControllerBase with Store {
     final user = await auth.getUser();
     if (user == null) return null;
     try {
+      remoteData.setAuth(user.id, user.password);
       final result = await remoteData.getHistory();
       if (result == null) return <HistoryEntryModel>[];
       _history = _historyFromMap(result);
@@ -230,6 +230,7 @@ abstract class _DataControllerBase with Store {
     if (user == null) return null;
 
     try {
+      remoteData.setAuth(user.id, user.password);
       final result = await remoteData.getProfile();
 
       if (result == null) return null;
@@ -261,10 +262,9 @@ abstract class _DataControllerBase with Store {
     final user = await auth.getUser();
     if (user == null) return null;
 
-    remoteData.setAuth(user.id, user.password);
-
     try {
       print('DataController > download file ...');
+      remoteData.setAuth(user.id, user.password);
       return await remoteData.downloadRDM();
     } catch (e) {
       print('DataController > download file ERROR');
@@ -318,13 +318,17 @@ abstract class _DataControllerBase with Store {
   }
 
   static String _path(ProfileModel profile) {
-    final campus =
-        removeDiacritics(profile.campus).toLowerCase().replaceAll(' ', '-');
+    final campus = profile.campus
+        .toLowerCase()
+        .withoutDiacriticalMarks
+        .replaceAll(' ', '-');
     final register = profile.register;
     final building =
-        removeDiacritics(profile.building).toLowerCase().split(' ');
-    final program =
-        removeDiacritics(profile.program).toLowerCase().replaceAll(' ', '-');
+        profile.building.toLowerCase().withoutDiacriticalMarks.split(' ');
+    final program = profile.program
+        .toLowerCase()
+        .withoutDiacriticalMarks
+        .replaceAll(' ', '-');
 
     final buffer = StringBuffer();
 

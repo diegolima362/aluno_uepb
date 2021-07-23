@@ -16,10 +16,12 @@ import 'package:workmanager/workmanager.dart';
 
 import 'scraper.dart';
 
+final _debugMode = false;
+
 Future<void> verifyChanges() async {
   Workmanager().executeTask((task, inputData) async {
     final flp = FlutterLocalNotificationsPlugin();
-    final android = AndroidInitializationSettings('app_icon');
+    final android = AndroidInitializationSettings('notification_icon');
     final initSettings = InitializationSettings(android: android);
     flp.initialize(initSettings);
     await runTask(flp);
@@ -30,15 +32,16 @@ Future<void> verifyChanges() async {
 Future<void> runTask(FlutterLocalNotificationsPlugin flp) async {
   try {
     final result = await InternetAddress.lookup('example.com');
-    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-      print('connected');
+    if (result.isEmpty || result[0].rawAddress.isEmpty) {
+      return;
     }
-  } on SocketException catch (_) {
-    print('not connected');
+  } on SocketException catch (e) {
+    print('WorkerUpdateCourses>\n$e');
+    return;
   }
 
   try {
-    IAuthRepository authStorage = FlutterSecureStorageRepository();
+    IAuthRepository authStorage = SharedPreferencesRepository();
     final user = await authStorage.getCurrentUser();
 
     if (user != null) {
@@ -47,23 +50,23 @@ Future<void> runTask(FlutterLocalNotificationsPlugin flp) async {
       final _scraper = Scraper(
         user: u.id,
         password: u.password,
-        debugMode: true,
+        debugMode: _debugMode,
       );
+
       final updatedData = (await _scraper.getCourses());
 
-      if (updatedData != null) {
+      if (updatedData != null && updatedData.isNotEmpty) {
         await _init();
         ILocalStorage storage = HiveStorage();
         final _courses = await _getLocalData(storage);
-        if (_courses == null) return;
+        if (_courses == null || _courses.isEmpty) return;
         await _compareData(flp, updatedData, _courses, storage);
         await storage.saveCourses(updatedData);
       }
     }
-    await Hive.box(HiveStorage.COURSES_BOX).close();
   } catch (e) {
-    print('Error updating data');
-    print(e);
+    print('WorkerUpdateCourses>\n$e');
+  } finally {
     await Hive.box(HiveStorage.COURSES_BOX).close();
   }
 }
@@ -78,7 +81,7 @@ void showNotification(
     'Show Notification when data change',
     priority: Priority.max,
     importance: Importance.max,
-    icon: 'app_icon',
+    icon: 'notification_icon',
   );
 
   var platform = NotificationDetails(android: android);
@@ -104,47 +107,46 @@ FutureOr<List<CourseModel>?> _getLocalData(ILocalStorage storage) async {
 Future<void> _compareData(
   FlutterLocalNotificationsPlugin flp,
   List<Map<String, dynamic>> updatedData,
-  List<CourseModel> _courses,
+  List<CourseModel> local,
   ILocalStorage storage,
 ) async {
-  if (updatedData.length != _courses.length) {
-    showNotification(flp, 'Seu RDM foi Atualizado!');
-  } else if (updatedData.length == _courses.length) {
-    final updateCourses = _coursesFromMap(updatedData);
-    final changedIndex = <int>[];
+  final updated = _coursesFromMap(updatedData);
+  final changedIndex = <int>[];
 
-    for (int i = 0; i < updatedData.length; i++) {
-      if (_courses[i].toString() != updateCourses[i].toString())
-        changedIndex.add(i);
-    }
+  updated.sort((a, b) => a.id.toLowerCase().compareTo(b.id.toLowerCase()));
+  local.sort((a, b) => a.id.toLowerCase().compareTo(b.id.toLowerCase()));
 
-    if (changedIndex.length > 0) {
-      final message = <String>[];
+  for (int i = 0; i < updatedData.length; i++) {
+    if (local[i].id == updated[i].id &&
+        local[i].toString() != updated[i].toString()) changedIndex.add(i);
+  }
 
-      for (int i = 0; i < changedIndex.length; i++) {
-        final originalCourse = _courses[changedIndex[i]];
-        final updateCourse = updateCourses[changedIndex[i]];
-        final professor = Format.capitalString(originalCourse.professor);
-        final course = originalCourse.name.toUpperCase();
+  if (changedIndex.length > 0) {
+    final message = <String>[];
 
-        if (updateCourse.absences != originalCourse.absences) {
-          message.add('$professor registrou uma falta sua em $course!');
-        }
+    for (int i = 0; i < changedIndex.length; i++) {
+      final l = local[changedIndex[i]];
+      final u = updated[changedIndex[i]];
+      final professor = Format.capitalString(l.professor);
+      final course = l.name.toUpperCase();
 
-        if (originalCourse.und1Grade != updateCourse.und1Grade ||
-            originalCourse.und2Grade != updateCourse.und2Grade ||
-            originalCourse.finalTest != updateCourse.finalTest) {
-          message.add('Sua nota em $course foi registrada!');
-        }
+      if (u.absences != l.absences) {
+        message.add('$professor registrou uma falta sua em $course!');
       }
 
-      var text = message.fold<String>('', (a, b) => a + b + '\n');
-
-      await Hive.openBox(HiveStorage.ALERTS_BOX);
-      await storage.saveAlerts(message);
-      Hive.box(HiveStorage.ALERTS_BOX).close();
-      showNotification(flp, text);
+      if (l.und1Grade != u.und1Grade ||
+          l.und2Grade != u.und2Grade ||
+          l.finalTest != u.finalTest) {
+        message.add('Sua nota em $course foi registrada!');
+      }
     }
+
+    var text = message.fold<String>('', (a, b) => a + b + '\n');
+
+    await Hive.openBox(HiveStorage.ALERTS_BOX);
+    await storage.saveAlerts(message);
+    await Hive.box(HiveStorage.ALERTS_BOX).close();
+    showNotification(flp, text);
   }
 }
 

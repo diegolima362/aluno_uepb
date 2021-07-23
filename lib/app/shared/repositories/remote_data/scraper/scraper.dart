@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:aluno_uepb/app/utils/session.dart';
+import 'package:flutter/services.dart';
 import 'package:html/dom.dart';
 
 import '../interfaces/remote_data_interface.dart';
@@ -158,7 +159,10 @@ class Scraper implements IRemoteData {
     try {
       home = await client.get(_baseURL + '/index');
 
-      if (!debugMode) await client.post(loginURL, _formData);
+      if (!debugMode) {
+        final response = await client.post(loginURL, _formData);
+        if (response != null) _checkAuth(response.body.toString());
+      }
 
       client.enableMultipleRequest(true);
       final data = await Future.wait([
@@ -171,12 +175,11 @@ class Scraper implements IRemoteData {
       profile = data[0];
       home = data[1];
       courses = data[2];
-
-      client.clean();
     } catch (e) {
+      rethrow;
+    } finally {
       client.clean();
       _setAllWaiting(false);
-      rethrow;
     }
 
     final data = <String, Document?>{
@@ -193,44 +196,46 @@ class Scraper implements IRemoteData {
 
     // final url = _baseURL + '/print/rdm.pdf';
 
-    print('> _requestFile');
     final client = Session();
     Uint8List? data;
 
     try {
       // Start cookies
       await client.get(loginURL);
-
-      await client.post(loginURL, _formData);
+      if (!debugMode) {
+        final response = await client.post(loginURL, _formData);
+        if (response != null) _checkAuth(response.body.toString());
+      }
 
       data = await client.getBytes(url);
-
-      client.clean();
     } catch (e) {
+      rethrow;
+    } finally {
       client.clean();
       _setAllWaiting(false);
-      rethrow;
     }
 
     return data;
   }
 
   Future<Document?> _requestDOMCourses() async {
-    print('> _requestDOMCourses');
     final client = Session();
     Document? rdm;
 
     try {
       // Start cookies
       await client.get(_baseURL + '/index');
+      if (!debugMode) {
+        final response = await client.post(loginURL, _formData);
+        if (response != null) _checkAuth(response.body.toString());
+      }
 
-      if (!debugMode) await client.post(loginURL, _formData);
       rdm = await client.get(_baseURL + '/rdm');
-      client.clean();
     } catch (e) {
+      rethrow;
+    } finally {
       client.clean();
       _setAllWaiting(false);
-      rethrow;
     }
 
     return rdm;
@@ -243,15 +248,18 @@ class Scraper implements IRemoteData {
 
     try {
       // Start cookies
-      await client.get(_baseURL + '/index');
+      await client.get(loginURL);
+      if (!debugMode) {
+        final response = await client.post(loginURL, _formData);
+        if (response != null) _checkAuth(response.body.toString());
+      }
 
-      if (!debugMode) await client.post(loginURL, _formData);
       history = await client.get(_baseURL + '/historico');
-      client.clean();
     } catch (e) {
+      rethrow;
+    } finally {
       client.clean();
       _setAllWaiting(false);
-      rethrow;
     }
 
     return history;
@@ -267,16 +275,18 @@ class Scraper implements IRemoteData {
       // Start cookies
       await client.get(_baseURL + '/index');
 
-      if (!debugMode) await client.post(loginURL, _formData);
+      if (!debugMode) {
+        final response = await client.post(loginURL, _formData);
+        if (response != null) _checkAuth(response.body.toString());
+      }
 
       home = await client.get(_baseURL + '/index');
       profile = await client.get(_baseURL + '/cadastro');
-
-      client.clean();
     } catch (e) {
+      rethrow;
+    } finally {
       client.clean();
       _setAllWaiting(false);
-      rethrow;
     }
 
     final data = {
@@ -309,5 +319,16 @@ class Scraper implements IRemoteData {
       _setAllWaiting(false);
       return null;
     });
+  }
+
+  Future<void> _checkAuth(String str) async {
+    final error1 = '<p>Usuário ou senha não conferem.</p>';
+    final error2 = '<p>Matrícula ou senha não conferem.</p>';
+    final error3 = '<p>Erro inesperado na autenticação do aluno.</p>';
+
+    if (str.contains(error1) || str.contains(error2) || str.contains(error3)) {
+      throw PlatformException(
+          message: 'Matrícula ou senha não conferem', code: 'error_login');
+    }
   }
 }
