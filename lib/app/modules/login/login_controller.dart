@@ -60,19 +60,16 @@ abstract class _LoginControllerBase with Store {
         id: id.trim(),
         password: password.trim(),
       );
-
-      loading = false;
     } on PlatformException catch (e) {
-      loading = false;
       errorMsg = e.message;
       rethrow;
     } on Exception catch (e) {
-      loading = false;
-
       throw PlatformException(
         code: 'ERROR_SIGN_IN',
         details: e.toString(),
       );
+    } finally {
+      loading = false;
     }
   }
 }

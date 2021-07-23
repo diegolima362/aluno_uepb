@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aluno_uepb/app/shared/auth/auth_controller.dart';
 import 'package:aluno_uepb/app/shared/components/loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +17,39 @@ class _LandingPageState extends State<LandingPage>
     with SingleTickerProviderStateMixin {
   late final AuthController authController;
 
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
 
+    _timer = Timer(
+      Duration(seconds: 3),
+      () => Modular.to.navigate(global.LOGIN),
+    );
+
     authController = Modular.get<AuthController>();
-    authController.status.observe((status) async {
-      if (status.newValue == AuthStatus.loggedOn) {
-        Modular.to.navigate(global.HOME + home.TODAY_SCHEDULE_PAGE);
-      } else if (status.newValue == AuthStatus.loggedOut) {
-        Modular.to.navigate(global.LOGIN);
-      }
-    });
+    authController.status.observe((status) => _checkStatus(status.newValue));
+    authController.loadUser();
+    _checkStatus(authController.status.value);
+  }
+
+  _checkStatus(AuthStatus? status) {
+    if (status == AuthStatus.loggedOn) {
+      _goToHome();
+    } else if (status == AuthStatus.loggedOut) {
+      _gotoLogin();
+    }
+  }
+
+  _goToHome() {
+    _timer?.cancel();
+    Modular.to.navigate(global.HOME + home.TODAY_SCHEDULE_PAGE);
+  }
+
+  _gotoLogin() {
+    _timer?.cancel();
+    Modular.to.navigate(global.LOGIN);
   }
 
   @override

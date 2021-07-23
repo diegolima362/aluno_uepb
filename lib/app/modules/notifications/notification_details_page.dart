@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:aluno_uepb/app/modules/home/today_schedule/today_schedule_controller.dart';
+import 'package:aluno_uepb/app/modules/home/schedule/today_schedule/today_schedule_controller.dart';
 import 'package:aluno_uepb/app/shared/components/components.dart';
 import 'package:aluno_uepb/app/shared/repositories/data_controller.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 class NotificationDetailsPage extends StatefulWidget {
-  final String title = 'Notification Details';
   final String payload;
 
   const NotificationDetailsPage({Key? key, required this.payload})
@@ -31,13 +30,8 @@ class _NotificationDetailsPageState extends State<NotificationDetailsPage> {
   }
 
   ListView _buildBody() {
-    print(widget.payload);
-
     final map = json.decode(widget.payload) as Map<String, dynamic>;
-
-    print(map);
     final text = (map['title'] ?? '').trim().split('\n');
-    print(text);
 
     return ListView.builder(
       padding: EdgeInsets.all(2),
