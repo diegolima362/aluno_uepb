@@ -166,7 +166,7 @@ class NotificationsManager implements INotificationsManager {
       '003',
       'Alert Notifications Channel',
       'Alert Notifications Channel',
-      icon: 'app_icon',
+      icon: 'notification_icon',
       importance: Importance.max,
       priority: Priority.max,
       showWhen: false,
@@ -194,7 +194,7 @@ class NotificationsManager implements INotificationsManager {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
-      icon: 'app_icon',
+      icon: 'notification_icon',
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -211,7 +211,7 @@ class NotificationsManager implements INotificationsManager {
 
   Future<void> _init() async {
     const initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('notification_icon');
 
     _initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
