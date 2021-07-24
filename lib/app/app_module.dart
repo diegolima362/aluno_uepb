@@ -25,7 +25,7 @@ class AppModule extends Module {
     Bind.singleton((i) => AppController(i.get<DataController>())),
     Bind.singleton(
       (i) => AuthController(
-        i.get<FlutterSecureStorageRepository>(),
+        i.get<SharedPreferencesRepository>(),
         i.get<ScraperAuthenticator>(),
       ),
     ),
@@ -36,7 +36,7 @@ class AppModule extends Module {
         remoteData: i.get<IRemoteData>(),
       ),
     ),
-    Bind.singleton((i) => FlutterSecureStorageRepository()),
+    Bind.singleton((i) => SharedPreferencesRepository()),
     Bind.singleton((i) => ScraperAuthenticator(debugMode: _debugMode)),
     Bind.lazySingleton((i) => HiveStorage()),
     Bind.lazySingleton((i) => CustomThemes()),

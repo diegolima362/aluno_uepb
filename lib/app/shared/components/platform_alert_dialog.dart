@@ -23,11 +23,13 @@ class PlatformAlertDialog extends PlatformWidget {
         ? await showCupertinoDialog<bool>(
             context: context,
             builder: (context) => this,
+            useRootNavigator: false,
           )
         : await showDialog<bool>(
             context: context,
             barrierDismissible: false,
             builder: (context) => this,
+            useRootNavigator: false,
           );
   }
 
