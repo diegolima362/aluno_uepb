@@ -44,8 +44,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/google-services.json
 
 
 **.g.dart
 
-lib/generated_plugin_registrant.dart
+
+/lib/generated_plugin_registrant.dart

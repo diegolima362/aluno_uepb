@@ -1,20 +1,20 @@
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final user = '';
 final pass = '';
 
 main() async {
   test('should save and rea user', () async {
-    final storage = FlutterSecureStorage();
+    final storage = await SharedPreferences.getInstance();
 
-    await storage.write(
-      key: 'user',
-      value: json.encode({'user': user, 'password': pass}),
+    await storage.setString(
+      'user',
+      json.encode({'user': user, 'password': pass}),
     );
-    final result = await storage.read(key: 'user');
+    final result = storage.getString('user');
     print(result);
   });
 

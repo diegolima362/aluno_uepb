@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:aluno_uepb/app/app_module.dart';
 import 'package:aluno_uepb/app/app_widget.dart';
+import 'package:aluno_uepb/app/shared/auth/repositories/secure_storage/auth_repository.dart';
 import 'package:aluno_uepb/app/shared/repositories/local_storage/hive_storage/hive_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,8 @@ Future<void> _initPlugins() async {
   await Workmanager().initialize(verifyChanges);
 
   await _configureLocalTimeZone();
+
+  await SharedPreferencesRepository.init();
 
   await Firebase.initializeApp();
 
