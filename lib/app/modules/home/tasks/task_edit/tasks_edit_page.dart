@@ -1,4 +1,3 @@
-import 'package:aluno_uepb/app/modules/home/routes.dart';
 import 'package:aluno_uepb/app/modules/home/tasks/tasks_controller.dart';
 import 'package:aluno_uepb/app/modules/home/widgets/widgets.dart';
 import 'package:aluno_uepb/app/shared/components/components.dart';
@@ -25,9 +24,18 @@ class _TaskEditPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(elevation: 0),
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(
+          controller.isNew ? 'Adicionar Lembrete' : 'Editar Lembrete',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       body: Observer(
-        builder: (context) {
+        builder: (_) {
           if (controller.isLoading) {
             return LoadingIndicator(text: 'Carregando');
           } else if (controller.hasError) {
@@ -66,7 +74,7 @@ class _TaskEditPageState
                       onSave: () async {
                         await controller.save();
                         await Modular.get<TasksController>().loadData();
-                        Modular.to.navigate(TASKS_PAGE);
+                        Navigator.of(context).pop();
                       },
                     ),
                     const SizedBox(height: 20.0),
@@ -103,12 +111,11 @@ class _TaskEditPageState
         ? Text('Carregando')
         : Column(
             children: [
-              Container(
-                height: 50,
-                child: CoursePicker(
-                  selectCourse: controller.setCourse,
-                  courses: controller.courses,
-                ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(controller.course?.name ?? ''),
+                onTap: _showCoursePicker,
+                trailing: Icon(Icons.arrow_drop_down),
               ),
               Divider(
                 height: 1,
@@ -116,6 +123,24 @@ class _TaskEditPageState
               ),
             ],
           );
+  }
+
+  Future<void> _showCoursePicker() async {
+    if (MediaQuery.of(context).orientation == Orientation.landscape) return;
+
+    final c =
+        controller.course != null ? controller.course : controller.courses[0];
+
+    await PlatformAlertDialog(
+      title: 'Selecionar curso',
+      content: CoursePickerDialog(
+        courses: controller.courses,
+        initialCourse: c!,
+        onTap: controller.setCourse,
+      ),
+      defaultActionText: 'Confirmar',
+      cancelActionText: 'Cancelar',
+    ).show(context);
   }
 
   Widget _buildFinalDate() {
@@ -150,7 +175,7 @@ class _TaskEditPageState
       checkColor: Theme.of(context).canvasColor,
       contentPadding: EdgeInsets.all(0),
       title: Text(
-        'Criar alerta',
+        'Ser notificado',
         style: TextStyle(fontSize: 20.0),
       ),
       value: controller.reminder,
@@ -196,6 +221,7 @@ class _TaskEditPageState
 
   Future<void> _selectDate() async {
     final pickedDate = await showDatePicker(
+      useRootNavigator: false,
       context: context,
       initialDate: controller.dueDate,
       firstDate: DateTime.now(),
@@ -211,6 +237,7 @@ class _TaskEditPageState
 
   Future<void> _selectTime() async {
     final pickedTime = await showTimePicker(
+      useRootNavigator: false,
       context: context,
       cancelText: 'Cancelar',
       initialEntryMode: TimePickerEntryMode.input,

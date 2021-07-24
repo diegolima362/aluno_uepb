@@ -51,7 +51,7 @@ class _TaskDetailsPageState
             onPressed: () async {
               await controller.delete();
               await (Modular.get<TasksController>().loadData());
-              Modular.to.navigate(TASKS_PAGE);
+              Navigator.of(context).pop();
             },
           ),
         ],

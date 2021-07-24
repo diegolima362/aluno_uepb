@@ -53,11 +53,14 @@ abstract class _EditControllerBase with Store {
 
   late final DataController storage;
 
+  late final bool isNew;
+
   _EditControllerBase({
     required this.storage,
     required this.notificationsManager,
     TaskModel? task,
   }) {
+    isNew = task == null;
     setTask(task);
   }
 
@@ -67,16 +70,13 @@ abstract class _EditControllerBase with Store {
     try {
       final result = await storage.getCourses();
       courses.clear();
-
       courses.addAll(result!);
-
       courses.sort((a, b) => a.name.compareTo(b.name));
-
-      isLoading = false;
     } catch (e) {
       print('TasksEditController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -89,6 +89,8 @@ abstract class _EditControllerBase with Store {
 
     if (t.setReminder && !t.dueDate.isBefore(DateTime.now())) {
       final payload = t.toMap();
+
+      payload['type'] = 'task';
 
       NotificationModel notification = NotificationModel(
         id: _idFromDate(),

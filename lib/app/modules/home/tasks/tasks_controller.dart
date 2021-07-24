@@ -94,12 +94,11 @@ abstract class _TasksControllerBase with Store {
       });
 
       setTasks(result);
-
-      isLoading = false;
     } catch (e) {
       print('TasksController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 
