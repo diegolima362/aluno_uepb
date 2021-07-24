@@ -65,12 +65,11 @@ abstract class _ProfileControllerBase with Store {
       setAccent(
         isDarkMode ? storage.darkAccentColorCode : storage.lightAccentColorCode,
       );
-
-      isLoading = false;
     } catch (e) {
       print('ProfileController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -111,13 +110,12 @@ abstract class _ProfileControllerBase with Store {
   Future<void> update() async {
     try {
       isLoading = true;
-      print('> ProfileController : update profile');
       setProfile(await storage.updateProfile());
-      isLoading = false;
     } catch (e) {
       print('ProfileController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 

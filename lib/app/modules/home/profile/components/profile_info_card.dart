@@ -25,22 +25,18 @@ class ProfileInfoCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          Divider(height: 1.0),
           ListTile(
             title: Text('Matrícula'),
             trailing: Text('${profile?.register ?? ''}'),
           ),
-          Divider(height: 1.0),
           ListTile(
-            title: Text('C.R.A'),
+            title: Text('C.R.A.'),
             trailing: Text('${profile?.cra ?? ''}'),
           ),
-          Divider(height: 1.0),
           ListTile(
             title: Text('C.H. Acumulada'),
             trailing: Text('${profile?.cumulativeCh ?? 0}'),
           ),
-          Divider(height: 1.0),
           ListTile(
             title: Text('Curso'),
             trailing: Text('${profile?.program ?? ''}'),

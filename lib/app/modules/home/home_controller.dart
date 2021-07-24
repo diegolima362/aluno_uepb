@@ -26,15 +26,13 @@ abstract class _HomeControllerBase with Store {
   @action
   Future<void> loadData() async {
     try {
-      print('HomeController > get all data ...');
       isLoading = true;
       if (!(await storage.getAllData())) await storage.getAllData();
-      print('HomeController > get all data OK');
-      isLoading = false;
     } catch (e) {
       print('HomeController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 

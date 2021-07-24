@@ -29,11 +29,11 @@ abstract class _HistoryBase with Store {
     try {
       isLoading = true;
       setHistory(await storage.getHistory());
-      isLoading = false;
     } catch (e) {
       print('HistoryController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -53,11 +53,11 @@ abstract class _HistoryBase with Store {
       isLoading = true;
       history.clear();
       setHistory(await storage.updateHistory());
-      isLoading = false;
     } catch (e) {
       print('HistoryController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 }

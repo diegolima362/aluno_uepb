@@ -1,22 +1,17 @@
 import 'package:aluno_uepb/app/shared/models/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class CoursePicker extends StatefulWidget {
-  final ValueChanged<CourseModel> selectCourse;
   final List<CourseModel> courses;
-  final Color? bgColor;
-  final Color? highlightColor;
-  final double? height;
-  final double? width;
+  final CourseModel selectedCourse;
+  final void Function(CourseModel)? onTap;
 
-  CoursePicker({
+  const CoursePicker({
     Key? key,
-    required this.selectCourse,
     required this.courses,
-    this.bgColor,
-    this.highlightColor,
-    this.height,
-    this.width,
+    required this.selectedCourse,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -24,120 +19,50 @@ class CoursePicker extends StatefulWidget {
 }
 
 class _CoursePickerState extends State<CoursePicker> {
-  late final List<CourseModel> _courses;
-  int _selectedIndex = 0;
+  late CourseModel selectedCourse;
+  late int selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCourse = widget.selectedCourse;
+    selectedIndex = widget.courses.indexOf(
+      widget.courses.firstWhere((e) => e.id == selectedCourse.id),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // final dark = Theme.of(context).brightness == Brightness.dark;
-
-    final size = MediaQuery.of(context).size;
-    final h = widget.height ?? size.height * 0.15;
-    // final bg = widget.bgColor ?? dark ? Colors.black : Colors.white;
-    // final w = widget.width ?? size.width;
-
-    return GestureDetector(
-      onTap: _showPicker,
-      child: Container(
-        height: h,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('Curso: ', style: TextStyle(fontSize: 20)),
-            Expanded(
-              child: Text(
-                _courses[_selectedIndex].name.toUpperCase(),
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 20.0),
+    return Container(
+      child: ListView.builder(
+        itemCount: widget.courses.length,
+        padding: EdgeInsets.zero,
+        itemBuilder: (_, index) {
+          return TextButton(
+            onPressed: () => selectCourse(index),
+            child: Text(
+              widget.courses[index].name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: index == selectedIndex
+                    ? Theme.of(context).accentColor
+                    : Theme.of(context).disabledColor,
               ),
             ),
-            Icon(Icons.arrow_drop_down),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  @override
-  void initState() {
-    _courses = widget.courses;
-    _courses.sort((a, b) => a.name.compareTo(b.name));
+  void selectCourse(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
 
-    super.initState();
-  }
-
-  void _setCourse(int value) => setState(() {
-        widget.selectCourse(_courses[value]);
-        _selectedIndex = value;
-      });
-
-  Future<void> _showPicker() async {
-    final accent = Theme.of(context).accentColor;
-
-    final portrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    final size = MediaQuery.of(context).size;
-    final h = widget.height ?? size.height * 0.5;
-    final w = size.width * .9;
-
-    await showDialog(
-      context: context,
-      builder: (context) {
-        int _tempIndex = _selectedIndex;
-
-        return StatefulBuilder(
-          builder: (context, innerSetState) {
-            return AlertDialog(
-              contentPadding: EdgeInsets.zero,
-              actionsPadding: EdgeInsets.zero,
-              title: Text(
-                'Escolher curso',
-                style: TextStyle(color: accent, fontSize: 20),
-              ),
-              actions: [
-                TextButton(
-                  child: Text('Cancelar'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    _setCourse(_tempIndex);
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-              content: SingleChildScrollView(
-                child: Container(
-                  height: h,
-                  width: w * (portrait ? 1 : .5),
-                  child: Container(
-                    height: h * (portrait ? .7 : .5),
-                    child: ListView.builder(
-                      itemCount: _courses.length,
-                      itemBuilder: (context, index) {
-                        final c = _courses[index];
-                        return ListTile(
-                          onTap: () => innerSetState(() => _tempIndex = index),
-                          title: Text(
-                            c.name.toUpperCase(),
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: _tempIndex == index
-                                  ? accent
-                                  : Theme.of(context).disabledColor,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+    if (widget.onTap != null) {
+      widget.onTap!(widget.courses[index]);
+    }
   }
 }

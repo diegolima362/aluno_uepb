@@ -96,13 +96,13 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   void onTap(int id) {
     controller.updateIndex(id);
     if (id == 0) {
-      Modular.to.navigate(pages.TODAY_SCHEDULE_PAGE);
+      Modular.to.navigate('/home/' + pages.TODAY_SCHEDULE_PAGE);
     } else if (id == 1) {
-      Modular.to.navigate(pages.RDM_PAGE);
+      Modular.to.navigate('/home/' + pages.RDM_PAGE);
     } else if (id == 2) {
-      Modular.to.navigate(pages.TASKS_PAGE);
+      Modular.to.navigate('/home/' + pages.TASKS_PAGE);
     } else if (id == 3) {
-      Modular.to.navigate(pages.PROFILE_PAGE);
+      Modular.to.navigate('/home/' + pages.PROFILE_PAGE);
     }
   }
 

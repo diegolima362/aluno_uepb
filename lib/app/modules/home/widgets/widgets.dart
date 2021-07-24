@@ -1,5 +1,6 @@
 export 'course_info_card.dart';
 export 'course_picker.dart';
+export 'course_picker_dialog.dart';
 export 'header.dart';
 export 'history_entry_card.dart';
 export 'loading_page.dart';

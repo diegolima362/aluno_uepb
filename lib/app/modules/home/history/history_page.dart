@@ -58,16 +58,21 @@ class _HistoryPageState extends ModularState<HistoryPage, HistoryController> {
   }
 
   Widget _buildFAB() {
-    return CustomFAB(
-      tooltip: 'Atualizar histórico',
-      label: 'Atualizar',
-      extended: true,
-      icon: Icon(Icons.update),
-      onPressed: () async {
-        if (!(await _checkConnection(context))) return;
-        controller.update();
-      },
-    );
+    return Observer(builder: (_) {
+      return Visibility(
+        visible: !controller.isLoading,
+        child: CustomFAB(
+          tooltip: 'Atualizar histórico',
+          label: 'Atualizar',
+          extended: true,
+          icon: Icon(Icons.update),
+          onPressed: () async {
+            if (!(await _checkConnection(context))) return;
+            controller.update();
+          },
+        ),
+      );
+    });
   }
 
   Future<bool> _checkConnection(BuildContext context) async {
