@@ -31,10 +31,10 @@ abstract class _RdmControllerBase with Store {
     try {
       isLoading = true;
       setCourses(await storage.getCourses());
-      isLoading = false;
     } catch (e) {
       print('RDMController > \n$e');
       hasError = true;
+    } finally {
       isLoading = false;
     }
   }
@@ -56,11 +56,11 @@ abstract class _RdmControllerBase with Store {
     try {
       isLoading = true;
       setCourses(await storage.updateCourses());
-      isLoading = false;
     } catch (e) {
       print('RDMController > \n$e');
-      isLoading = false;
       hasError = true;
+    } finally {
+      isLoading = false;
     }
   }
 

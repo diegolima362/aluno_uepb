@@ -55,7 +55,9 @@ abstract class _DetailsControllerBase with Store {
     reminders.clear();
     reminders.addAll(data
         .cast<NotificationModel>()
-        .where((x) => x.courseId == course.id && !x.taskReminder)
+        .where(
+          (x) => !x.taskReminder && x.courseId == course.id && !x.taskReminder,
+        )
         .toList());
   }
 

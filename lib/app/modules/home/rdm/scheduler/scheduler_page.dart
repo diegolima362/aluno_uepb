@@ -17,6 +17,17 @@ class _SchedulerPageState
   late FocusNode _titleFocus;
 
   @override
+  void initState() {
+    super.initState();
+
+    controller.setDueTime(TimeOfDay.now());
+    controller.setTitle('');
+
+    _titleController = TextEditingController(text: controller.title);
+    _titleFocus = FocusNode();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -66,25 +77,6 @@ class _SchedulerPageState
     );
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _titleFocus.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller.setDueTime(TimeOfDay.now());
-    controller.setTitle('');
-
-    _titleController = TextEditingController(text: controller.title);
-    _titleFocus = FocusNode();
-  }
-
   Widget _buildTitle() {
     return TextFormField(
       keyboardType: TextInputType.text,
@@ -104,6 +96,7 @@ class _SchedulerPageState
   Future<void> _selectTime() async {
     final pickedTime = await showTimePicker(
       context: context,
+      useRootNavigator: false,
       cancelText: 'Cancelar',
       initialEntryMode: TimePickerEntryMode.input,
       initialTime: controller.dueTime,
@@ -113,6 +106,14 @@ class _SchedulerPageState
     if (pickedTime != null && pickedTime != controller.dueTime) {
       controller.setDueTime(pickedTime);
     }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _titleFocus.dispose();
+
+    super.dispose();
   }
 }
 

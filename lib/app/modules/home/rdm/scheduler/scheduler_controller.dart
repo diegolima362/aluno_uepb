@@ -39,29 +39,30 @@ abstract class _SchedulerControllerBase with Store {
   TimeOfDay dueTime = TimeOfDay(hour: 23, minute: 59);
 
   _SchedulerControllerBase({required this.course, required this.manager}) {
-    loadData();
+    // loadData();
   }
 
   @action
   Future<void> scheduleReminder() async {
-    (await manager.getAllNotifications())
-        .where((x) => x.courseId == course.id && !x.taskReminder)
-        .toList()
-        .forEach((e) async => await manager.cancelNotification(e.id));
+    // (await manager.getAllNotifications())
+    //     .where((x) => x.courseId == course.id && !x.taskReminder)
+    //     .toList()
+    //     .forEach((e) async => await manager.cancelNotification(e.id));
 
     final _title = title.isEmpty ? 'Sem Título' : title;
 
     for (int i = 0, l = selectedDays.length; i < l; i++) {
+      final now = DateTime.now();
       if (selectedDays[i]) {
         final date = DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          DateTime.now().day,
+          now.year,
+          now.month,
+          now.day,
           dueTime.hour,
           dueTime.minute,
         );
         final payload = {
-          'title': _title,
+          'title': course.name + ': ' + _title,
           'date': date.millisecondsSinceEpoch.toString(),
           'text': course.name,
           'courseId': course.id,
@@ -71,7 +72,7 @@ abstract class _SchedulerControllerBase with Store {
         };
 
         final notification = NotificationModel(
-          id: (DateTime.now().millisecondsSinceEpoch ~/ 6000) + i,
+          id: (now.millisecondsSinceEpoch ~/ 6000) + i,
           title: _title,
           body: course.name,
           payload: json.encode(payload),
