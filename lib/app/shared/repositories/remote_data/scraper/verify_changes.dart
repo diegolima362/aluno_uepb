@@ -121,7 +121,7 @@ Future<void> _compareData(
         local[i].toString() != updated[i].toString()) changedIndex.add(i);
   }
 
-  if (changedIndex.length > 0) {
+  if (changedIndex.isNotEmpty) {
     final message = <String>[];
 
     for (int i = 0; i < changedIndex.length; i++) {
@@ -141,12 +141,13 @@ Future<void> _compareData(
       }
     }
 
-    var text = message.fold<String>('', (a, b) => a + b + '\n');
-
-    await Hive.openBox(HiveStorage.ALERTS_BOX);
-    await storage.saveAlerts(message);
-    await Hive.box(HiveStorage.ALERTS_BOX).close();
-    showNotification(flp, text);
+    if (message.isNotEmpty) {
+      var text = message.fold<String>('', (a, b) => a + b + '\n');
+      await Hive.openBox(HiveStorage.ALERTS_BOX);
+      await storage.saveAlerts(message);
+      await Hive.box(HiveStorage.ALERTS_BOX).close();
+      showNotification(flp, text);
+    }
   }
 }
 

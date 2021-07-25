@@ -74,7 +74,7 @@ class _TodaySchedulePageState
       return CustomFAB(
         onPressed: () => Modular.to.pushNamed('full'),
         tooltip: 'Mostrar horário completo',
-        label: 'Horário completo',
+        label: 'Horário semanal',
         extended: true,
         icon: Icon(Icons.calendar_today),
       );

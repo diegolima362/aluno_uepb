@@ -110,7 +110,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
     if (controller.currentIndex == 0)
       return true;
     else {
-      Modular.to.navigate(pages.TODAY_SCHEDULE_PAGE);
+      Modular.to.navigate('/home/' + pages.TODAY_SCHEDULE_PAGE);
       controller.updateIndex(0);
       return false;
     }

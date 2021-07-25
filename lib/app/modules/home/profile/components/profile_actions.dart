@@ -30,12 +30,12 @@ class ProfileActionsInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ListTile(
-            title: Text('Ver Histórico'),
+            title: Text('Histórico'),
             onTap: () => Modular.to.pushNamed(home.HISTORY_PAGE),
           ),
           Divider(height: 1.0),
           ListTile(
-            title: Text('Atualizar perfil'),
+            title: Text('Atualizar dados'),
             onTap: () async {
               if (!(await _checkConnection(context))) return;
               controller.update();
