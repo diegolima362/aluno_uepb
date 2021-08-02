@@ -1,4 +1,5 @@
 import 'package:aluno_uepb/app/shared/models/models.dart';
+import 'package:aluno_uepb/app/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInfoCard extends StatelessWidget {
@@ -20,10 +21,7 @@ class ProfileInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ListTile(
-            title: Text(
-              '${profile?.name ?? ''}',
-              textAlign: TextAlign.center,
-            ),
+            title: Text('${profile?.name.capitalizeFirstofEach ?? ''}'),
           ),
           ListTile(
             title: Text('Matrícula'),

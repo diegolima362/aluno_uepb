@@ -22,7 +22,7 @@ class AboutAppPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             subtitle: Text(
-              'Versão 1.2.0',
+              'Versão 1.2.2',
               textAlign: TextAlign.center,
             ),
           ),
