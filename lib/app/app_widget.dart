@@ -1,79 +1,57 @@
-import 'package:aluno_uepb/app/modules/routes.dart';
-import 'package:aluno_uepb/app/shared/notifications/local_notification/notifications_manager.dart';
-import 'package:aluno_uepb/app/shared/themes/custom_themes.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:asuka/asuka.dart' as asuka;
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'app_controller.dart';
+import 'core/presenter/stores/preferences_store.dart';
 
-class AppWidget extends StatefulWidget {
+BuildContext? globalContext;
+
+class Responsive extends StatelessWidget {
+  final BuildContext? context;
+
+  Responsive({Key? key, this.context}) : super(key: key) {
+    globalContext = context;
+  }
+
   @override
-  _AppWidgetState createState() => _AppWidgetState();
+  Widget build(BuildContext context) => const AppWidget();
 }
 
-class _AppWidgetState extends ModularState<AppWidget, AppController> {
-  @override
-  void initState() {
-    super.initState();
-    _configureSelectNotificationSubject();
-  }
+class AppWidget extends StatefulWidget {
+  const AppWidget({Key? key}) : super(key: key);
 
   @override
-  void dispose() {
-    NotificationsManager().selectNotificationSubject.close();
-    super.dispose();
-  }
+  State<AppWidget> createState() => _AppWidgetState();
+}
 
-  static final analytics = FirebaseAnalytics();
-  static final observer = FirebaseAnalyticsObserver(analytics: analytics);
-
+class _AppWidgetState extends ModularState<AppWidget, PreferencesStore> {
   @override
   Widget build(BuildContext context) {
-    final themes = Modular.get<CustomThemes>();
-
-    return Observer(
-      builder: (_) {
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness:
-              controller.darkMode ? Brightness.light : Brightness.dark,
-        ));
-
-        final themeMode =
-            controller.darkMode ? ThemeMode.dark : ThemeMode.light;
-
-        return NotificationListener<OverscrollIndicatorNotification>(
-          child: MaterialApp(
-            localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-            supportedLocales: [const Locale('en'), const Locale('pt', 'BR')],
-            debugShowCheckedModeBanner: false,
+    return NotificationListener<OverscrollIndicatorNotification>(
+      child: AnimatedBuilder(
+        animation: store.selectState,
+        builder: (context, _) {
+          return MaterialApp.router(
             title: 'Aluno UEPB',
-            navigatorObservers: <NavigatorObserver>[observer],
-            themeMode: themeMode,
-            theme: themes.getLight(colorValue: controller.lightAccent),
-            darkTheme: themes.getDark(colorValue: controller.darkAccent),
-          ).modular(),
-          onNotification: (overScroll) {
-            overScroll.disallowGlow();
-            return false;
-          },
-        );
+            themeMode: store.state.themeMode,
+            debugShowCheckedModeBanner: false,
+            showPerformanceOverlay: false,
+            builder: asuka.builder,
+            useInheritedMediaQuery: true,
+            locale: DevicePreview.locale(context),
+            supportedLocales: const [Locale('pt', 'BR')],
+            routeInformationParser: Modular.routeInformationParser,
+            routerDelegate: Modular.routerDelegate,
+            localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          );
+        },
+      ),
+      onNotification: (overScroll) {
+        overScroll.disallowIndicator();
+        return false;
       },
     );
-  }
-
-  void _configureSelectNotificationSubject() {
-    NotificationsManager()
-        .selectNotificationSubject
-        .stream
-        .listen((payload) async {
-      await Modular.to.pushNamed(NOTIFICATION, arguments: payload);
-    });
   }
 }

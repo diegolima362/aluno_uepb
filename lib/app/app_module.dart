@@ -1,57 +1,50 @@
-import 'package:aluno_uepb/app/shared/auth/auth_controller.dart';
-import 'package:aluno_uepb/app/shared/auth/authenticator/scraper_auth/authenticator.dart';
-import 'package:aluno_uepb/app/shared/auth/repositories/secure_storage/auth_repository.dart';
-import 'package:aluno_uepb/app/shared/repositories/local_storage/interfaces/local_storage_interface.dart';
-import 'package:aluno_uepb/app/shared/repositories/remote_data/interfaces/remote_data_interface.dart';
-import 'package:aluno_uepb/app/shared/repositories/remote_data/scraper/scraper.dart';
+import 'package:aluno_uepb/app/modules/home/home_module.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:http/http.dart';
 
-import 'app_controller.dart';
-import 'modules/home/home_module.dart';
-import 'modules/landing/landing_page.dart';
-import 'modules/login/login_module.dart';
-import 'modules/notifications/notification_details_page.dart';
-import 'modules/routes.dart' as global;
-import 'shared/notifications/local_notification/notifications_manager.dart';
-import 'shared/repositories/data_controller.dart';
-import 'shared/repositories/local_storage/hive_storage/hive_storage.dart';
-import 'shared/themes/custom_themes.dart';
+import 'app_widget.dart';
+import 'core/external/drivers/connectivity_driver.dart';
+import 'core/external/drivers/session.dart';
+import 'core/infra/services/connectivity_service.dart';
+import 'core/presenter/pages/landing/landing_page.dart';
+import 'core/presenter/stores/auth_store.dart';
+import 'core/presenter/stores/preferences_store.dart';
+import 'core/presenter/widgets/responsive.dart';
+import 'modules/auth/auth_module.dart';
+import 'modules/auth/external/datasources/adapters/drift/drift_database.dart';
+import 'modules/preferences/external/datasources/adapters/drift/drift_database.dart';
+import 'modules/preferences/preferences_module.dart';
 
 class AppModule extends Module {
-  static final _debugMode = false;
-
   @override
-  final List<Bind> binds = [
-    Bind.singleton((i) => AppController(i.get<DataController>())),
-    Bind.singleton(
-      (i) => AuthController(
-        i.get<SharedPreferencesRepository>(),
-        i.get<ScraperAuthenticator>(),
-      ),
-    ),
-    Bind.lazySingleton(
-      (i) => DataController(
-        storage: i.get<ILocalStorage>(),
-        auth: i.get<AuthController>(),
-        remoteData: i.get<IRemoteData>(),
-      ),
-    ),
-    Bind.singleton((i) => SharedPreferencesRepository()),
-    Bind.singleton((i) => ScraperAuthenticator(debugMode: _debugMode)),
-    Bind.lazySingleton((i) => HiveStorage()),
-    Bind.lazySingleton((i) => CustomThemes()),
-    Bind.lazySingleton((i) => NotificationsManager()),
-    Bind.lazySingleton((i) => Scraper(debugMode: _debugMode)),
-  ];
+  List<Bind> get binds => [
+        // dbs
+        Bind.singleton((i) => PrefsDatabase()),
+        Bind.singleton((i) => AuthDatabase()),
+
+        // auth
+        ...AuthModule.export,
+        // preferences
+        ...PreferencesModule.export,
+        // core stores
+        Bind.singleton((i) => AuthStore(i(), i())),
+        Bind.singleton((i) => PreferencesStore(i(), i(), i(), i())),
+        // services
+        Bind.lazySingleton((i) => ConnectivityService(i())),
+        // tools
+        Bind.lazySingleton((i) => Client()),
+        Bind.lazySingleton((i) => Session(i())),
+        Bind.lazySingleton((i) => Connectivity()),
+        Bind.lazySingleton((i) => ConnectivityDriver(i())),
+        Bind.lazySingleton((i) => ResponsiveSize(globalContext)),
+      ];
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute('/', child: (ctx, args) => LandingPage()),
-    ModuleRoute(global.LOGIN, module: LoginModule()),
-    ModuleRoute(global.HOME, module: HomeModule()),
-    ChildRoute(
-      global.NOTIFICATION,
-      child: (ctx, args) => NotificationDetailsPage(payload: args.data),
-    ),
+    ChildRoute(Modular.initialRoute, child: (context, args) => LandingPage()),
+    ModuleRoute('/login/', module: AuthModule()),
+    ModuleRoute('/podcasts/', module: HomeModule()),
+    ModuleRoute('/preferences/', module: PreferencesModule()),
   ];
 }
