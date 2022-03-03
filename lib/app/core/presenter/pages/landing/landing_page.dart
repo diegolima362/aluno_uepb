@@ -9,7 +9,7 @@ class LandingPage extends StatelessWidget {
 
     authStore.checkLogin().whenComplete(() {
       if (authStore.isLogged) {
-        Modular.to.navigate('/podcasts/');
+        Modular.to.navigate('/root/courses/');
       } else {
         Modular.to.navigate('/login/');
       }

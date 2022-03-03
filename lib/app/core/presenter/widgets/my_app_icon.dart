@@ -10,7 +10,7 @@ class MyAppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final asset = Theme.of(context).brightness == Brightness.dark
-        ? 'splash_dark'
+        ? 'splash-invert'
         : 'splash';
     return Center(
       child: Padding(

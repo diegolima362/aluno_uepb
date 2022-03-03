@@ -96,8 +96,8 @@ class PreferencesPage extends StatelessWidget {
       ),
       onTap: () async => showAboutDialog(
         context: context,
-        applicationName: 'Saco Cheio TV APP',
-        applicationVersion: '1.2.0',
+        applicationName: 'Aluno UEPB',
+        applicationVersion: '1.3.0',
         applicationIcon: const MyAppIcon(),
         useRootNavigator: false,
       ),
