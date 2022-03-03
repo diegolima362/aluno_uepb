@@ -13,8 +13,18 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<EitherLoggedInfo> signIn(String register, String password) async {
     try {
-      var user = await dataSource.signIn(register, password);
+      final user = await dataSource.signIn(register, password);
       return Right(Option.of(user));
+    } on AuthFailure catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<EitherSession> signedSession(String credentials) async {
+    try {
+      final session = await dataSource.signedSession(credentials);
+      return Right(session);
     } on AuthFailure catch (e) {
       return Left(e);
     }

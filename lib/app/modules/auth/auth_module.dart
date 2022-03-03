@@ -10,6 +10,7 @@ class AuthModule extends Module {
   static List<Bind> export = [
     // usecases
     Bind.singleton((i) => GetLoggedUser(i())),
+    Bind.singleton((i) => SignedSession(i(), i())),
     Bind.singleton((i) => Logout(i())),
     // repositories
     Bind.singleton((i) => AuthRepository(i())),

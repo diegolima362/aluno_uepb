@@ -6,4 +6,6 @@ abstract class IAuthRepository {
   Future<EitherLoggedInfo> loggedUser();
 
   Future<EitherLoggedInfo> logout();
+
+  Future<EitherSession> signedSession(String credentials);
 }

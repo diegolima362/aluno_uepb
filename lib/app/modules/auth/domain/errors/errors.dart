@@ -5,16 +5,22 @@ abstract class AuthFailure implements Exception {
   String toString() => '$runtimeType: $message';
 }
 
+class NotSignedUser extends AuthFailure {
+  @override
+  final String message;
+  NotSignedUser({required this.message});
+}
+
 class AuthConnectionError extends AuthFailure {
   @override
   final String message;
   AuthConnectionError({required this.message});
 }
 
-class ErrorLoginEmail extends AuthFailure {
+class SignInError extends AuthFailure {
   @override
   final String message;
-  ErrorLoginEmail({required this.message});
+  SignInError({required this.message});
 }
 
 class ErrorGuestSignIn extends AuthFailure {

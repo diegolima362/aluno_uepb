@@ -21,9 +21,9 @@ class SignIn implements ISignIn {
     var result = await service.isOnline;
 
     if (!credential.isValidRegister) {
-      return Left(ErrorLoginEmail(message: "Matricula inválida"));
+      return Left(SignInError(message: "Matricula inválida"));
     } else if (!credential.isValidPassword) {
-      return Left(ErrorLoginEmail(message: "Senha inválida"));
+      return Left(SignInError(message: "Senha inválida"));
     }
 
     if (result.isLeft()) {

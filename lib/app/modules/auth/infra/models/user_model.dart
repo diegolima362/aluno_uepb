@@ -35,10 +35,7 @@ class UserModel extends LoggedUser implements LoggedUserInfo {
 
   UserModel copyWith({
     String? id,
-    String? name,
     String? credentials,
-    bool? isSubscribed,
-    bool? isAnonymous,
   }) {
     return UserModel(
       id: id ?? this.id,

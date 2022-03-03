@@ -1,3 +1,4 @@
+import '../../../../core/external/drivers/session.dart';
 import '../models/user_model.dart';
 
 abstract class IAuthDatasource {
@@ -6,4 +7,6 @@ abstract class IAuthDatasource {
   Future<UserModel?> get currentUser;
 
   Future<void> logout();
+
+  Future<Session> signedSession(String credentials);
 }

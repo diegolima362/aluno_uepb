@@ -1,4 +1,6 @@
 import 'package:aluno_uepb/app/core/external/drivers/session.dart';
+import 'package:aluno_uepb/app/core/external/utils/urls.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../domain/errors/errors.dart';
 import '../../infra/datasources/auth_datasource.dart';
@@ -10,7 +12,12 @@ import 'utils/encoders.dart' as encoders;
 class AuthDatasource implements IAuthDatasource {
   final Session client;
   final AuthDatabase db;
+
+  static const Duration _expireTime = Duration(minutes: 5);
+
   UserModel? _user;
+
+  final _cachedSession = <int, Session>{};
 
   AuthDatasource(this.client, this.db);
 
@@ -37,19 +44,88 @@ class AuthDatasource implements IAuthDatasource {
   @override
   Future<UserModel> signIn(String register, String password) async {
     try {
-      _user = UserModel(
-        id: register,
-        credentials: encoders.encodeCredentials(register, password),
-      );
+      final data = {'nome_usuario': register, 'senha_usuario': password};
 
-      await db.saveUser(userToTable(_user!));
+      final result = await client.post(loginURL, data);
 
-      return _user!;
+      if (result.isNone()) {
+        throw SignInError(message: 'Cliente ocupado');
+      } else {
+        final body = result.toNullable()?.body ?? '';
+
+        if (body.contains(error1) || body.contains(error2)) {
+          throw SignInError(message: 'Erro de credenciais');
+        }
+        if (body.contains(error3)) {
+          throw SignInError(message: 'Falha ao conectar com servidor');
+        }
+
+        _cachedSession.clear();
+        final now = DateTime.now().millisecondsSinceEpoch;
+        _cachedSession[now] = client;
+
+        _user = UserModel(
+          id: register,
+          credentials: encoders.encodeCredentials(register, password),
+        );
+
+        await db.saveUser(userToTable(_user!));
+
+        return _user!;
+      }
     } on AuthFailure catch (e) {
-      throw ErrorLoginEmail(message: 'Erro ao logar com email: ' + e.message);
+      throw SignInError(message: 'Erro ao logar: ' + e.message);
     } catch (e) {
-      throw ErrorLoginEmail(
-        message: 'Erro ao logar com email: ' + e.toString(),
+      throw SignInError(
+        message: 'Erro ao logar: ' + e.toString(),
+      );
+    }
+  }
+
+  @override
+  Future<Session> signedSession(String credentials) async {
+    if (_cachedSession.isNotEmpty) {
+      final session = _cachedSession.entries.first;
+      final expiration = DateTime.now().add(_expireTime).millisecondsSinceEpoch;
+
+      if (session.key < expiration) {
+        return session.value;
+      }
+    }
+
+    try {
+      final options = encoders.decodeCredentials(credentials).split(':');
+
+      final data = {'nome_usuario': options[0], 'senha_usuario': options[1]};
+
+      client.clean();
+      await client.get(loginURL);
+      final result = await client.post(loginURL, data);
+
+      if (result.isNone()) {
+        throw SignInError(message: 'Cliente ocupado');
+      } else {
+        final body = result.toNullable()?.body ?? '';
+
+        if (body.contains(error1) || body.contains(error2)) {
+          throw SignInError(message: 'Erro de credenciais');
+        }
+        if (body.contains(error3)) {
+          throw SignInError(message: 'Falha ao conectar com servidor');
+        }
+
+        _cachedSession.clear();
+        final now = DateTime.now().millisecondsSinceEpoch;
+        _cachedSession[now] = client;
+
+        return client;
+      }
+    } on AuthFailure catch (e) {
+      throw SignInError(message: 'Erro ao logar: ' + e.message);
+    } catch (e) {
+      debugPrint('> AuthRemoteDatasource: ${e.toString()}');
+      throw SignInError(
+        message: 'Erro ao entrar: ' + e.toString(),
       );
     }
   }
