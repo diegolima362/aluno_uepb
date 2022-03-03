@@ -20,6 +20,15 @@ class AcademicLocalDatasource implements IAcademicLocalDatasource {
   }
 
   @override
+  Future<List<CourseModel>> getTodaysClasses() async {
+    try {
+      return await db.coursesDao.todayClasses;
+    } catch (e) {
+      throw ServerError(message: 'LocalDatasource: ' + e.toString());
+    }
+  }
+
+  @override
   Future<Unit> saveCourses(List<CourseModel> courses) async {
     try {
       await db.coursesDao.saveCourses(courses);

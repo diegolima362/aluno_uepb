@@ -9,10 +9,7 @@ class AcademicRepository implements IAcademicRepository {
   final IAcademicLocalDatasource localDatasource;
   final IAcademicRemoteDatasource remoteDatasource;
 
-  AcademicRepository({
-    required this.localDatasource,
-    required this.remoteDatasource,
-  });
+  AcademicRepository(this.localDatasource, this.remoteDatasource);
 
   @override
   Future<EitherProfile> getProfile({bool cached = true}) async {
@@ -32,7 +29,7 @@ class AcademicRepository implements IAcademicRepository {
       final result = await remoteDatasource.getProfile();
 
       if (result.isSome()) {
-        // await localDatasource.saveProfile(result.toNullable()!);
+        await localDatasource.saveProfile(result.toNullable()!);
       }
 
       return Right(result);
@@ -59,7 +56,7 @@ class AcademicRepository implements IAcademicRepository {
     try {
       final result = await remoteDatasource.getCourses();
 
-      // await localDatasource.saveCourses(result);
+      await localDatasource.saveCourses(result);
 
       result.sort((a, b) => b.name.compareTo(a.name));
 
@@ -87,9 +84,22 @@ class AcademicRepository implements IAcademicRepository {
     try {
       final result = await remoteDatasource.getHistory();
 
-      // await localDatasource.saveHistory(result);
+      await localDatasource.saveHistory(result);
 
       result.sort((a, b) => b.semester.compareTo(a.semester));
+
+      return Right(result);
+    } on RDMFailure catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<EitherCourses> getTodaysClasses() async {
+    try {
+      await getCourses();
+
+      final result = (await localDatasource.getTodaysClasses());
 
       return Right(result);
     } on RDMFailure catch (e) {

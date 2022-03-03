@@ -73,8 +73,8 @@ List<CourseModel> extractCourses(Document doc) {
 
     courses.add(
       CourseModel(
-        id: heading[0],
-        name: heading[1],
+        id: heading[1],
+        name: heading[0],
         professor: items[1],
         duration: duration,
         absences: absences[i],

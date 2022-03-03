@@ -1,14 +1,14 @@
 import '../repositories/academic_repository.dart';
 import '../types/types.dart';
 
-abstract class IGetRDM {
+abstract class IGetCourses {
   Future<EitherCourses> call({bool cached = true});
 }
 
-class GetRDM implements IGetRDM {
+class GetCourses implements IGetCourses {
   final IAcademicRepository repository;
 
-  GetRDM(this.repository);
+  GetCourses(this.repository);
 
   @override
   Future<EitherCourses> call({bool cached = true}) async {

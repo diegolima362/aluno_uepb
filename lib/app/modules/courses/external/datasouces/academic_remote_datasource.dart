@@ -1,32 +1,41 @@
+import 'package:aluno_uepb/app/modules/auth/domain/usecases/usecases.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/external/drivers/session.dart';
+import '../../../../core/external/utils/urls.dart';
+import '../../../auth/domain/errors/errors.dart';
 import '../../domain/errors/errors.dart';
 import '../../infra/datasources/academic_datasource.dart';
 import '../../infra/models/models.dart';
 import 'utils/parser.dart' as parser;
-import 'utils/urls.dart';
 
 class AcademicRemoteDatasource implements IAcademicRemoteDatasource {
   final Session client;
+  final ISignedSession getSession;
 
-  AcademicRemoteDatasource(this.client);
+  AcademicRemoteDatasource(this.client, this.getSession);
 
   @override
   Future<List<CourseModel>> getCourses() async {
-    final options = {'nome_usuario': '172080037', 'senha_usuario': '24061999'};
-
     final stopwatch = Stopwatch()..start();
     try {
-      await client.get(loginURL);
-      await client.post(loginURL, options);
+      final result = await getSession();
 
-      final doc = await client.get(rdmURL);
+      return await result.fold(
+        (l) => throw l,
+        (r) async {
+          final doc = await r.get(rdmURL);
 
-      if (doc != null) {
-        return parser.extractCourses(doc);
-      }
+          if (doc != null) {
+            return parser.extractCourses(doc);
+          } else {
+            throw ServerError(
+              message: 'Erro na comunicação com o servidor',
+            );
+          }
+        },
+      );
     } catch (e) {
       throw ServerError(
         message: 'Erro na comunicação com o servidor: ${e.toString()}',
@@ -34,57 +43,62 @@ class AcademicRemoteDatasource implements IAcademicRemoteDatasource {
     } finally {
       debugPrint('doSomething() executed in ${stopwatch.elapsed}');
     }
-
-    return [];
   }
 
   @override
   Future<Option<ProfileModel>> getProfile() async {
-    final options = {'nome_usuario': '172080037', 'senha_usuario': '24061999'};
-
     final stopwatch = Stopwatch()..start();
+
     try {
-      await client.get(loginURL);
-      await client.post(loginURL, options);
+      final result = await getSession();
 
-      final doc = await client.get(historyURL);
+      return await result.fold(
+        (l) => throw l,
+        (r) async {
+          final doc = await client.get(historyURL);
 
-      if (doc != null) {
-        return parser.extractProfile(doc);
-      }
-    } catch (e) {
-      throw ServerError(
-        message: 'Erro na comunicação com o servidor: ${e.toString()}',
+          if (doc != null) {
+            return parser.extractProfile(doc);
+          } else {
+            throw ServerError(
+              message: 'Erro na comunicação com o servidor',
+            );
+          }
+        },
       );
+    } catch (e) {
+      debugPrint('AcademicRemoteDasource > ${e.toString()}');
+      throw SignInError(message: 'Erro ao fazer login');
     } finally {
       debugPrint('doSomething() executed in ${stopwatch.elapsed}');
     }
-
-    return none();
   }
 
   @override
   Future<List<HistoryModel>> getHistory() async {
-    final options = {'nome_usuario': '172080037', 'senha_usuario': '24061999'};
-
     final stopwatch = Stopwatch()..start();
     try {
-      await client.get(loginURL);
-      await client.post(loginURL, options);
+      final result = await getSession();
 
-      final doc = await client.get(historyURL);
+      return await result.fold(
+        (l) => throw l,
+        (r) async {
+          final doc = await client.get(historyURL);
 
-      if (doc != null) {
-        return parser.extractHistory(doc);
-      }
-    } catch (e) {
-      throw ServerError(
-        message: 'Erro na comunicação com o servidor: ${e.toString()}',
+          if (doc != null) {
+            return parser.extractHistory(doc);
+          } else {
+            throw ServerError(
+              message: 'Erro na comunicação com o servidor',
+            );
+          }
+        },
       );
+    } catch (e) {
+      debugPrint('AcademicRemoteDasource > ${e.toString()}');
+      throw SignInError(message: 'Erro ao fazer login');
     } finally {
       debugPrint('doSomething() executed in ${stopwatch.elapsed}');
     }
-
-    return [];
   }
 }

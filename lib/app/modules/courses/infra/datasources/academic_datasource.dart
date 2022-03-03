@@ -16,6 +16,8 @@ abstract class IAcademicLocalDatasource extends IAcademicDatasource {
   Future<Unit> saveProfile(ProfileModel profile);
 
   Future<Unit> saveHistory(List<HistoryModel> history);
+
+  Future<List<CourseModel>> getTodaysClasses();
 }
 
 abstract class IAcademicRemoteDatasource extends IAcademicDatasource {}
