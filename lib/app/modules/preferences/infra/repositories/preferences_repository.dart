@@ -1,3 +1,5 @@
+import 'package:aluno_uepb/app/modules/preferences/domain/entities/preferences_entity.dart';
+import 'package:aluno_uepb/app/modules/preferences/infra/models/preferences_model.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../domain/erros/erros.dart';
@@ -14,6 +16,15 @@ class PreferencesRepository implements IPreferencesRepository {
   Future<EitherInt> getThemeMode() async {
     try {
       return Right(await datasource.themeMode);
+    } on PreferencesFailure catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<EitherPreferences> getPreferences() async {
+    try {
+      return Right(await datasource.preferences);
     } on PreferencesFailure catch (e) {
       return Left(e);
     }
@@ -37,5 +48,17 @@ class PreferencesRepository implements IPreferencesRepository {
     } on PreferencesFailure catch (e) {
       return Left(e);
     }
+  }
+
+  @override
+  Future<EitherUnit> updatePreferences(PreferencesEntity preferences) async {
+    final _preferences = PreferencesModel(
+      themeIndex: preferences.themeMode.index,
+      allowNotifications: preferences.allowNotifications,
+      allowAutoDownload: preferences.allowAutoDownload,
+      seedColor: preferences.seedColor,
+    );
+    await datasource.updatePreferences(_preferences);
+    return const Right(unit);
   }
 }

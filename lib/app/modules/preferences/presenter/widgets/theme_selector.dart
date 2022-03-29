@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ThemeSelector extends StatelessWidget {
@@ -13,21 +12,24 @@ class ThemeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selected = List.generate(3, (index) => index == initialTheme.index);
     return ListTile(
       title: const Text(
         'Tema ',
         textAlign: TextAlign.start,
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontSize: 18,
+        ),
       ),
-      trailing: CupertinoSlidingSegmentedControl<ThemeMode>(
-        groupValue: initialTheme,
-        onValueChanged: onSetTheme,
-        padding: EdgeInsets.zero,
-        children: const {
-          ThemeMode.system: Icon(Icons.phone_android_sharp),
-          ThemeMode.light: Icon(Icons.wb_sunny_outlined),
-          ThemeMode.dark: Icon(Icons.nightlight_round),
-        },
+      trailing: ToggleButtons(
+        isSelected: selected,
+        borderRadius: BorderRadius.circular(4),
+        onPressed: (index) => onSetTheme(ThemeMode.values.elementAt(index)),
+        children: const [
+          Icon(Icons.phone_android_sharp),
+          Icon(Icons.wb_sunny_outlined),
+          Icon(Icons.nightlight_round),
+        ],
       ),
     );
   }
