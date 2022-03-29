@@ -1,6 +1,8 @@
 flutter_native_splash:
-  color: "#fafafa"  # required parameter
-  image: images/splash.png  # optional parameter
-  color_dark: "#141414"  # required if image_dark parameter is used
-  image_dark: images/splash-invert.png  # optional parameter
-  fill: true
+  android: true
+  android_gravity: "center"
+  color: "#FFFBFE"
+  image: assets/images/app_logo.png
+  color_dark: "#191C1D"
+  image_dark: assets/images/app_logo_invert.png
+  fullscreen: true
