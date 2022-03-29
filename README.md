@@ -8,6 +8,8 @@ Features:
 - Informações das cadeiras: Professor, faltas, horários e notas
 - Definir lembretes de atividades
 - Criar alertas para inicio de aulas
+- Histórico acadêmico
+- Atualizações do CA em plano de fundo
 - Dados Offline depois do primeiro login
 
 # Avisos:
