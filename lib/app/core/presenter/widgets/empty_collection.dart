@@ -7,9 +7,9 @@ class EmptyCollection extends StatelessWidget {
   const EmptyCollection({Key? key, required this.text, required this.icon})
       : super(key: key);
 
-  factory EmptyCollection.error() => const EmptyCollection(
-        text: 'Erro ao obter os dados',
-        icon: Icons.error_outline_sharp,
+  factory EmptyCollection.error({String? message}) => EmptyCollection(
+        text: message ?? 'Erro ao obter os dados',
+        icon: Icons.warning_amber_sharp,
       );
 
   @override
@@ -19,17 +19,17 @@ class EmptyCollection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 48,
-            color: Theme.of(context).primaryColor,
-          ),
+          Icon(icon, size: 48),
           const SizedBox(height: 16),
-          Text(
-            text,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 300),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ),
         ],

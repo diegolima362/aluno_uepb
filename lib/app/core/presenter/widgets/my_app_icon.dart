@@ -10,8 +10,8 @@ class MyAppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final asset = Theme.of(context).brightness == Brightness.dark
-        ? 'splash-invert'
-        : 'splash';
+        ? 'app_logo_invert'
+        : 'app_logo';
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -19,7 +19,8 @@ class MyAppIcon extends StatelessWidget {
           'assets/images/$asset.png',
           width: width,
           height: height,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
         ),
       ),
     );

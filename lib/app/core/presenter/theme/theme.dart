@@ -1,139 +1,138 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static ThemeData get lightTheme {
-    // const bg = Color(0xffffffff);
-    const bg = Color(0xffffffff);
-    // const cardColor = Color(0xffeeeeee);
-    const cardColor = Color(0xffffffff);
+  static ThemeData theme(Color seedColor, {bool darkMode = false}) {
+    late Brightness brightness;
 
-    const primary = Color(0xffaf52de);
-    const secondary = Color(0xff34c759);
+    if (darkMode) {
+      brightness = Brightness.dark;
+    } else {
+      brightness = Brightness.light;
+    }
 
-    return ThemeData(
-      brightness: Brightness.light,
-      colorScheme: const ColorScheme.light().copyWith(
-        primary: primary,
-        secondary: secondary,
-      ),
-      textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-        primary: Colors.black,
-      )),
-      primaryColor: primary,
-      backgroundColor: bg,
-      scaffoldBackgroundColor: bg,
-      canvasColor: bg,
-      cardColor: cardColor,
-      bottomAppBarColor: cardColor,
-      appBarTheme: const AppBarTheme(
-        foregroundColor: Colors.black,
-        backgroundColor: bg,
-        elevation: 0,
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: cardColor,
-      ),
-      dialogTheme: const DialogTheme(
-        backgroundColor: cardColor,
-      ),
-      cardTheme: const CardTheme(
-        color: cardColor,
-      ),
-      textTheme: ThemeData.light().textTheme.copyWith(
-            headline1: GoogleFonts.firaCode(
-                fontSize: 96, fontWeight: FontWeight.w300, letterSpacing: -1.5),
-            headline2: GoogleFonts.firaCode(
-                fontSize: 60, fontWeight: FontWeight.w300, letterSpacing: -0.5),
-            headline3: GoogleFonts.firaCode(
-                fontSize: 48, fontWeight: FontWeight.w400, letterSpacing: 0),
-            headline4: GoogleFonts.firaCode(
-                fontSize: 34, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-            headline5: GoogleFonts.firaCode(
-                fontSize: 24, fontWeight: FontWeight.w400, letterSpacing: 0),
-            headline6: GoogleFonts.firaCode(
-                fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: 0.15),
-            subtitle1: GoogleFonts.firaCode(
-                fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.15),
-            subtitle2: GoogleFonts.firaCode(
-                fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
-            bodyText1: GoogleFonts.firaCode(
-                fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
-            bodyText2: GoogleFonts.firaCode(
-                fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-            button: GoogleFonts.firaCode(
-                fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 1.25),
-            caption: GoogleFonts.firaCode(
-                fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4),
-            overline: GoogleFonts.firaCode(
-                fontSize: 10, fontWeight: FontWeight.w400, letterSpacing: 1.5),
-          ),
+    final scheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: brightness,
     );
-  }
-
-  static ThemeData get themeDark {
-    // const bg = Color(0xff121212);
-    const bg = Color(0xff121212);
-    const cardColor = Color(0xff1e1e1e);
-
-    const primary = Color(0xff9965f4);
-    const secondary = Color(0xff30d158);
 
     return ThemeData(
-      colorScheme: const ColorScheme.dark().copyWith(
-        primary: primary,
-        secondary: secondary,
-      ),
-      primaryColor: primary,
-      brightness: Brightness.dark,
-      textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-        primary: Colors.white,
-      )),
-      backgroundColor: bg,
-      scaffoldBackgroundColor: bg,
-      canvasColor: bg,
-      cardColor: cardColor,
-      appBarTheme: const AppBarTheme(
-        foregroundColor: Colors.white,
-        backgroundColor: bg,
+      brightness: brightness,
+      primaryColor: scheme.primary,
+      useMaterial3: true,
+      colorScheme: scheme,
+      indicatorColor: scheme.secondary,
+      appBarTheme: AppBarTheme(
         elevation: 0,
+        toolbarHeight: 64,
+        backgroundColor: scheme.surface,
+        foregroundColor: scheme.onSurface,
+        titleTextStyle: TextStyle(
+          color: scheme.onSurface,
+          fontSize: 22,
+          fontWeight: FontWeight.w400,
+        ),
+        iconTheme: IconThemeData(
+          color: scheme.onSurface,
+        ),
+        actionsIconTheme: IconThemeData(
+          color: scheme.onSurfaceVariant,
+        ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: cardColor,
-        selectedItemColor: primary,
+      canvasColor: scheme.background,
+      backgroundColor: scheme.background,
+      cardTheme: CardTheme(
+        color: scheme.surfaceVariant,
+        shadowColor: scheme.shadow,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
-      dialogTheme: const DialogTheme(backgroundColor: cardColor),
-      cardTheme: const CardTheme(color: cardColor),
-      textTheme: ThemeData.dark().textTheme.copyWith(
-            headline1: GoogleFonts.firaCode(
-                fontSize: 96, fontWeight: FontWeight.w300, letterSpacing: -1.5),
-            headline2: GoogleFonts.firaCode(
-                fontSize: 60, fontWeight: FontWeight.w300, letterSpacing: -0.5),
-            headline3: GoogleFonts.firaCode(
-                fontSize: 48, fontWeight: FontWeight.w400, letterSpacing: 0),
-            headline4: GoogleFonts.firaCode(
-                fontSize: 34, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-            headline5: GoogleFonts.firaCode(
-                fontSize: 24, fontWeight: FontWeight.w400, letterSpacing: 0),
-            headline6: GoogleFonts.firaCode(
-                fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: 0.15),
-            subtitle1: GoogleFonts.firaCode(
-                fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.15),
-            subtitle2: GoogleFonts.firaCode(
-                fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
-            bodyText1: GoogleFonts.firaCode(
-                fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
-            bodyText2: GoogleFonts.firaCode(
-                fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-            button: GoogleFonts.firaCode(
-                fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 1.25),
-            caption: GoogleFonts.firaCode(
-                fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4),
-            overline: GoogleFonts.firaCode(
-                fontSize: 10, fontWeight: FontWeight.w400, letterSpacing: 1.5),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: scheme.primaryContainer,
+        foregroundColor: scheme.onPrimaryContainer,
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          elevation: MaterialStateProperty.resolveWith((states) => 0),
+          foregroundColor: MaterialStateProperty.resolveWith(
+            (states) => scheme.primary,
           ),
+          textStyle: MaterialStateProperty.resolveWith((states) => TextStyle(
+                color: scheme.primary,
+                fontSize: 14,
+                letterSpacing: 0.1,
+                fontWeight: FontWeight.w500,
+              )),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          elevation: MaterialStateProperty.resolveWith((states) => 1),
+          backgroundColor: MaterialStateProperty.resolveWith(
+            (states) => scheme.surface,
+          ),
+          foregroundColor: MaterialStateProperty.resolveWith(
+            (states) => scheme.primary,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: ButtonStyle(
+          elevation: MaterialStateProperty.resolveWith((states) => 0),
+          backgroundColor: MaterialStateProperty.resolveWith(
+            (states) => scheme.surface,
+          ),
+          foregroundColor: MaterialStateProperty.resolveWith(
+            (states) => scheme.primary,
+          ),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: scheme.secondaryContainer.withOpacity(0.25),
+        indicatorColor: scheme.primaryContainer,
+        labelTextStyle: MaterialStateProperty.resolveWith(
+          (_) => TextStyle(
+            color: scheme.onSurface,
+          ),
+        ),
+        iconTheme: MaterialStateProperty.resolveWith(
+          (_) => IconThemeData(
+            color: scheme.onSecondaryContainer,
+          ),
+        ),
+      ),
+      dialogTheme: DialogTheme(
+        backgroundColor: scheme.surface,
+        elevation: 3,
+        titleTextStyle: TextStyle(
+          color: scheme.onSurface,
+          fontSize: 24,
+        ),
+        contentTextStyle: TextStyle(
+          color: scheme.onSurfaceVariant,
+          fontSize: 14,
+          letterSpacing: 0.25,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+      ),
+      timePickerTheme: TimePickerThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        checkColor: MaterialStateProperty.resolveWith((_) => scheme.secondary),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: MaterialStateProperty.resolveWith((_) => scheme.secondary),
+      ),
     );
   }
 }
