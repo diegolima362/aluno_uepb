@@ -1,7 +1,7 @@
+import 'package:aluno_uepb/app/core/external/drivers/drift_database.dart';
 import 'package:aluno_uepb/app/modules/courses/infra/models/models.dart';
 import 'package:drift/drift.dart';
 
-import '../drift_database.dart';
 import 'mappers.dart';
 
 part 'courses_dao.g.dart';
@@ -29,13 +29,24 @@ final _intToDay = {
 String intToDay(int val) => _intToDay[val] ?? 'Not found';
 
 @DriftAccessor(tables: [CoursesTable])
-class CoursesDao extends DatabaseAccessor<ContentDatabase>
+class CoursesDao extends DatabaseAccessor<AppDriftDatabase>
     with _$CoursesDaoMixin {
-  CoursesDao(ContentDatabase db) : super(db);
+  CoursesDao(AppDriftDatabase db) : super(db);
 
-  Future<List<CourseModel>> get allCourses async {
+  Future<List<CourseModel>> getCourses({String? id}) async {
     final result = <CourseModel>[];
-    final courses = await select(db.coursesTable).get();
+    List<Courses> courses;
+
+    if (id != null) {
+      courses = await (db.select(db.coursesTable)
+            ..where((c) => c.id.equals(id))
+            ..orderBy([(c) => OrderingTerm(expression: c.name)]))
+          .get();
+    } else {
+      courses = await (db.select(db.coursesTable)
+            ..orderBy([(c) => OrderingTerm(expression: c.name)]))
+          .get();
+    }
 
     for (final c in courses) {
       final schedule = await (select(db.schedulesTable)
@@ -54,20 +65,24 @@ class CoursesDao extends DatabaseAccessor<ContentDatabase>
 
     final today = intToDay(DateTime.now().weekday);
 
-    final schedules = await (select(db.schedulesTable)
-          ..where((s) => s.day.lower().equals(today.toLowerCase()))
-          ..orderBy([(t) => OrderingTerm(expression: t.time)]))
+    final ids = await (select(db.schedulesTable)
+          ..where((s) => s.day.lower().equals(today.toLowerCase())))
+        .map((s) => s.course)
         .get();
 
-    if (schedules.isEmpty) return result;
+    if (ids.isEmpty) return result;
 
-    for (final schedule in schedules) {
-      final course = await (select(coursesTable)
-            ..where((c) => c.id.equals(schedule.course)))
+    for (final id in ids) {
+      final course = await (select(coursesTable)..where((c) => c.id.equals(id)))
           .getSingleOrNull();
 
+      final schedule = await (select(db.schedulesTable)
+            ..where((s) => s.course.equals(course?.id)))
+          .map(scheduleFromTable)
+          .get();
+
       if (course != null) {
-        result.add(courseFromTable(course, [scheduleFromTable(schedule)]));
+        result.add(courseFromTable(course, schedule));
       }
     }
 
@@ -76,12 +91,15 @@ class CoursesDao extends DatabaseAccessor<ContentDatabase>
 
   Future<void> saveCourses(List<CourseModel> courses) async {
     await batch((batch) {
-      batch.insertAll(db.coursesTable, courses.map(courseToTalbe));
+      batch.insertAllOnConflictUpdate(
+          db.coursesTable, courses.map(courseToTalbe));
     });
+
+    await db.delete(db.schedulesTable).go();
 
     for (final course in courses) {
       await batch((batch) {
-        batch.insertAll(
+        batch.insertAllOnConflictUpdate(
           db.schedulesTable,
           course.scheduleModel.map((s) => scheduleToTable(s, course.id)),
         );

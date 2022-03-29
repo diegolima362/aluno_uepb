@@ -94,9 +94,7 @@ class CourseModel extends CourseEntity {
   }
 
   @override
-  String toString() {
-    return 'CourseModel(id: $id, name: $name, professor: $professor, duration: $duration, absences: $absences, absencesLimit: $absencesLimit, schedule: $scheduleModel, und1Grade: $und1Grade, und2Grade: $und2Grade, finalTest: $finalTest)';
-  }
+  String toString() => toMap().toString();
 
   @override
   bool operator ==(Object other) {

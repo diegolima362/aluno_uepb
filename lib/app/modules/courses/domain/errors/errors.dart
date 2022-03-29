@@ -1,18 +1,18 @@
-abstract class RDMFailure implements Exception {
+abstract class CoursesFailure implements Exception {
   String get message;
 
   @override
   String toString() => '$runtimeType: $message';
 }
 
-class WrongCredentials implements RDMFailure {
+class AlertFailure implements CoursesFailure {
   @override
   final String message;
-  WrongCredentials({this.message = 'Matrícula ou senha não conferem!'});
+  AlertFailure({this.message = ''});
 }
 
-class ServerError implements RDMFailure {
+class GetCoursesError implements CoursesFailure {
   @override
   final String message;
-  ServerError({this.message = 'Problema na comunicação com o servidor!'});
+  GetCoursesError({this.message = ''});
 }

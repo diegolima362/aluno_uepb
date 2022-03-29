@@ -6,13 +6,16 @@ import 'package:fpdart/fpdart.dart';
 import '../../../../core/external/drivers/fpdart_either_adapter.dart';
 import '../../domain/entities/entities.dart';
 
-class TodayStore extends NotifierStore<RDMFailure, List<CourseEntity>> {
+class TodayStore extends NotifierStore<CoursesFailure, List<CourseEntity>> {
   final IGetTodaysClasses usecase;
 
   TodayStore(this.usecase) : super([]);
 
   Future<Unit> getData() async {
+    setLoading(true);
+
     executeEither(() => FpdartEitherAdapter.adapter(usecase()));
+
     return unit;
   }
 }

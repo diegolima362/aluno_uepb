@@ -1,4 +1,4 @@
-import '../repositories/academic_repository.dart';
+import '../repositories/courses_repository.dart';
 import '../types/types.dart';
 
 abstract class IGetTodaysClasses {
@@ -6,7 +6,7 @@ abstract class IGetTodaysClasses {
 }
 
 class GetTodaysClasses implements IGetTodaysClasses {
-  final IAcademicRepository repository;
+  final ICoursesRepository repository;
 
   GetTodaysClasses(this.repository);
 

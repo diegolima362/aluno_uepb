@@ -1,4 +1,3 @@
-import 'package:fpdart/fpdart.dart';
 import 'package:html/dom.dart';
 
 import '../../../infra/models/models.dart';
@@ -8,35 +7,6 @@ final findAbsences = RegExp(r'gauge\d+.set\((\d+)');
 final findAbsencesLimit = RegExp(r'gauge\d+.maxValue = \d+');
 
 String trim(Element e) => e.text.trim();
-
-Option<ProfileModel> extractProfile(Document doc) {
-  final name = doc.getElementsByTagName('h2')[0].text;
-
-  final cra = doc.getElementsByClassName('text-purple')[0].text;
-  final ch = doc.getElementsByClassName('ch')[0].text;
-
-  final items = doc.getElementsByClassName('text-muted').map(trim).toList();
-
-  final register = items[0];
-  final programInfo = items[1];
-
-  final program = programInfo.split('-').last.split('(').first.trim();
-
-  final campus = (RegExp(r'\([^)]*\)').firstMatch(programInfo)?[0] ?? '')
-      .replaceAll('(', '')
-      .replaceAll(')', '');
-
-  final profile = ProfileModel(
-    register: register,
-    name: name,
-    program: program,
-    campus: campus,
-    cra: cra,
-    cumulativeHours: ch,
-  );
-
-  return some(profile);
-}
 
 List<CourseModel> extractCourses(Document doc) {
   final courses = <CourseModel>[];
@@ -87,6 +57,8 @@ List<CourseModel> extractCourses(Document doc) {
     );
   }
 
+  courses.sort((a, b) => a.name.compareTo(b.name));
+
   return courses;
 }
 
@@ -127,26 +99,4 @@ List<ScheduleModel> _extractSchedule(Element element) {
       );
     },
   ).toList();
-}
-
-List<HistoryModel> extractHistory(Document doc) {
-  final history = <HistoryModel>[];
-
-  final rows = doc.getElementsByTagName('tr').skip(1);
-
-  for (final row in rows) {
-    final items = row.getElementsByTagName('td').map(trim).toList();
-
-    history.add(HistoryModel(
-      id: items[0],
-      name: items[1],
-      semester: items[2],
-      cumulativeHours: items[4],
-      grade: items[5].isNotEmpty ? items[5] : '-',
-      absences: items[6].isNotEmpty ? items[6] : '0',
-      status: items[7],
-    ));
-  }
-
-  return history;
 }

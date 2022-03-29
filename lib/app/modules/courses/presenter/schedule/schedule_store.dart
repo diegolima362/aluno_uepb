@@ -7,12 +7,14 @@ import '../../domain/entities/entities.dart';
 import '../../domain/errors/errors.dart';
 import '../../domain/usecases/usecases.dart';
 
-class ScheduleStore extends NotifierStore<RDMFailure, List<CourseEntity>> {
+class ScheduleStore extends NotifierStore<CoursesFailure, List<CourseEntity>> {
   final IGetCourses usecase;
 
   ScheduleStore(this.usecase) : super([]);
 
   Future<Unit> getData() async {
+    setLoading(true);
+
     executeEither(() => FpdartEitherAdapter.adapter(usecase()));
     return unit;
   }

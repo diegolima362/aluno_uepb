@@ -55,7 +55,7 @@ class ScheduleModel extends ScheduleEntity {
       ScheduleModel.fromMap(json.decode(source));
 
   @override
-  String toString() => 'ScheduleModel(day: $day, time: $time, local: $local)';
+  String toString() => toMap().toString();
 
   @override
   bool operator ==(Object other) {

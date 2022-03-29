@@ -1,28 +1,5 @@
+import 'package:aluno_uepb/app/core/external/drivers/drift_database.dart';
 import 'package:aluno_uepb/app/modules/courses/infra/models/models.dart';
-
-import '../drift_database.dart';
-
-ProfileModel profileFromTable(Profiles profile) {
-  return ProfileModel(
-    register: profile.register,
-    name: profile.name,
-    program: profile.program,
-    campus: profile.campus,
-    cra: profile.cra,
-    cumulativeHours: profile.cumulativeHours,
-  );
-}
-
-ProfilesTableCompanion profileToTable(ProfileModel profile) {
-  return ProfilesTableCompanion.insert(
-    register: profile.register,
-    name: profile.name,
-    program: profile.program,
-    campus: profile.campus,
-    cra: profile.cra,
-    cumulativeHours: profile.cumulativeHours,
-  );
-}
 
 CourseModel courseFromTable(Courses course, List<ScheduleModel> schedule) {
   return CourseModel(
@@ -67,29 +44,5 @@ SchedulesTableCompanion scheduleToTable(ScheduleModel schedule, String id) {
     local: schedule.local,
     time: schedule.time,
     course: id,
-  );
-}
-
-HistoryModel historyFromTable(History history) {
-  return HistoryModel(
-    id: history.id,
-    name: history.name,
-    semester: history.semester,
-    cumulativeHours: history.cumulativeHours,
-    grade: history.grade,
-    absences: history.absences,
-    status: history.status,
-  );
-}
-
-HistoryTableCompanion historyToTable(HistoryModel history) {
-  return HistoryTableCompanion.insert(
-    id: history.id,
-    name: history.name,
-    semester: history.semester,
-    cumulativeHours: history.cumulativeHours,
-    grade: history.grade,
-    absences: history.absences,
-    status: history.status,
   );
 }
