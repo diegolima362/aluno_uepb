@@ -1,13 +1,13 @@
 import 'package:asuka/asuka.dart' as asuka;
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 
-import '../../../../../core/presenter/stores/auth_store.dart';
-import '../../../domain/entities/login_credential.dart';
-import '../../../domain/errors/errors.dart';
-import '../../../domain/usecases/usecases.dart';
-import '../../utils/loading_indicator.dart';
+import '../../../../core/presenter/stores/auth_store.dart';
+import '../../domain/entities/login_credential.dart';
+import '../../domain/errors/errors.dart';
+import '../../domain/usecases/usecases.dart';
+import '../widgets/loading_indicator.dart';
 
 class LoginStore extends NotifierStore<AuthFailure, LoginCredential> {
   final ISignIn signIn;
@@ -33,9 +33,12 @@ class LoginStore extends NotifierStore<AuthFailure, LoginCredential> {
     entry.remove();
 
     result.fold((failure) {
-      AsukaSnackbar.alert(failure.message).show();
+      asuka.showSnackBar(SnackBar(
+        content: Text(failure.message),
+        backgroundColor: const Color(0xFFB3261E),
+      ));
     }, (user) {
-      AsukaSnackbar.success('Bem-vindo').show();
+      asuka.showSnackBar(const SnackBar(content: Text('Bem-vindo')));
       authStore.setUser(user.toNullable());
       Modular.to.navigate('/');
     });

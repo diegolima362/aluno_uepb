@@ -3,27 +3,27 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'domain/usecases/usecases.dart';
 import 'external/datasources/auth_datasource.dart';
 import 'infra/repositories/auth_repository.dart';
-import 'presenter/pages/login_page/login_page.dart';
-import 'presenter/pages/login_page/login_store.dart';
+import 'presenter/login/login_page.dart';
+import 'presenter/login/login_store.dart';
 
 class AuthModule extends Module {
   static List<Bind> export = [
     // usecases
-    Bind.singleton((i) => GetLoggedUser(i())),
-    Bind.singleton((i) => SignedSession(i(), i())),
-    Bind.singleton((i) => Logout(i())),
+    Bind.lazySingleton((i) => GetLoggedUser(i())),
+    Bind.lazySingleton((i) => SignedSession(i(), i())),
+    Bind.lazySingleton((i) => Logout(i())),
     // repositories
-    Bind.singleton((i) => AuthRepository(i())),
+    Bind.lazySingleton((i) => AuthRepository(i())),
     // datasources
-    Bind.singleton((i) => AuthDatasource(i(), i())),
+    Bind.lazySingleton((i) => AuthDatasource(i(), i())),
   ];
 
   @override
   final List<Bind> binds = [
     // usecases
-    Bind.singleton((i) => SignIn(i(), i())),
+    Bind.lazySingleton((i) => SignIn(i(), i())),
     //stores
-    Bind.singleton((i) => LoginStore(i(), i())),
+    Bind.lazySingleton((i) => LoginStore(i(), i())),
   ];
 
   @override

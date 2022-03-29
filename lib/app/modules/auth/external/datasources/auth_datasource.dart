@@ -1,3 +1,4 @@
+import 'package:aluno_uepb/app/core/external/drivers/drift_database.dart';
 import 'package:aluno_uepb/app/core/external/drivers/session.dart';
 import 'package:aluno_uepb/app/core/external/utils/urls.dart';
 import 'package:flutter/foundation.dart';
@@ -5,13 +6,13 @@ import 'package:flutter/foundation.dart';
 import '../../domain/errors/errors.dart';
 import '../../infra/datasources/auth_datasource.dart';
 import '../../infra/models/user_model.dart';
-import 'adapters/drift/drift_database.dart';
-import 'adapters/drift/mappers.dart';
+
+import 'adapters/drift/daos/mappers.dart';
 import 'utils/encoders.dart' as encoders;
 
 class AuthDatasource implements IAuthDatasource {
   final Session client;
-  final AuthDatabase db;
+  final AppDriftDatabase db;
 
   static const Duration _expireTime = Duration(minutes: 5);
 
@@ -26,7 +27,7 @@ class AuthDatasource implements IAuthDatasource {
     if (_user != null) return _user;
 
     try {
-      final result = await db.currentUser;
+      final result = await db.usersDao.currentUser;
       if (result != null) {
         _user = userFromTable(result);
       } else {
@@ -46,18 +47,20 @@ class AuthDatasource implements IAuthDatasource {
     try {
       final data = {'nome_usuario': register, 'senha_usuario': password};
 
+      await client.get(loginURL);
+
       final result = await client.post(loginURL, data);
 
       if (result.isNone()) {
-        throw SignInError(message: 'Cliente ocupado');
+        throw SignInError(message: 'Cliente ocupado.');
       } else {
         final body = result.toNullable()?.body ?? '';
 
         if (body.contains(error1) || body.contains(error2)) {
-          throw SignInError(message: 'Erro de credenciais');
+          throw SignInError(message: 'Matrícula ou senha não conferem.');
         }
         if (body.contains(error3)) {
-          throw SignInError(message: 'Falha ao conectar com servidor');
+          throw SignInError(message: 'Falha ao conectar com servidor.');
         }
 
         _cachedSession.clear();
@@ -69,7 +72,7 @@ class AuthDatasource implements IAuthDatasource {
           credentials: encoders.encodeCredentials(register, password),
         );
 
-        await db.saveUser(userToTable(_user!));
+        await db.usersDao.saveUser(userToTable(_user!));
 
         return _user!;
       }
@@ -133,7 +136,9 @@ class AuthDatasource implements IAuthDatasource {
   @override
   Future<void> logout() async {
     try {
-      await db.clearDatabase();
+      _user = null;
+      _cachedSession.clear();
+      await db.usersDao.clearDatabase();
     } catch (e) {
       throw ErrorLogout(message: 'Erro ao fazer logout: ' + e.toString());
     } finally {

@@ -10,7 +10,7 @@ class LoginCredential {
   });
 
   bool get isValidRegister => register.isNotEmpty;
-  bool get isValidPassword => password.isNotEmpty && password.length >= 6;
+  bool get isValidPassword => password.isNotEmpty;
   bool get isValid => isValidRegister && isValidPassword;
 
   factory LoginCredential.withRegisterAndPassword({

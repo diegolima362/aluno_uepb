@@ -1,5 +1,6 @@
-import '../../../../infra/models/user_model.dart';
-import 'drift_database.dart';
+import 'package:aluno_uepb/app/core/external/drivers/drift_database.dart';
+
+import '../../../../../infra/models/user_model.dart';
 
 UserModel userFromTable(User u) {
   return UserModel(
