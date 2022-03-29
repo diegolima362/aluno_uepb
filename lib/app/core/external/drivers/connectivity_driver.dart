@@ -13,10 +13,17 @@ class ConnectivityDriver implements IConnectivityDriver {
   ConnectivityDriver(this.connectivity);
 
   @override
-  Stream<Future<bool>> get connectionStream =>
-      connectivity.onConnectivityChanged.map(
-        (e) async => e != ConnectivityResult.none && await _checkStatus(),
-      );
+  Stream<Future<bool>> get connectionStream {
+    return connectivity.onConnectivityChanged.map(
+      (e) async {
+        try {
+          return e != ConnectivityResult.none && await _checkStatus();
+        } catch (e) {
+          return false;
+        }
+      },
+    );
+  }
 
   @override
   Future<bool> get isOnline async {
@@ -38,7 +45,7 @@ class ConnectivityDriver implements IConnectivityDriver {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         isOnline = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
       }
-    } on Exception {
+    } catch (e) {
       isOnline = false;
       rethrow;
     }

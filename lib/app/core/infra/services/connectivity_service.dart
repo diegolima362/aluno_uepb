@@ -11,7 +11,7 @@ class ConnectivityService implements IConnectivityService {
   ConnectivityService(this.driver);
 
   @override
-  Future<EitherBool> get isOnline async {
+  Future<EitherConnectivityBool> get isOnline async {
     try {
       var check = await driver.isOnline;
       if (check) {

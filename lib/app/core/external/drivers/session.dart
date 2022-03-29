@@ -36,7 +36,8 @@ class Session {
       const Duration(seconds: 30),
       onTimeout: () {
         waiting = false;
-        throw TimeoutException('Controle Acadêmico indisponivel');
+        timer.cancel();
+        throw TimeoutException('Tempo esgotado');
       },
     );
 
@@ -56,6 +57,8 @@ class Session {
       return response == null ? null : parse(response.body);
     } catch (e) {
       rethrow;
+    } finally {
+      waiting = false;
     }
   }
 
@@ -65,6 +68,8 @@ class Session {
       return response?.bodyBytes;
     } catch (e) {
       rethrow;
+    } finally {
+      waiting = false;
     }
   }
 
@@ -78,16 +83,22 @@ class Session {
 
     final timer = Timer(const Duration(seconds: 20), () => waiting = false);
 
-    http.Response response = await client.post(
-      Uri.parse(url),
-      body: data,
-      headers: _headers,
-    );
+    try {
+      http.Response response = await client.post(
+        Uri.parse(url),
+        body: data,
+        headers: _headers,
+      );
 
-    waiting = false;
-    timer.cancel();
+      waiting = false;
 
-    return some(response);
+      return some(response);
+    } catch (e) {
+      rethrow;
+    } finally {
+      timer.cancel();
+      waiting = false;
+    }
   }
 
   void updateCookie(http.Response response) {

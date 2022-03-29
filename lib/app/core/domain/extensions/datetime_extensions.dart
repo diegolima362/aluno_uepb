@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 extension DateFormater on DateTime {
@@ -25,6 +26,17 @@ extension DateFormater on DateTime {
 
   String get dateFirebase =>
       DateFormat('dMMMy').format(this).replaceAll('/', ' ');
+}
+
+extension ToDateTime on TimeOfDay {
+  DateTime get asDateTime {
+    final n = DateTime.now();
+    return DateTime(n.year, n.month, n.day, hour, minute);
+  }
+
+  DateTime toDateTime(DateTime date) {
+    return DateTime(date.year, date.month, date.day, hour, minute);
+  }
 }
 
 extension ThisWeek on DateTime {
