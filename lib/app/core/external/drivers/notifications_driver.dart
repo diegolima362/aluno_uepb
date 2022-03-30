@@ -53,8 +53,6 @@ class NotificationsDriver implements INotificationsDriver {
       'singleAlert',
       'Alertas simples',
       channelDescription: 'Alertas simples',
-      priority: Priority.max,
-      importance: Importance.max,
       icon: 'notification_icon',
       ongoing: true,
       styleInformation: BigTextStyleInformation(

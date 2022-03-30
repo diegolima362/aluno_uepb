@@ -1,6 +1,9 @@
 import 'package:aluno_uepb/app/core/external/drivers/drift_database.dart';
 import 'package:aluno_uepb/app/core/presenter/stores/preferences_store.dart';
 import 'package:aluno_uepb/app/modules/auth/domain/usecases/logout.dart';
+import 'package:aluno_uepb/app/modules/courses/infra/repositories/courses_repository.dart';
+import 'package:aluno_uepb/app/modules/history/infra/repositories/history_repository.dart';
+import 'package:aluno_uepb/app/modules/profile/infra/repositories/profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -118,6 +121,11 @@ class _ProfilePageState extends ModularState<ProfilePage, ProfileStore> {
 
     await Modular.get<ILogout>().call();
     await Modular.get<AppDriftDatabase>().clearDatabase();
+
+    Modular.get<CoursesRepository>().coursesCache.clear();
+    Modular.get<CoursesRepository>().todayCache.clear();
+    Modular.get<HistoryRepository>().historyCache.clear();
+    Modular.get<ProfileRepository>().profile = fpdart.none();
 
     Navigator.pop(context);
     Modular.to.navigate('/');

@@ -45,7 +45,7 @@
 
         <service
             android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
-            android:exported="false"
+            android:exported="true"
             android:stopWithTask="false"/>
     </application>
 </manifest>
