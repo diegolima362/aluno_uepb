@@ -1,5 +1,4 @@
 import 'package:aluno_uepb/app/core/presenter/stores/preferences_store.dart';
-import 'package:aluno_uepb/app/core/presenter/theme/colors.dart';
 import 'package:aluno_uepb/app/core/presenter/widgets/widgets.dart';
 import 'package:aluno_uepb/app/modules/preferences/domain/erros/erros.dart';
 import 'package:flutter/material.dart';
@@ -44,16 +43,26 @@ class PreferencesPage extends StatelessWidget {
                 ListTile(
                   title: const Text('Tema'),
                   subtitle: Text(themeNames[state.themeMode] ?? ''),
-                  onTap: () => _selectTheme(
-                    context,
-                    state.themeMode,
-                    store.setTheme,
+                  onTap: () => showDialog(
+                    context: context,
+                    useRootNavigator: false,
+                    builder: (context) => ThemeSelector(
+                      initialValue: state.themeMode,
+                      onThemeSelected: store.setTheme,
+                    ),
                   ),
                 ),
                 ListTile(
                   title: const Text('Cor de destaque'),
                   trailing: ColorContainer(colorValue: state.seedColor),
-                  onTap: () => _selectSeedColor(context, state),
+                  onTap: () => showDialog(
+                    context: context,
+                    useRootNavigator: false,
+                    builder: (_) => ThemeColorSelector(
+                      initialValue: state.seedColor,
+                      onColorSelected: Modular.get<PreferencesStore>().setColor,
+                    ),
+                  ),
                 ),
                 const Divider(height: 0),
                 const SectionTitle(text: 'Atualizações'),
@@ -127,90 +136,6 @@ class PreferencesPage extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  Future<dynamic> _selectSeedColor(
-      BuildContext context, PreferencesState state) {
-    return showDialog(
-      context: context,
-      useRootNavigator: false,
-      builder: (context) {
-        return CustomAlert<int>(
-          title: 'Escolher cor',
-          initialValue: state.seedColor,
-          onValueChanged: Modular.get<PreferencesStore>().setColor,
-          contentBuilder: (update, value) {
-            return Wrap(
-              alignment: WrapAlignment.center,
-              children: appColors
-                  .map(
-                    (e) => GestureDetector(
-                      onTap: () => update(e.value),
-                      child: ColorContainer(
-                        color: e,
-                        useBorder: value == e.value,
-                        width: 32,
-                        height: 32,
-                      ),
-                    ),
-                  )
-                  .toList(),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<dynamic> _selectTheme(
-    BuildContext context,
-    ThemeMode initialValue,
-    void Function(ThemeMode?) onThemeSelected,
-  ) {
-    return showDialog(
-      context: context,
-      useRootNavigator: false,
-      builder: (context) {
-        return CustomAlert<ThemeMode>(
-          title: 'Escolher tema',
-          initialValue: initialValue,
-          onValueChanged: onThemeSelected,
-          contentBuilder: (update, value) => Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                title: const Text('Claro'),
-                contentPadding: EdgeInsets.zero,
-                leading: Radio<ThemeMode>(
-                  value: ThemeMode.light,
-                  groupValue: value,
-                  onChanged: (newValue) => update(newValue),
-                ),
-              ),
-              ListTile(
-                title: const Text('Escuro'),
-                contentPadding: EdgeInsets.zero,
-                leading: Radio<ThemeMode>(
-                  value: ThemeMode.dark,
-                  groupValue: value,
-                  onChanged: (newValue) => update(newValue),
-                ),
-              ),
-              ListTile(
-                title: const Text('Pelo sistema'),
-                contentPadding: EdgeInsets.zero,
-                leading: Radio<ThemeMode>(
-                  value: ThemeMode.system,
-                  groupValue: value,
-                  onChanged: (newValue) => update(newValue),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

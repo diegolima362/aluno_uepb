@@ -1,34 +1,57 @@
 import 'package:flutter/material.dart';
 
-class ThemeSelector extends StatelessWidget {
-  final Function(ThemeMode?) onSetTheme;
-  final ThemeMode initialTheme;
+import 'custom_dialog.dart';
 
-  const ThemeSelector(
-      {Key? key,
-      required this.onSetTheme,
-      this.initialTheme = ThemeMode.system})
-      : super(key: key);
+class ThemeSelector extends StatelessWidget {
+  final ThemeMode initialValue;
+  final void Function(ThemeMode?) onThemeSelected;
+
+  const ThemeSelector({
+    Key? key,
+    required this.initialValue,
+    required this.onThemeSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final selected = List.generate(3, (index) => index == initialTheme.index);
-    return ListTile(
-      title: const Text(
-        'Tema ',
-        textAlign: TextAlign.start,
-        style: TextStyle(
-          fontSize: 18,
-        ),
-      ),
-      trailing: ToggleButtons(
-        isSelected: selected,
-        borderRadius: BorderRadius.circular(4),
-        onPressed: (index) => onSetTheme(ThemeMode.values.elementAt(index)),
-        children: const [
-          Icon(Icons.phone_android_sharp),
-          Icon(Icons.wb_sunny_outlined),
-          Icon(Icons.nightlight_round),
+    return CustomAlert<ThemeMode>(
+      title: 'Escolher tema',
+      initialValue: initialValue,
+      onValueChanged: onThemeSelected,
+      contentBuilder: (update, value) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            title: const Text('Claro'),
+            contentPadding: EdgeInsets.zero,
+            onTap: () => update(ThemeMode.light),
+            leading: Radio<ThemeMode>(
+              value: ThemeMode.light,
+              groupValue: value,
+              onChanged: (newValue) => update(newValue),
+            ),
+          ),
+          ListTile(
+            title: const Text('Escuro'),
+            contentPadding: EdgeInsets.zero,
+            onTap: () => update(ThemeMode.dark),
+            leading: Radio<ThemeMode>(
+              value: ThemeMode.dark,
+              groupValue: value,
+              onChanged: (newValue) => update(newValue),
+            ),
+          ),
+          ListTile(
+            title: const Text('Pelo sistema'),
+            contentPadding: EdgeInsets.zero,
+            onTap: () => update(ThemeMode.system),
+            leading: Radio<ThemeMode>(
+              value: ThemeMode.system,
+              groupValue: value,
+              onChanged: (newValue) => update(newValue),
+            ),
+          ),
         ],
       ),
     );

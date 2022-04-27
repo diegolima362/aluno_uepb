@@ -15,7 +15,7 @@ class CustomAboutDialog extends StatelessWidget {
         children: [
           const MyAppIcon(),
           Text(
-            'v1.3.1',
+            'v1.3.2',
             style: textTheme.labelMedium,
             textAlign: TextAlign.center,
           ),
@@ -36,7 +36,7 @@ class CustomAboutDialog extends StatelessWidget {
               applicationIcon: const MyAppIcon(),
               applicationLegalese: 'Aluno UEPB\n'
                   'Feito com ❤ por Diego Lima',
-              applicationVersion: '1.3.1',
+              applicationVersion: '1.3.2',
               applicationName: '',
             );
           },

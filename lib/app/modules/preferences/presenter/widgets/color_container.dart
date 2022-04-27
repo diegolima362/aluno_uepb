@@ -25,7 +25,7 @@ class ColorContainer extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
         color: color ?? Color(colorValue!),
-        borderRadius: BorderRadius.circular(20),
+        shape: BoxShape.circle,
         border: !useBorder
             ? null
             : Border.all(
