@@ -1,13 +1,14 @@
-import 'package:aluno_uepb/app/core/domain/extensions/datetime_extensions.dart';
-import 'package:aluno_uepb/app/modules/alerts/domain/entities/entities.dart';
-import 'package:aluno_uepb/app/modules/alerts/presenter/reminders/reminders_store.dart';
-import 'package:aluno_uepb/app/modules/courses/domain/usecases/get_courses.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../core/domain/extensions/datetime_extensions.dart';
+import '../../../courses/domain/usecases/get_courses.dart';
+import '../../domain/entities/entities.dart';
+import 'reminders_store.dart';
 
 class ReminderDetailsPage extends HookWidget {
   final TaskReminderEntity reminder;
@@ -102,7 +103,7 @@ class ReminderDetailsPage extends HookWidget {
             child: Markdown(
               selectable: true,
               onTapLink: (a, b, c) {
-                if (b != null) launch(b);
+                if (b != null) launchUrl(Uri.parse(b));
               },
               data: reminder.body,
               extensionSet: md.ExtensionSet(

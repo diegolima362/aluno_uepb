@@ -103,7 +103,9 @@ class PreferencesPage extends StatelessWidget {
                 ListTile(
                   title: const Text('Veja como fui feito'),
                   onTap: () {
-                    launch('https://github.com/diegolima362/aluno_uepb');
+                    launchUrl(
+                      Uri.parse('https://github.com/diegolima362/aluno_uepb'),
+                    );
                   },
                 ),
                 ListTile(
@@ -117,7 +119,7 @@ class PreferencesPage extends StatelessWidget {
                       ),
                     );
 
-                    launch(emailLaunchUri.toString());
+                    launchUrl(emailLaunchUri);
                   },
                 ),
               ],
