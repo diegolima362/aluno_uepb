@@ -90,16 +90,17 @@ class CoursesDao extends DatabaseAccessor<AppDriftDatabase>
   }
 
   Future<void> saveCourses(List<CourseModel> courses) async {
+    await db.delete(db.coursesTable).go();
+
     await batch((batch) {
-      batch.insertAllOnConflictUpdate(
-          db.coursesTable, courses.map(courseToTalbe));
+      batch.insertAll(db.coursesTable, courses.map(courseToTalbe));
     });
 
     await db.delete(db.schedulesTable).go();
 
     for (final course in courses) {
       await batch((batch) {
-        batch.insertAllOnConflictUpdate(
+        batch.insertAll(
           db.schedulesTable,
           course.scheduleModel.map((s) => scheduleToTable(s, course.id)),
         );

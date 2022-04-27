@@ -19,6 +19,7 @@ class CoursesModule extends Module {
 
     // usecases
     Bind.lazySingleton((i) => GetCourses(i())),
+    Bind.lazySingleton((i) => GetCourseById(i())),
     Bind.lazySingleton((i) => GetRDM(i(), i())),
 
     // datasources

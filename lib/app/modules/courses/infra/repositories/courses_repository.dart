@@ -22,6 +22,17 @@ class CoursesRepository implements ICoursesRepository {
       .isAfter(await prefsStorage.getLastCoursesUpdate());
 
   @override
+  Future<EitherCourse> getCourseById(String id) async {
+    final filtered = coursesCache.filter((t) => t.id == id);
+
+    if (filtered.isNotEmpty) {
+      return Right(Option.of(filtered.first));
+    } else {
+      return Right(Option.none());
+    }
+  }
+
+  @override
   Future<EitherCourses> getCourses({String? id, bool cached = true}) async {
     final courses = <CourseEntity>[];
 
@@ -51,10 +62,13 @@ class CoursesRepository implements ICoursesRepository {
           coursesCache.addAll(result);
         } else {
           remoteData.getCourses(id: id).then(
-                (r) async => await localData.saveCourses(r),
-              );
+            (r) async {
+              coursesCache.clear();
 
-          coursesCache.clear();
+              coursesCache.addAll(r);
+              await localData.saveCourses(r);
+            },
+          );
         }
 
         await prefsStorage.setLastCoursesUpdate(DateTime.now());
@@ -62,6 +76,8 @@ class CoursesRepository implements ICoursesRepository {
         return Left(e);
       }
     }
+
+    todayCache.clear();
 
     return Right(courses);
   }
