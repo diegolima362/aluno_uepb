@@ -6,7 +6,9 @@ import '../../../../shared/data/types/types.dart';
 import '../../data/datasources/preferences_local_datasource.dart';
 
 // const _baseUrl = 'http://10.0.2.2:8000';
-const _baseUrl = 'http://192.168.0.106:8000';
+// const _baseUrl = 'http://192.168.0.106:8000';
+const _baseUrl = 'https://hub.362devs.com';
+
 final _mock = <Map<String, dynamic>>[
   {
     'title': 'Mock',
