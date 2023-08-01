@@ -5,6 +5,7 @@ import 'data/repositories/auth_repository.dart';
 import 'external/datasources/auth_secure_storage_local_datasource.dart';
 import 'reducers/auth_reducer.dart';
 import 'ui/pages/sign_in_page.dart';
+import 'ui/pages/sign_in_webview.dart';
 
 class AuthModule extends Module {
   @override
@@ -23,5 +24,12 @@ class AuthModule extends Module {
   @override
   final List<ModularRoute> routes = [
     ChildRoute('/', child: (_, __) => const SignInPage()),
+    ChildRoute(
+      '/sign-in-webview/',
+      child: (_, args) => SignInWebView(
+        username: args.data['username'],
+        password: args.data['password'],
+      ),
+    ),
   ];
 }

@@ -18,6 +18,7 @@ class AuthReducer extends Reducer {
     on(() => [fetchCurrentUser], _fetchCurrentUser);
     on(() => [signInAction], _signIn);
     on(() => [signOutAction], _signOut);
+    on(() => [resetAuthAction], _resetAuth);
   }
 
   void _fetchCurrentUser() async {
@@ -26,6 +27,13 @@ class AuthReducer extends Reducer {
       (success) => userState.value = success,
       (failure) => userState.value = null,
     );
+  }
+
+  void _resetAuth() {
+    usernameState.value = userState.value?.username ?? '';
+    passwordState.value = userState.value?.password ?? '';
+    signInResultState.value = null;
+    userState.value = null;
   }
 
   Future<void> _signIn() async {

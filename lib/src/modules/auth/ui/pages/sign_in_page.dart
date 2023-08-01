@@ -18,6 +18,7 @@ class _SignInPageState extends State<SignInPage> {
   late final FocusNode passwordFocusNode;
 
   bool _hidePassword = true;
+  bool _shouldRedirect = false;
 
   @override
   void initState() {
@@ -43,6 +44,16 @@ class _SignInPageState extends State<SignInPage> {
           passwordState.value = '';
         },
         (error) {
+          if (error.code == 'anti_span' && !_shouldRedirect) {
+            _shouldRedirect = true;
+            Modular.to.pushNamed(
+              '/auth/sign-in-webview/',
+              arguments: {
+                'username': usernameState.value,
+                'password': passwordState.value,
+              },
+            ).then((value) => _shouldRedirect = false);
+          }
           context.showError(error.message, resetResult);
         },
       );
