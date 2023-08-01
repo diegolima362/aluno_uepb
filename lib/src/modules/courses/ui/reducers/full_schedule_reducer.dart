@@ -40,6 +40,8 @@ class ScheduleReducer extends Reducer {
             }
           }
 
+          scheduleAtDay.sort((a, b) => a.startTime.compareTo(b.startTime));
+
           schedule.add((day, scheduleAtDay));
         }
 

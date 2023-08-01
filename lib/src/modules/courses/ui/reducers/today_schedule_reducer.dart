@@ -41,6 +41,7 @@ class TodayScheduleReducer extends Reducer {
           }
         }
 
+        schedule.sort((a, b) => a.startTime.compareTo(b.startTime));
         todayScheduleState.value = schedule;
       },
       (err) => todayScheduleResultState.value = Failure(err),
