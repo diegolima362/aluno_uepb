@@ -1,7 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.u362devs.aluno_uepb">
+    package="com.u362devs.aluno_uepb" xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.support.customtabs.action.CustomTabsService" />
+
 
     <queries>
         <!-- If your app opens https URLs -->
@@ -16,7 +21,7 @@
         </intent>
     </queries>
 
-   <application
+    <application
         android:label="Hub"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -29,23 +34,23 @@
             android:hardwareAccelerated="true"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:windowSoftInputMode="adjustResize">            
+            android:windowSoftInputMode="adjustResize">
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+            />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>        
+        </activity>
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
         <service
-            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
+            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
             android:exported="true"
-            android:stopWithTask="false"/>
+            android:stopWithTask="false" />
     </application>
 </manifest>
