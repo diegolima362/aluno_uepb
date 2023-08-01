@@ -19,6 +19,19 @@ class SuapUpebRemoteDataSource implements AcademicRemoteDataSource {
   @override
   void setUser(User? user) {
     _user = user;
+    if (user == null) {
+      client.clearCache();
+    }
+  }
+
+  Future<bool> _checkAuth() async {
+    try {
+      var homePage = await client.getResponse(consts.baseURL);
+      String? sessionUser = homePage.headers['user'];
+      return sessionUser != null && sessionUser == _user?.username;
+    } on AppException {
+      return false;
+    }
   }
 
   @override
@@ -26,6 +39,10 @@ class SuapUpebRemoteDataSource implements AcademicRemoteDataSource {
     String user,
     String password,
   ) async {
+    if (_user != null && await _checkAuth()) {
+      return Success(_user!);
+    }
+
     final data = {
       'username': user,
       'password': password,
@@ -91,105 +108,87 @@ class SuapUpebRemoteDataSource implements AcademicRemoteDataSource {
     return Success(_user!);
   }
 
+  Future<Result<User, AppException>> _refreshAuth() async {
+    final user = _user;
+    if (user == null) {
+      return Failure(AppException('Usuário não logado.'));
+    }
+
+    return await signInWithUserAndPassword(user.username, user.password);
+  }
+
   @override
   AsyncResult<Profile, AppException> fetchProfile() async {
-    try {
-      final user = _user;
-      if (user == null) {
-        return Failure(AppException('Usuário não logado.'));
-      }
-
-      await signInWithUserAndPassword(user.username, user.password);
-
-      final url = '${consts.infoUrl}${user.username}/?tab=requisitos';
-
-      final response = await client.getResponse(url);
-
-      final redirectedUrl = response.headers['location'];
-      if (redirectedUrl == consts.loginURL) {
-        return Failure(AppException('Falha ao entrar.'));
-      }
-
-      final doc = parse(response.body);
-
-      if (doc.body?.text.contains('Entrar') ?? true) {
-        return Failure(AppException('Falha ao entrar, reinicie o app.'));
-      }
-
-      return Success(parseProfile(doc));
-    } on AppException catch (e) {
-      return Failure(e);
-    }
+    return _refreshAuth().then((result) {
+      return result.fold(
+        (user) async {
+          try {
+            final url = '${consts.infoUrl}${user.username}/?tab=requisitos';
+            final response = await client.get(url);
+            return Success(parseProfile(response));
+          } on AppException catch (e) {
+            return Failure(e);
+          }
+        },
+        (err) => Failure(err),
+      );
+    });
   }
 
   @override
   AsyncResult<List<Course>, AppException> fetchCourses() async {
-    final user = _user;
-    if (user == null) {
-      return Failure(AppException('Usuário não logado.'));
-    }
-    await signInWithUserAndPassword(user.username, user.password);
+    return _refreshAuth().then((result) {
+      return result.fold(
+        (user) async {
+          try {
+            final urlCoursesInfo =
+                '${consts.infoUrl}${user.username}/?tab=boletim';
+            final urlSchedule =
+                '${consts.infoUrl}${user.username}/?tab=locais_aula_aluno';
 
-    try {
-      final urlCoursesInfo = '${consts.infoUrl}${user.username}/?tab=boletim';
-      final urlSchedule =
-          '${consts.infoUrl}${user.username}/?tab=locais_aula_aluno';
+            final infoResponse = await client.getResponse(urlCoursesInfo);
+            final scheduleResponse = await client.getResponse(urlSchedule);
 
-      final infoResponse = await client.getResponse(urlCoursesInfo);
-      final scheduleResponse = await client.getResponse(urlSchedule);
+            final courses = parseCourses(parse(infoResponse.body));
+            final scheduleDoc =
+                parseScheduleAndProfessor(parse(scheduleResponse.body));
 
-      if (infoResponse.headers['location'] == consts.loginURL ||
-          infoResponse.headers['user'] != user.username ||
-          scheduleResponse.headers['location'] == consts.loginURL ||
-          scheduleResponse.headers['user'] != user.username) {
-        return Failure(AppException('Falha ao entrar.'));
-      }
+            final formated = <Course>[];
+            for (final course in courses) {
+              final data = scheduleDoc[course.courseCode];
+              if (data != null) {
+                formated.add(course.copyWith(
+                  professors: data.$1,
+                  schedule: data.$2,
+                ));
+              }
+            }
 
-      final courses = parseCourses(parse(infoResponse.body));
-      final scheduleDoc =
-          parseScheduleAndProfessor(parse(scheduleResponse.body));
-
-      final formated = <Course>[];
-      for (final course in courses) {
-        final data = scheduleDoc[course.courseCode];
-        if (data != null) {
-          formated.add(course.copyWith(
-            professors: data.$1,
-            schedule: data.$2,
-          ));
-        }
-      }
-
-      return Success(formated);
-    } on AppException catch (e) {
-      return Failure(e);
-    }
+            return Success(formated);
+          } on AppException catch (e) {
+            return Failure(e);
+          }
+        },
+        (err) => Failure(err),
+      );
+    });
   }
 
   @override
   AsyncResult<List<History>, AppException> fetchHistory() async {
-    final user = _user;
-    if (user == null) {
-      return Failure(AppException('Usuário não logado.'));
-    }
-    await signInWithUserAndPassword(user.username, user.password);
-
-    try {
-      final url = '${consts.infoUrl}${user.username}/?tab=historico';
-
-      final response = await client.getResponse(url);
-
-      final redirectedUrl = response.headers['location'];
-      final sessionUser = response.headers['user'];
-      if (sessionUser != user.username || redirectedUrl == consts.loginURL) {
-        return Failure(AppException('Falha ao entrar.'));
-      }
-
-      final doc = parse(response.body);
-
-      return Success(parseHistory(doc));
-    } on AppException catch (e) {
-      return Failure(e);
-    }
+    return _refreshAuth().then((result) {
+      return result.fold(
+        (user) async {
+          try {
+            final url = '${consts.infoUrl}${user.username}/?tab=historico';
+            final response = await client.get(url);
+            return Success(parseHistory(response));
+          } on AppException catch (e) {
+            return Failure(e);
+          }
+        },
+        (err) => Failure(err),
+      );
+    });
   }
 }

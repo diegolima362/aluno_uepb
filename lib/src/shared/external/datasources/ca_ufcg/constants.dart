@@ -18,4 +18,5 @@ const inProgressAbsencesUrl =
 
 const historyUrl = '$baseUrl?command=AlunoHistorico';
 
-const error1 = 'Matrícula inválida ou senha incorreta.';
+const wrongCredentialsError = 'Matrícula inválida ou senha incorreta.';
+const antiSpanError = 'Você não passou no Teste anti-spam';

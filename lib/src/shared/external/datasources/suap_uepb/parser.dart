@@ -135,7 +135,7 @@ Map<String, (List<String>, List<Schedule>)> parseScheduleAndProfessor(
   final map = <String, (List<String>, List<Schedule>)>{};
 
   final tables = document.querySelectorAll('.table-responsive');
-  if (tables.isEmpty) {
+  if (tables.length < 4) {
     return map;
   }
 

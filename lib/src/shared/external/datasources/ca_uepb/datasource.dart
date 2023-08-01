@@ -1,4 +1,3 @@
-import 'package:html/parser.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../modules/auth/models/user.dart';
@@ -22,11 +21,25 @@ class CaUepbRemoteDataSource implements AcademicRemoteDataSource {
     _user = user;
   }
 
+  Future<bool> _checkAuth() async {
+    try {
+      final response = await client.getResponse(consts.homeURL);
+      final redirectedUrl = response.headers['location'];
+      return redirectedUrl != consts.loginURL;
+    } on AppException {
+      return false;
+    }
+  }
+
   @override
   AsyncResult<User, AppException> signInWithUserAndPassword(
     String user,
     String password,
   ) async {
+    if (_user != null && await _checkAuth()) {
+      return Success(_user!);
+    }
+
     final data = {'nome_usuario': user, 'senha_usuario': password};
 
     client.clearCache();
@@ -54,92 +67,63 @@ class CaUepbRemoteDataSource implements AcademicRemoteDataSource {
     return Success(_user!);
   }
 
-  Future<Result<User, AppException>> refreshAuth() async {
-    if (_user == null) {
-      return Failure(AppException('Usuário não autenticado.'));
+  Future<Result<User, AppException>> _refreshAuth() async {
+    final user = _user;
+    if (user == null) {
+      return Failure(AppException('Usuário não logado.'));
     }
 
-    return await signInWithUserAndPassword(
-      _user!.username,
-      _user!.password,
-    );
+    return await signInWithUserAndPassword(user.username, user.password);
   }
 
   @override
   AsyncResult<Profile, AppException> fetchProfile() async {
-    try {
-      (await refreshAuth()).fold((success) => null, (failure) => throw failure);
-
-      final response = await client.getResponse(consts.profileURL);
-
-      final redirectedUrl = response.headers['location'];
-      if (redirectedUrl == consts.loginURL) {
-        return Failure(AppException('Falha ao entrar.'));
-      }
-
-      final doc = parse(response.body);
-
-      if (doc.body?.text.contains('Entrar') ?? true) {
-        return Failure(AppException('Falha ao entrar, reinicie o app.'));
-      }
-
-      return Success(parseProfile(doc));
-    } on AppException catch (e) {
-      return Failure(e);
-    }
+    return _refreshAuth().then((result) {
+      return result.fold(
+        (_) async {
+          try {
+            final response = await client.get(consts.profileURL);
+            return Success(parseProfile(response));
+          } on AppException catch (e) {
+            return Failure(e);
+          }
+        },
+        (err) => Failure(err),
+      );
+    });
   }
 
   @override
   AsyncResult<List<Course>, AppException> fetchCourses() async {
-    try {
-      (await refreshAuth()).fold((success) => null, (failure) => throw failure);
-
-      final response = await client.getResponse(consts.rdmURL);
-
-      final redirectedUrl = response.headers['location'];
-      if (redirectedUrl == consts.loginURL) {
-        return Failure(AppException('Falha ao entrar.'));
-      }
-
-      final doc = parse(response.body);
-
-      if (doc.body?.text.contains('Entrar') ?? true) {
-        return Failure(AppException('Falha ao entrar, reinicie o app.'));
-      }
-
-      if (doc.body?.text.contains(consts.errorAvaliation) ?? false) {
-        throw AppException(consts.avaliationMessage);
-      }
-
-      return Success(parseCourses(doc));
-    } on AppException catch (e) {
-      return Failure(e);
-    }
+    return _refreshAuth().then((result) {
+      return result.fold(
+        (_) async {
+          try {
+            final response = await client.get(consts.rdmURL);
+            return Success(parseCourses(response));
+          } on AppException catch (e) {
+            return Failure(e);
+          }
+        },
+        (err) => Failure(err),
+      );
+    });
   }
 
   @override
   AsyncResult<List<History>, AppException> fetchHistory() async {
-    try {
-      final response = await client.getResponse(consts.historyURL);
-
-      final redirectedUrl = response.headers['location'];
-      if (redirectedUrl == consts.loginURL) {
-        return Failure(AppException('Falha ao entrar.'));
-      }
-
-      final doc = parse(response.body);
-
-      if (doc.body?.text.contains('Entrar') ?? true) {
-        return Failure(AppException('Falha ao entrar, reinicie o app.'));
-      }
-
-      if (doc.body?.text.contains(consts.errorAvaliation) ?? false) {
-        throw AppException(consts.avaliationMessage);
-      }
-
-      return Success(parseHistory(doc));
-    } on AppException catch (e) {
-      return Failure(e);
-    }
+    return _refreshAuth().then((result) {
+      return result.fold(
+        (_) async {
+          try {
+            final response = await client.get(consts.historyURL);
+            return Success(parseHistory(response));
+          } on AppException catch (e) {
+            return Failure(e);
+          }
+        },
+        (err) => Failure(err),
+      );
+    });
   }
 }
