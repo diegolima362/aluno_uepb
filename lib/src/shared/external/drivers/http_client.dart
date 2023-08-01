@@ -113,5 +113,8 @@ class AppHttpClient {
 
   void setHeader(String header, String value) {
     _headers[header] = value;
+    if (header == 'Cookie') {
+      _saveCookie(value);
+    }
   }
 }
