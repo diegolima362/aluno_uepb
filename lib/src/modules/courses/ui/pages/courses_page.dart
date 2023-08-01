@@ -42,7 +42,18 @@ class _CoursesPageState extends State<CoursesPage> {
 
     result.fold(
       (success) => context.showMessage(success, resetResult),
-      (failure) => context.showError(failure.message, resetResult),
+      (error) {
+        if (error.code == 'anti_span') {
+          context.showErrorWithAction(
+            error.message,
+            onClosed: resetResult,
+            label: 'Entrar',
+            onPressed: resetAuthAction,
+          );
+        } else {
+          context.showError(error.message, resetResult);
+        }
+      },
     );
   }
 

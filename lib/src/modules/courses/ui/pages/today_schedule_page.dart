@@ -2,6 +2,7 @@ import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../shared/data/extensions/extensions.dart';
+import '../../../auth/atoms/auth_atom.dart';
 import '../../../profile/atoms/profile_atom.dart';
 import '../atoms/today_schedule_atom.dart';
 import '../components/schedule_tile.dart';
@@ -33,7 +34,16 @@ class _TodaysSchedulePageState extends State<TodaysSchedulePage> {
           context.showMessage(message, resetResult);
         },
         (error) {
-          context.showError(error.message, resetResult);
+          if (error.code == 'anti_span') {
+            context.showErrorWithAction(
+              error.message,
+              onClosed: resetResult,
+              label: 'Entrar',
+              onPressed: resetAuthAction,
+            );
+          } else {
+            context.showError(error.message, resetResult);
+          }
         },
       );
     }

@@ -41,15 +41,19 @@ class CourseReducer extends Reducer {
   }
 
   Future<void> _refreshData() async {
+    coursesLoadingState.value = true;
+
     final result = await _courseRepository.fetchCourses(true);
 
     result.fold(
       (success) {
-        coursesState.setValue(success);
+        coursesState.value = success;
         coursesResultState.value = Result.success('Cursos atualizados!');
-        setLastSync.setValue(DateTime.now());
+        setLastSync.value = DateTime.now();
       },
       (failure) => coursesResultState.value = Result.failure(failure),
     );
+
+    coursesLoadingState.value = false;
   }
 }
