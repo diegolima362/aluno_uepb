@@ -1,12 +1,9 @@
 import 'package:asp/asp.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../shared/services/worker_service.dart';
-import '../../courses/data/repositories/course_repository.dart';
-import '../../courses/data/repositories/history_repository.dart';
+import '../../courses/ui/atoms/courses_atom.dart';
+import '../../courses/ui/atoms/history_atom.dart';
 import '../../preferences/atoms/preferences_atom.dart';
-import '../../preferences/data/repositories/preference_repository.dart';
-import '../../profile/data/repositories/profile_repository.dart';
+import '../../profile/atoms/profile_atom.dart';
 import '../atoms/auth_atom.dart';
 import '../atoms/sign_in_atom.dart';
 import '../data/repositories/auth_repository.dart';
@@ -55,14 +52,11 @@ class AuthReducer extends Reducer {
   }
 
   Future<void> _signOut() async {
-    await Future.wait([
-      Modular.get<CourseRepository>().clear(),
-      Modular.get<HistoryRepository>().clear(),
-      Modular.get<PreferencesRepository>().clear(),
-      Modular.get<ProfileRepository>().clear(),
-      Modular.get<WorkerService>().cancelAll(),
-      _repository.signOut(),
-    ]);
+    clearCoursesData();
+    clearHistoryData();
+    clearPreferencesData();
+    clearProfileData();
+    await _repository.signOut();
 
     fetchPreferences();
 

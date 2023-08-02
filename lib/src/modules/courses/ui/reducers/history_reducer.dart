@@ -11,6 +11,7 @@ class HistoryReducer extends Reducer {
     on(() => [fetchHistory], _fetchHistory);
     on(() => [refreshHistory], () => _fetchHistory(true));
     on(() => [reverseHistory], _reverseHistory);
+    on(() => [clearHistoryData], _clearHistoryData);
   }
 
   void _fetchHistory([bool refresh = false]) async {
@@ -38,5 +39,10 @@ class HistoryReducer extends Reducer {
     await Future.delayed(const Duration(milliseconds: 16));
     historyState.setValue(historyState.value.reversed.toList());
     historyLoadingState.value = false;
+  }
+
+  void _clearHistoryData() {
+    historyState.value = [];
+    _historyRepository.clear();
   }
 }

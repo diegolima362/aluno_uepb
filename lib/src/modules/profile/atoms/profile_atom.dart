@@ -9,3 +9,5 @@ final profileLoadingState = Atom<bool>(false);
 // actions
 final fetchProfile = Atom.action();
 final refreshProfile = Atom.action();
+
+final clearProfileData = Atom.action();

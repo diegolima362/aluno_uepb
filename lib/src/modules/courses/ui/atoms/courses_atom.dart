@@ -12,3 +12,4 @@ final coursesResultState = Atom<Result<String, AppException>?>(null);
 // actions
 final fetchCourses = Atom.action();
 final refreshCourses = Atom.action();
+final clearCoursesData = Atom.action();

@@ -21,6 +21,7 @@ class PreferenceReducer extends Reducer {
     on(() => [toggleNotifications], _changeNotifications);
     on(() => [setLastSync], _setLastSync);
     on(() => [changeProtocolSpec], _changeProtocolSpec);
+    on(() => [clearPreferencesData], _clearPreferencesData);
   }
 
   void _fetchPreferences() async {
@@ -114,6 +115,11 @@ class PreferenceReducer extends Reducer {
     final lastSync = setLastSync.value;
     lastSyncState.value = lastSync;
     _repository.updateLastSync(lastSync);
+  }
+
+  void _clearPreferencesData() async {
+    await _repository.clear();
+    _fetchPreferences();
   }
 
   Future<void> _externalRequestNotificationPermission() async {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../shared/data/types/open_protocol.dart';
 import '../../../shared/external/datasources/implementations.dart';
-import '../models/preferences.dart';
 
 // atoms
 final themeModeState = Atom<ThemeMode>(ThemeMode.system);
@@ -26,7 +25,6 @@ final preferencesLoadingState = Atom<bool>(false);
 // actions
 final fetchPreferences = Atom.action();
 final fetchProtocolSpecs = Atom.action();
-final savePreferences = Atom<Preferences?>(null);
 
 final changeImplementation = Atom<DataSourceImplementation?>(null);
 final changeProtocolSpec = Atom<OpenProtocolSpec?>(null);
@@ -37,3 +35,5 @@ final toggleBackgroundSync = Atom<bool?>(null);
 final toggleNotifications = Atom<bool?>(null);
 
 final setLastSync = Atom<DateTime?>(null);
+
+final clearPreferencesData = Atom.action();

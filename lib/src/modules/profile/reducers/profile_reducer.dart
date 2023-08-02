@@ -9,6 +9,7 @@ class ProfileReducer extends Reducer {
   ProfileReducer(this._profileRepository) {
     on(() => [fetchProfile], _fetchProfile);
     on(() => [refreshProfile], () => _fetchProfile(true));
+    on(() => [clearProfileData], _clearProfileData);
   }
 
   void _fetchProfile([bool refresh = false]) async {
@@ -21,5 +22,10 @@ class ProfileReducer extends Reducer {
     );
 
     profileLoadingState.value = false;
+  }
+
+  void _clearProfileData() {
+    profileState.value = null;
+    _profileRepository.clear();
   }
 }

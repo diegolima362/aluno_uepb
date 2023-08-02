@@ -14,3 +14,5 @@ final fetchHistory = Atom.action();
 final refreshHistory = Atom.action();
 
 final reverseHistory = Atom.action();
+
+final clearHistoryData = Atom.action();

@@ -13,6 +13,7 @@ class CourseReducer extends Reducer {
   CourseReducer(this._courseRepository) {
     on(() => [fetchCourses], _fetchCourses);
     on(() => [refreshCourses], _refreshData);
+    on(() => [clearCoursesData], _clearCoursesData);
   }
 
   void _fetchCourses([bool refresh = false]) async {
@@ -55,5 +56,11 @@ class CourseReducer extends Reducer {
     );
 
     coursesLoadingState.value = false;
+  }
+
+  void _clearCoursesData() {
+    coursesState.value = [];
+    coursesResultState.value = null;
+    _courseRepository.clear();
   }
 }
