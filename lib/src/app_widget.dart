@@ -8,6 +8,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'modules/auth/atoms/auth_atom.dart';
 import 'modules/preferences/atoms/preferences_atom.dart';
+import 'shared/data/datasources/remote_datasource.dart';
 import 'shared/ui/theme/theme.dart';
 
 class AppWidget extends StatefulWidget {
@@ -34,6 +35,8 @@ class _AppWidgetState extends State<AppWidget> {
 
   void userListener() {
     final user = userState.value;
+    Modular.get<AcademicRemoteDataSource>().setUser(user);
+
     if (user == null) {
       Modular.to.navigate('/auth/');
     } else {
@@ -71,11 +74,9 @@ class _AppWidgetState extends State<AppWidget> {
           ),
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,
-          showPerformanceOverlay: false,
           supportedLocales: const [Locale('pt', 'BR')],
-          routeInformationParser: Modular.routeInformationParser,
-          routerDelegate: Modular.routerDelegate,
           localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          routerConfig: Modular.routerConfig,
         );
       },
     );

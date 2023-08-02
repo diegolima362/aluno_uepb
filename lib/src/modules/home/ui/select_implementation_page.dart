@@ -167,7 +167,8 @@ class _SelectImplementationPageState extends State<SelectImplementationPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: FilledButton(
-              onPressed: implementation == DataSourceImplementation.none ||
+              onPressed: implementation == null ||
+                      implementation == DataSourceImplementation.none ||
                       (implementation ==
                               DataSourceImplementation.openProtocol &&
                           protocolSpec == null)

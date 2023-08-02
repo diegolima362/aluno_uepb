@@ -8,7 +8,7 @@ import '../../../../shared/data/datasources/remote_datasource.dart';
 import '../../../../shared/external/drivers/http_client.dart';
 import '../../atoms/auth_atom.dart';
 import '../../atoms/sign_in_atom.dart';
-import '../../external/datasources/auth_secure_storage_local_datasource.dart';
+import '../../data/datasources/auth_datasources.dart';
 import '../../models/user.dart';
 
 const baseUrl = 'https://pre.ufcg.edu.br:8443/ControleAcademicoOnline/';
@@ -157,8 +157,8 @@ class _SignInWebViewState extends State<SignInWebView>
           password: passwordState.value,
         );
 
-        Modular.get<GenericAcadamicRemoteDataSource>().setUser(user);
-        Modular.get<AuthSecureStorageLocalDataSource>().save(user);
+        Modular.get<AcademicRemoteDataSource>().setUser(user);
+        Modular.get<AuthLocalDataSource>().save(user);
         userState.setValue(user);
       }
     }

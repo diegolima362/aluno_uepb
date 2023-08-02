@@ -1,5 +1,8 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../profile/profile_module.dart';
+import 'data/datasources/course_datasource.dart';
+import 'data/datasources/history_datasource.dart';
 import 'data/repositories/course_repository.dart';
 import 'data/repositories/history_repository.dart';
 import 'external/course_isar_local_datasource.dart';
@@ -9,38 +12,29 @@ import 'ui/reducers/reducers.dart';
 
 class CoursesModule extends Module {
   @override
-  final List<Bind> binds = [
-    //
-    Bind.lazySingleton((i) => CourseIsarLocalDataSource(i()), export: true),
-    Bind.lazySingleton((i) => CourseRepository(i(), i()), export: true),
-
-    //
-    Bind.lazySingleton((i) => HistoryIsarLocalDataSource(i()), export: true),
-    Bind.lazySingleton((i) => HistoryRepository(i(), i()), export: true),
-    //
-    Bind.singleton<CourseReducer>(
-      (i) => CourseReducer(i()),
-      onDispose: (i) => i.dispose(),
-    ),
-    Bind.singleton<TodayScheduleReducer>(
-      (i) => TodayScheduleReducer(i()),
-      onDispose: (i) => i.dispose(),
-    ),
-    Bind.singleton<ScheduleReducer>(
-      (i) => ScheduleReducer(i()),
-      onDispose: (i) => i.dispose(),
-    ),
-    Bind.singleton<HistoryReducer>(
-      (i) => HistoryReducer(i()),
-      onDispose: (i) => i.dispose(),
-    ),
-  ];
+  List<Module> get imports => [ProfileModule()];
 
   @override
-  final List<ModularRoute> routes = [
-    ChildRoute('/', child: (_, __) => const CoursesPage()),
-    ChildRoute('/today/', child: (_, __) => const TodaysSchedulePage()),
-    ChildRoute('/schedule/', child: (_, __) => const FullSchedulePage()),
-    ChildRoute('/history/', child: (_, __) => const HistoryPage()),
-  ];
+  void binds(i) {
+    i
+      ..addSingleton<CourseLocalDataSource>(CourseIsarLocalDataSource.new)
+      ..addSingleton<HistoryLocalDataSource>(HistoryIsarLocalDataSource.new)
+      //
+      ..addSingleton(CourseRepository.new)
+      ..addSingleton(HistoryRepository.new)
+      //
+      ..addSingleton(CourseReducer.new)
+      ..addSingleton(TodayScheduleReducer.new)
+      ..addSingleton(ScheduleReducer.new)
+      ..addSingleton(HistoryReducer.new);
+  }
+
+  @override
+  void routes(r) {
+    r
+      ..child('/', child: (context) => const CoursesPage())
+      ..child('/today/', child: (context) => const TodaysSchedulePage())
+      ..child('/schedule/', child: (context) => const FullSchedulePage())
+      ..child('/history/', child: (context) => const HistoryPage());
+  }
 }

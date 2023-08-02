@@ -124,7 +124,10 @@ Future<Isar> initializeIsar() async {
 bool postInitCalled = false;
 void replaceImplementation(DataSourceImplementation implementation,
     [OpenProtocolSpec? spec]) {
-  final datasource = Modular.get<GenericAcadamicRemoteDataSource>();
+  // final datasource = Modular.get<GenericAcadamicRemoteDataSource>();
+
+  final datasource = Modular.get<AcademicRemoteDataSource>()
+      as GenericAcadamicRemoteDataSource;
 
   if (implementation != DataSourceImplementation.none) {
     final impl = getRemoteDataSourceImplementation(implementation, spec);

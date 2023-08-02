@@ -9,21 +9,29 @@ import 'ui/preferences_page.dart';
 
 class PreferencesModule extends Module {
   @override
-  final List<Bind> binds = [
-    Bind.singleton<PreferencesLocalDataSource>(
-      (i) => PreferencesIsarLocalDataSource(i()),
-      export: true,
-    ),
-    Bind.singleton<PreferencesRemoteDataSource>(
-      (i) => PreferencesMockRemoteDataSource(),
-      export: true,
-    ),
-    Bind.singleton((i) => PreferencesRepository(i(), i()), export: true),
-    Bind.singleton((i) => PreferenceReducer(i(), i()), export: true),
-  ];
+  void exportedBinds(i) {
+    i
+      ..addSingleton<PreferencesLocalDataSource>(
+          PreferencesIsarLocalDataSource.new)
+      ..addSingleton<PreferencesRemoteDataSource>(
+          PreferencesMockRemoteDataSource.new)
+      ..addSingleton(PreferencesRepository.new)
+      ..addSingleton(PreferenceReducer.new);
+  }
 
   @override
-  final List<ModularRoute> routes = [
-    ChildRoute('/', child: (_, __) => const PreferencesPage()),
-  ];
+  void binds(i) {
+    i
+      ..addSingleton<PreferencesLocalDataSource>(
+          PreferencesIsarLocalDataSource.new)
+      ..addSingleton<PreferencesRemoteDataSource>(
+          PreferencesMockRemoteDataSource.new)
+      ..addSingleton(PreferencesRepository.new)
+      ..addSingleton(PreferenceReducer.new);
+  }
+
+  @override
+  void routes(r) {
+    r.child('/', child: (context) => const PreferencesPage());
+  }
 }

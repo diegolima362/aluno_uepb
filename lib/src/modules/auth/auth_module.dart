@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../shared/shared_module.dart';
 import 'data/datasources/auth_datasources.dart';
 import 'data/repositories/auth_repository.dart';
 import 'external/datasources/auth_secure_storage_local_datasource.dart';
@@ -9,27 +10,34 @@ import 'ui/pages/sign_in_webview.dart';
 
 class AuthModule extends Module {
   @override
-  final List<Bind> binds = [
-    //
-    Bind.singleton<AuthLocalDataSource>(
-      (i) => AuthSecureStorageLocalDataSource(i()),
-      export: true,
-    ),
-    //
-    Bind.singleton((i) => AuthRepository(i(), i()), export: true),
-    //
-    Bind.singleton((i) => AuthReducer(i()), export: true),
-  ];
+  List<Module> get imports => [SharedModule()];
 
   @override
-  final List<ModularRoute> routes = [
-    ChildRoute('/', child: (_, __) => const SignInPage()),
-    ChildRoute(
-      '/sign-in-webview/',
-      child: (_, args) => SignInWebView(
-        username: args.data['username'],
-        password: args.data['password'],
-      ),
-    ),
-  ];
+  void exportedBinds(i) {
+    i
+      ..addSingleton<AuthLocalDataSource>(AuthSecureStorageLocalDataSource.new)
+      ..addSingleton(AuthRepository.new)
+      ..addSingleton(AuthReducer.new);
+  }
+
+  @override
+  void binds(i) {
+    i
+      ..addSingleton<AuthLocalDataSource>(AuthSecureStorageLocalDataSource.new)
+      ..addSingleton(AuthRepository.new)
+      ..addSingleton(AuthReducer.new);
+  }
+
+  @override
+  void routes(r) {
+    r
+      ..child('/', child: (context) => const SignInPage())
+      ..child(
+        '/sign-in-webview/',
+        child: (context) => SignInWebView(
+          username: r.args.data['username'],
+          password: r.args.data['password'],
+        ),
+      );
+  }
 }

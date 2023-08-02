@@ -7,18 +7,18 @@ import 'reducers/profile_reducer.dart';
 
 class ProfileModule extends Module {
   @override
-  final List<Bind> binds = [
-    //
-    Bind.singleton<ProfileLocalDataSource>(
-        (i) => ProfileIsarLocalDataSource(i()),
-        export: true),
-
-    //
-    Bind.singleton((i) => ProfileRepository(i(), i()), export: true),
-    //
-    Bind.singleton((i) => ProfileReducer(i()), export: true),
-  ];
+  void exportedBinds(i) {
+    i
+      ..addSingleton<ProfileLocalDataSource>(ProfileIsarLocalDataSource.new)
+      ..addSingleton(ProfileRepository.new)
+      ..addSingleton(ProfileReducer.new);
+  }
 
   @override
-  final List<ModularRoute> routes = [];
+  void binds(i) {
+    i
+      ..addSingleton<ProfileLocalDataSource>(ProfileIsarLocalDataSource.new)
+      ..addSingleton(ProfileRepository.new)
+      ..addSingleton(ProfileReducer.new);
+  }
 }
