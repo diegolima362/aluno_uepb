@@ -1,25 +1,28 @@
-# Aluno UEPB
+# Hub
 
-Aplicativo não oficial para alunos da UEPB.
+Bem-vindo(a) ao Hub, o aplicativo desenvolvido especialmente para tornar sua vida acadêmica mais simples e prática! Aqui você encontrará todas as informações importantes para te ajudar a se organizar durante a semana.
 
-Features:
+### Estamos expandindo
+Agora suportamos mais universidades, alunos da uepb e ufcg já podem usar o app para ter uma experiência universitária mais completa.
 
-- Horário do dia e da semana completa
-- Informações das cadeiras: Professor, faltas, horários e notas
-- Definir lembretes de atividades
-- Criar alertas para inicio de aulas
-- Histórico acadêmico
-- Atualizações do CA em plano de fundo
-- Dados Offline depois do primeiro login
+### Tudo em um só lugar
+Acesse facilmente suas disciplinas, horários e notas em uma interface intuitiva e amigável.
 
-# Avisos:
+### Rápido e Prático
+Informações acadêmicas atualizadas em segundos, sem complicações de login.
 
-O aplicativo necessita dos dados de autenticação no Controle Acadêmico do aluno.
+### Notificações Úteis
+Seja notificado quando uma nova falta ou nota foi registrada.
+
+## Nota
+- O Hub universitário valoriza a privacidade dos usuários e mantém suas informações protegidas, nenhum dado pessoal é enviado para fora do aplicativo.
+
+- O aplicativo necessita dos dados de autenticação no Portal Acadêmico do aluno.
 O aplicativo só realiza operações de leitura, nenhum dado é alterado na página do Controle Acadêmico.
 
-#### Ainda em desenvolvimento
+- Esse projeto foi desenvolvido para fins educacionais, e não possui nenhum vínculo com as instituições de ensino.
 
-#### Necessário acesso a internet para primeiro acesso e para futuras sincronizações com os dados remotos.
+- Esse projeto ainda está em desenvolvimento, coisas podem quebrar.
 
 ### Baixe o app
 
