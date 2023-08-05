@@ -1,10 +1,10 @@
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../shared/data/extensions/build_context_extensions.dart';
 import '../../../shared/external/datasources/implementations.dart';
 import '../../auth/atoms/auth_atom.dart';
+import '../../courses/ui/pages/pages.dart';
 import '../../preferences/atoms/preferences_atom.dart';
 import '../../profile/atoms/profile_atom.dart';
 import '../../profile/ui/profile_avatar.dart';
@@ -19,9 +19,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentPage = 0;
+  late final PageController _controller;
 
   @override
   void initState() {
+    _controller = PageController(initialPage: currentPage);
+
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -47,7 +50,8 @@ class _HomePageState extends State<HomePage> {
           return true;
         } else {
           setState(() => currentPage = 0);
-          Modular.to.navigate('/app/courses/today/');
+          _controller.jumpTo(0);
+
           return false;
         }
       },
@@ -70,18 +74,31 @@ class _HomePageState extends State<HomePage> {
               ),
           ],
         ),
-        body: const RouterOutlet(),
+        body: PageView.builder(
+          controller: _controller,
+          onPageChanged: (index) => setState(() => currentPage = index),
+          itemCount: 2,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return const TodaysSchedulePage();
+            } else if (index == 1) {
+              return const CoursesPage();
+            } else {
+              return const CoursesPage();
+            }
+          },
+        ),
         drawer: const AppDrawer(),
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentPage,
           onDestinationSelected: (index) {
             setState(() => currentPage = index);
             if (index == 0) {
-              Modular.to.navigate('/app/courses/today/');
+              _controller.jumpToPage(0);
             } else if (index == 1) {
-              Modular.to.navigate('/app/courses/');
+              _controller.jumpToPage(1);
             } else {
-              Modular.to.navigate('/app/courses/today/');
+              _controller.jumpToPage(0);
             }
           },
           destinations: const [
