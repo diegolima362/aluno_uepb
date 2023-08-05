@@ -147,14 +147,17 @@ Map<String, (List<String>, List<Schedule>)> parseScheduleAndProfessor(
     }
 
     final courseInfo = items[1].getElementsByTagName('dd');
-    final courseCode = courseInfo[0].text.split(' - ').first.trim();
 
-    final professors = courseInfo[1]
-        .text
-        .split('\n')
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
+    // get a list of elements dd, the first one is the course info, the second one, if present, is the professor name
+    final courseCode = courseInfo[0].text.split(' - ').first.trim();
+    final professors = courseInfo
+            .elementAtOrNull(1)
+            ?.text
+            .split('\n')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList() ??
+        [];
 
     final schedule = _extractSchedule(row);
 
