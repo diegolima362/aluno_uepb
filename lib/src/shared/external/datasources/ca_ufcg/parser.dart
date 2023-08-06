@@ -26,6 +26,13 @@ List<Course> parseCourses(Document document) {
 
     final codeAndTitle = tds[1].text.split('-');
     final code = codeAndTitle[0].trim();
+
+    // check for non active course
+    // e.g. "(Trancado) 1306343 - ESTUDOS DE HISTÓRIA DA PARAÍBA"
+    if (code.startsWith('(Trancado)')) {
+      continue;
+    }
+
     final title = codeAndTitle[1].trim();
 
     final strSchedule = tds[4].text.trim().split('\n');
