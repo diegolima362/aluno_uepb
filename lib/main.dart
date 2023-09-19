@@ -18,9 +18,9 @@ import 'src/modules/courses/external/schema.dart';
 import 'src/modules/preferences/external/datasources/schema.dart';
 import 'src/modules/profile/external/schema.dart';
 import 'src/shared/data/datasources/remote_datasource.dart';
-import 'src/shared/data/types/open_protocol.dart';
+import 'src/shared/data/services/background_worker.dart';
+import 'src/shared/domain/models/open_protocol.dart';
 import 'src/shared/external/datasources/implementations.dart';
-import 'src/shared/services/background_worker.dart';
 
 const debugLayoutMode = false; //kDebugMode;
 const devMode = false;

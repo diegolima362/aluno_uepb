@@ -7,7 +7,7 @@ import 'modules/home/ui/home_page.dart';
 import 'modules/home/ui/landing_page.dart';
 import 'modules/home/ui/select_implementation_page.dart';
 import 'modules/preferences/preferences_module.dart';
-import 'shared/data/datasources/remote_datasource.dart';
+import 'modules/profile/profile_module.dart';
 import 'shared/shared_module.dart';
 
 class AppModule extends Module {
@@ -19,13 +19,7 @@ class AppModule extends Module {
       ];
 
   @override
-  void binds(i) {
-    final generic = GenericAcadamicRemoteDataSource();
-
-    i
-      ..addInstance<GenericAcadamicRemoteDataSource>(generic)
-      ..addInstance<AcademicRemoteDataSource>(generic);
-  }
+  void binds(i) {}
 
   @override
   void routes(r) {
@@ -39,6 +33,7 @@ class AppModule extends Module {
         children: [
           ModuleRoute('/courses', module: CoursesModule()),
           ModuleRoute('/preferences', module: PreferencesModule()),
+          ModuleRoute('/profile', module: ProfileModule()),
         ],
         guards: [AppGuard()],
       );

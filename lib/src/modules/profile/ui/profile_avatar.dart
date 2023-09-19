@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../shared/data/extensions/build_context_extensions.dart';
-import '../models/profile.dart';
+import '../../../shared/domain/extensions/build_context_extensions.dart';
+import '../domain/models/profile.dart';
 import 'profile_card.dart';
 
 class ProfileAvatar extends StatelessWidget {
@@ -13,6 +14,9 @@ class ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
+        Modular.to.pushNamed('/app/profile/', forRoot: true);
+        return;
+
         showDialog(
           context: context,
           useRootNavigator: false,

@@ -65,11 +65,11 @@ class _AppWidgetState extends State<AppWidget> {
         return MaterialApp.router(
           title: 'Hub',
           theme: lightTheme(
-            seedColor ?? Colors.black,
+            seedColor ?? Colors.blue,
             seedColor != null ? null : lightDynamic,
           ),
           darkTheme: darkTheme(
-            seedColor ?? Colors.white,
+            seedColor ?? Colors.blue,
             seedColor != null ? null : darkDynamic,
           ),
           themeMode: themeMode,

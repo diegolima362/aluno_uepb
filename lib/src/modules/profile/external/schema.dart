@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-import '../models/profile.dart';
+import '../domain/models/profile.dart';
 
 part 'schema.g.dart';
 
@@ -15,6 +15,7 @@ class IsarProfileModel {
   String campus = '';
   String totalHours = '';
   String credits = '';
+  bool socialProfile = false;
   List<IsarAcademicIndexModel> academicIndexes = [];
 
   IsarProfileModel({
@@ -24,6 +25,7 @@ class IsarProfileModel {
     this.campus = '',
     this.totalHours = '',
     this.credits = '',
+    this.socialProfile = false,
     this.academicIndexes = const [],
   });
 
@@ -35,6 +37,7 @@ class IsarProfileModel {
       campus: profile.campus,
       totalHours: profile.totalHours,
       credits: profile.credits,
+      socialProfile: profile.socialProfile,
       academicIndexes: profile.academicIndexes
           .map(IsarAcademicIndexModel.fromDomain)
           .toList(),
@@ -48,6 +51,7 @@ class IsarProfileModel {
         campus: campus,
         totalHours: totalHours,
         credits: credits,
+        socialProfile: socialProfile,
         academicIndexes: academicIndexes.map((e) => e.toDomain()).toList(),
       );
 }

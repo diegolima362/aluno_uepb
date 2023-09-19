@@ -1,8 +1,8 @@
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../shared/data/datasources/remote_datasource.dart';
-import '../../../../shared/data/types/types.dart';
-import '../../models/profile.dart';
+import '../../../../shared/domain/models/app_exception.dart';
+import '../../domain/models/profile.dart';
 import '../datasources/profile_datasources.dart';
 
 class ProfileRepository {
@@ -28,6 +28,10 @@ class ProfileRepository {
       return getProfile(true);
     }
     return local;
+  }
+
+  Future<void> save(Profile data) async {
+    await _localDataSource.save(data);
   }
 
   Future<void> clear() async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/data/extensions/build_context_extensions.dart';
-import '../models/profile.dart';
+import '../../../shared/domain/extensions/build_context_extensions.dart';
+import '../domain/models/profile.dart';
 
 class ProfileCard extends StatelessWidget {
   final Profile profile;
