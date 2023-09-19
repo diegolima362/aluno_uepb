@@ -21,12 +21,7 @@ class AuthModule extends Module {
   }
 
   @override
-  void binds(i) {
-    i
-      ..addSingleton<AuthLocalDataSource>(AuthSecureStorageLocalDataSource.new)
-      ..addSingleton(AuthRepository.new)
-      ..addSingleton(AuthReducer.new);
-  }
+  void binds(i) {}
 
   @override
   void routes(r) {

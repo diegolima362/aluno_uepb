@@ -1,7 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:result_dart/result_dart.dart';
 
-import '../../../../shared/data/types/types.dart';
+import '../../../../shared/domain/models/app_exception.dart';
 import '../../data/datasources/preferences_local_datasource.dart';
 import '../../models/preferences.dart';
 import 'schema.dart';

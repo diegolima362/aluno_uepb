@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/data/types/open_protocol.dart';
+import '../../../shared/domain/models/open_protocol.dart';
 import '../../../shared/external/datasources/implementations.dart';
 
 class Preferences {

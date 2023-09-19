@@ -2,7 +2,7 @@ import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../shared/data/extensions/extensions.dart';
+import '../../../../shared/domain/extensions/extensions.dart';
 import '../../../../shared/external/datasources/implementations.dart';
 import '../../../preferences/atoms/preferences_atom.dart';
 import '../../atoms/sign_in_atom.dart';

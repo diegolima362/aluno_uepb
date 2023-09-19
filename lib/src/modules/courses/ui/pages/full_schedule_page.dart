@@ -1,7 +1,7 @@
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/data/extensions/extensions.dart';
+import '../../../../shared/domain/extensions/extensions.dart';
 import '../../../../shared/ui/widgets/empty_collection.dart';
 import '../../models/models.dart';
 import '../atoms/full_schedule_atom.dart';

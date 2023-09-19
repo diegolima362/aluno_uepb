@@ -1,8 +1,8 @@
 import 'package:dson_adapter/dson_adapter.dart';
 import 'package:result_dart/result_dart.dart';
 
-import '../../../../shared/data/types/open_protocol.dart';
-import '../../../../shared/data/types/types.dart';
+import '../../../../shared/domain/models/app_exception.dart';
+import '../../../../shared/domain/models/open_protocol.dart';
 import '../../data/datasources/preferences_local_datasource.dart';
 
 // const _baseUrl = 'http://10.0.2.2:8000';

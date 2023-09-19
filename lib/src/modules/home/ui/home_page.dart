@@ -1,12 +1,12 @@
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/data/extensions/build_context_extensions.dart';
+import '../../../shared/domain/extensions/build_context_extensions.dart';
 import '../../../shared/external/datasources/implementations.dart';
 import '../../auth/atoms/auth_atom.dart';
 import '../../courses/ui/pages/pages.dart';
 import '../../preferences/atoms/preferences_atom.dart';
-import '../../profile/atoms/profile_atom.dart';
+import '../../profile/domain/atoms/profile_atom.dart';
 import '../../profile/ui/profile_avatar.dart';
 import 'app_drawer.dart';
 

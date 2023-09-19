@@ -2,12 +2,12 @@ import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../shared/data/extensions/extensions.dart';
+import '../../../shared/domain/extensions/extensions.dart';
 import '../../../shared/external/datasources/implementations.dart';
 import '../../auth/atoms/auth_atom.dart';
 import '../../preferences/atoms/preferences_atom.dart';
-import '../../profile/atoms/profile_atom.dart';
-import '../../profile/models/profile.dart';
+import '../../profile/domain/atoms/profile_atom.dart';
+import '../../profile/domain/models/profile.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 
-import '../../../../shared/data/types/open_protocol.dart';
+import '../../../../shared/domain/models/open_protocol.dart';
 import '../../../../shared/external/datasources/implementations.dart';
 import '../../models/preferences.dart';
 

@@ -2,7 +2,7 @@
 import 'package:asp/asp.dart';
 import 'package:result_dart/result_dart.dart';
 
-import '../../../shared/data/types/types.dart';
+import '../../../shared/domain/models/app_exception.dart';
 import '../models/user.dart';
 
 final usernameState = Atom<String>('');

@@ -1,9 +1,9 @@
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/data/extensions/extensions.dart';
+import '../../../../shared/domain/extensions/extensions.dart';
 import '../../../auth/atoms/auth_atom.dart';
-import '../../../profile/atoms/profile_atom.dart';
+import '../../../profile/domain/atoms/profile_atom.dart';
 import '../atoms/today_schedule_atom.dart';
 import '../components/schedule_tile.dart';
 

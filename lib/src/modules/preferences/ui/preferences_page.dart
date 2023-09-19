@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../main.dart';
-import '../../../shared/data/extensions/extensions.dart';
+import '../../../shared/domain/extensions/extensions.dart';
 import '../../../shared/ui/widgets/my_app_icon.dart';
 import '../atoms/preferences_atom.dart';
 

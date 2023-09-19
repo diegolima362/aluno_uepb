@@ -3,7 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../main.dart';
-import '../../../shared/services/worker_service.dart';
+import '../../../shared/data/services/worker_service.dart';
 import '../atoms/preferences_atom.dart';
 import '../data/repositories/preference_repository.dart';
 

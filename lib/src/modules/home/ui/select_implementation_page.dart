@@ -3,8 +3,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../shared/data/extensions/extensions.dart';
-import '../../../shared/data/types/open_protocol.dart';
+import '../../../shared/domain/extensions/extensions.dart';
+import '../../../shared/domain/models/open_protocol.dart';
 import '../../../shared/external/datasources/implementations.dart';
 import '../../../shared/ui/widgets/empty_collection.dart';
 import '../../preferences/atoms/preferences_atom.dart';

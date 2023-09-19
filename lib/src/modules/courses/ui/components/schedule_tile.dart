@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/data/extensions/extensions.dart';
+import '../../../../shared/domain/extensions/extensions.dart';
 import '../../models/models.dart';
 
 class ScheduleTile extends StatelessWidget {

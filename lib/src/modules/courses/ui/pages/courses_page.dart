@@ -1,10 +1,10 @@
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/data/extensions/extensions.dart';
+import '../../../../shared/domain/extensions/extensions.dart';
 import '../../../../shared/ui/widgets/empty_collection.dart';
 import '../../../auth/atoms/auth_atom.dart';
-import '../../../profile/atoms/profile_atom.dart';
+import '../../../profile/domain/atoms/profile_atom.dart';
 import '../atoms/courses_atom.dart';
 import '../components/course_info_card.dart';
 

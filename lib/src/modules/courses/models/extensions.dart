@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-import '../../../shared/data/extensions/extensions.dart';
+import '../../../shared/domain/extensions/extensions.dart';
 import 'course.dart';
 
 extension Formater on Schedule {

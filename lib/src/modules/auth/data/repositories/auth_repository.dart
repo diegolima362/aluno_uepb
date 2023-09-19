@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../shared/data/datasources/remote_datasource.dart';
-import '../../../../shared/data/types/types.dart';
+import '../../../../shared/domain/models/app_exception.dart';
 import '../../models/user.dart';
 import '../datasources/auth_datasources.dart';
 
@@ -24,6 +24,7 @@ class AuthRepository {
       (s) {
         _currentUser = s;
         _remote.setUser(s);
+
         return Success(s);
       },
       (f) => Failure(f),
@@ -38,6 +39,7 @@ class AuthRepository {
         _currentUser = s;
         _remote.setUser(s);
         await _local.save(s);
+
         return Success(s);
       },
       (f) => Failure(f),

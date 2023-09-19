@@ -1,7 +1,7 @@
 import 'package:result_dart/result_dart.dart';
 
-import '../../../../shared/data/types/open_protocol.dart';
-import '../../../../shared/data/types/types.dart';
+import '../../../../shared/domain/models/app_exception.dart';
+import '../../../../shared/domain/models/open_protocol.dart';
 import '../../models/preferences.dart';
 
 abstract class PreferencesLocalDataSource {

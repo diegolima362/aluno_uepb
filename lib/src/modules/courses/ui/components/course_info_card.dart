@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/data/extensions/build_context_extensions.dart';
+import '../../../../shared/domain/extensions/build_context_extensions.dart';
 import '../../models/extensions.dart';
 import '../../models/models.dart';
 
