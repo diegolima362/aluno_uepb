@@ -22,8 +22,33 @@ class ProfileReducer extends Reducer {
     final result = await _profileRepository.getProfile(refresh);
 
     result.fold(
-      (success) => profileState.value = success,
+      (success) {
+        _fetchSocialProfile();
+        return profileState.value = success;
+      },
       (failure) => null,
+    );
+
+    profileLoadingState.value = false;
+  }
+
+  void _fetchSocialProfile() async {
+    final profile = profileState.value;
+    final user = userState.value;
+    if (profile == null || user == null) return;
+
+    profileLoadingState.value = true;
+    profileResultState.value = null;
+    final result = await _socialRepository.signIn(user.username, user.password);
+
+    result.fold(
+      (success) {
+        profileState.value = profile.copyWith(socialProfile: true);
+        _profileRepository.save(profile.copyWith(socialProfile: true));
+
+        profileResultState.value = const Success('Perfil criado com sucesso!');
+      },
+      (failure) => profileResultState.value = Failure(failure),
     );
 
     profileLoadingState.value = false;

@@ -6,4 +6,8 @@ import '../../domain/models/social_profile.dart';
 
 abstract class SocialRemoteDatasource {
   AsyncResult<SocialProfile, AppException> createUser(User user);
+  AsyncResult<SocialProfile, AppException> signIn(
+    String username,
+    String password,
+  );
 }

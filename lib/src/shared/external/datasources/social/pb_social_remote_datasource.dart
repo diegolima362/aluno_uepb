@@ -13,23 +13,9 @@ class PocketBaseSocialRemoteDatasource implements SocialRemoteDatasource {
 
   @override
   AsyncResult<SocialProfile, AppException> createUser(User user) async {
-    try {
-      await pb
-          .collection('users')
-          .authWithPassword('+${user.username}@u.hub', user.password);
-
-      if (pb.authStore.isValid) {
-        final model = (pb.authStore.model as RecordModel).data;
-        return Success(SocialProfile(
-          name: model['name'] ?? '',
-          username: model['username'] ?? '',
-        ));
-      }
-    } on ClientException catch (e) {
-      final message = e.response['message'] ?? 'Error creating user';
-      if (e.response['message'] != 'Failed to authenticate.') {
-        return Failure(AppException(message));
-      }
+    final result = await signIn(user.username, user.password);
+    if (result.isSuccess()) {
+      return result;
     }
 
     try {
@@ -46,7 +32,30 @@ class PocketBaseSocialRemoteDatasource implements SocialRemoteDatasource {
         username: pb.authStore.model['username'] ?? '',
       ));
     } on ClientException catch (e) {
-      print(e);
+      return Failure(AppException(
+        e.response['message'] ?? 'Error creating user',
+      ));
+    }
+  }
+
+  @override
+  AsyncResult<SocialProfile, AppException> signIn(
+      String username, String password) async {
+    try {
+      await pb
+          .collection('users')
+          .authWithPassword('+$username@u.hub', password);
+
+      if (pb.authStore.isValid) {
+        final model = (pb.authStore.model as RecordModel).data;
+        return Success(SocialProfile(
+          name: model['name'] ?? '',
+          username: model['username'] ?? '',
+        ));
+      } else {
+        return Failure(AppException('Failed to authenticate.'));
+      }
+    } on ClientException catch (e) {
       return Failure(AppException(
         e.response['message'] ?? 'Error creating user',
       ));

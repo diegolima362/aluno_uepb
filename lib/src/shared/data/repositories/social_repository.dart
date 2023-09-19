@@ -14,4 +14,11 @@ class SocialRepository {
     final result = await _remote.createUser(user);
     return result;
   }
+
+  AsyncResult<SocialProfile, AppException> signIn(
+    String username,
+    String password,
+  ) {
+    return _remote.signIn(username, password);
+  }
 }
