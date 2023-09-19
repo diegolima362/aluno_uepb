@@ -3,8 +3,8 @@ import 'package:result_dart/result_dart.dart';
 import '../../../modules/auth/models/user.dart';
 import '../../../modules/courses/models/course.dart';
 import '../../../modules/courses/models/history.dart';
-import '../../../modules/profile/models/profile.dart';
-import '../types/types.dart';
+import '../../../modules/profile/domain/models/profile.dart';
+import '../../domain/models/app_exception.dart';
 
 abstract class AcademicRemoteDataSource {
   void setUser(User? user);

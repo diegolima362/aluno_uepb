@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:result_dart/result_dart.dart';
 
-import '../../data/types/types.dart';
+import '../../domain/models/app_exception.dart';
 import '../interfaces/notifications_driver.dart';
 
 class FlutterLocaltNotificationDriver implements NotificationsDriver {

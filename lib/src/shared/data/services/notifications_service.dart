@@ -1,7 +1,7 @@
 import 'package:result_dart/result_dart.dart';
 
-import '../data/types/types.dart';
-import '../external/interfaces/notifications_driver.dart';
+import '../../domain/models/app_exception.dart';
+import '../../external/interfaces/notifications_driver.dart';
 
 class NotificationsService {
   final NotificationsDriver driver;

@@ -1,7 +1,7 @@
 import 'package:result_dart/result_dart.dart';
 import 'package:workmanager/workmanager.dart';
 
-import '../../data/types/types.dart';
+import '../../domain/models/app_exception.dart';
 import '../interfaces/worker_driver.dart';
 
 class WorkManagerDriver implements WorkerDriver {

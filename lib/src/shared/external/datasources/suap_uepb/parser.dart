@@ -1,8 +1,8 @@
 import 'package:html/dom.dart';
 
 import '../../../../modules/courses/models/models.dart';
-import '../../../../modules/profile/models/profile.dart';
-import '../../../data/types/types.dart';
+import '../../../../modules/profile/domain/models/profile.dart';
+import '../../../domain/models/app_exception.dart';
 
 const timeSpots = {
   'M': {

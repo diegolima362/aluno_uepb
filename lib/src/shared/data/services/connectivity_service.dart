@@ -1,4 +1,4 @@
-import '../external/interfaces/connectivity_driver.dart';
+import '../../external/interfaces/connectivity_driver.dart';
 
 class ConnectivityService {
   final IConnectivityDriver driver;

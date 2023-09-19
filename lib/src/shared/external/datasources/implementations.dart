@@ -1,8 +1,8 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../data/datasources/remote_datasource.dart';
-import '../../data/types/open_protocol.dart';
-import '../../data/types/types.dart';
+import '../../domain/models/app_exception.dart';
+import '../../domain/models/open_protocol.dart';
 import 'ca_uepb/datasource.dart';
 import 'ca_ufcg/datasource.dart';
 import 'open_protocol/datasource.dart';

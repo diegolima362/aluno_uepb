@@ -2,8 +2,8 @@ import 'package:html/dom.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../modules/courses/models/models.dart';
-import '../../../../modules/profile/models/profile.dart';
-import '../../../data/types/types.dart';
+import '../../../../modules/profile/domain/models/profile.dart';
+import '../../../domain/models/app_exception.dart';
 
 final regexpInts = RegExp(r'\d+');
 final findAbsences = RegExp(r'gauge\d+.set\((\d+)');

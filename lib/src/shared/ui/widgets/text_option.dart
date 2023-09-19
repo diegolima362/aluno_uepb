@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../data/extensions/build_context_extensions.dart';
+
+import '../../domain/extensions/build_context_extensions.dart';
 
 class TextOption extends StatelessWidget {
   final VoidCallback? onTap;

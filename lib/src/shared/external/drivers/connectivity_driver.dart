@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import '../../data/types/types.dart';
 
+import '../../domain/models/app_exception.dart';
 import '../interfaces/connectivity_driver.dart';
 
 class ConnectivityDriver implements IConnectivityDriver {

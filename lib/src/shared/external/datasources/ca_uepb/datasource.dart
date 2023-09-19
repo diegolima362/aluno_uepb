@@ -2,9 +2,9 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../../modules/auth/models/user.dart';
 import '../../../../modules/courses/models/models.dart';
-import '../../../../modules/profile/models/profile.dart';
+import '../../../../modules/profile/domain/models/profile.dart';
 import '../../../data/datasources/remote_datasource.dart';
-import '../../../data/types/types.dart';
+import '../../../domain/models/app_exception.dart';
 import '../../drivers/http_client.dart';
 import 'constants.dart' as consts;
 import 'parser.dart';

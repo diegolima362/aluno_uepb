@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 
-import '../../data/types/types.dart';
+import '../../domain/models/app_exception.dart';
 
 class AppHttpClient {
   final IOClient _client;

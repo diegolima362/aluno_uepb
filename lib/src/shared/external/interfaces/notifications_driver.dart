@@ -1,6 +1,6 @@
 import 'package:result_dart/result_dart.dart';
 
-import '../../data/types/types.dart';
+import '../../domain/models/app_exception.dart';
 
 abstract class NotificationsDriver {
   AsyncResult<Unit, AppException> showNotifications(
