@@ -45,6 +45,17 @@ String parseCookie(String? header) {
   return '';
 }
 
+String parseSemester(Document document) {
+  final semester = document
+      .querySelectorAll('.tab-container .box h3')
+      .firstOrNull
+      ?.text
+      .split('-')
+      .last
+      .trim();
+  return semester ?? '';
+}
+
 List<Course> parseCourses(Document document) {
   final courses = <Course>[];
   final rows = document.querySelectorAll('.bordered tbody tr');
@@ -73,6 +84,7 @@ List<Course> parseCourses(Document document) {
         schedule: [],
         classId: '',
         credits: 0,
+        semester: '',
       ),
     );
   }
@@ -178,6 +190,9 @@ List<Lesson> _extractSchedule(Element element) {
   final schedules = <Lesson>[];
 
   for (final code in scheduleCodes) {
+    if (code == '-') {
+      continue;
+    }
     // spot = 5M2345
     final charaters = code.split('');
     final weekday = charaters[0];

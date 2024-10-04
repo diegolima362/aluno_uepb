@@ -2,6 +2,7 @@ const createCourses = '''
 CREATE TABLE courses(
     code          TEXT NOT NULL PRIMARY KEY,
     name          TEXT NOT NULL,
+    semester      TEXT NOT NULL,
     classId       TEXT NOT NULL,
     professors    TEXT NOT NULL,
     absences      INTEGER NOT NULL,

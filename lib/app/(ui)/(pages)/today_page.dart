@@ -2,6 +2,7 @@ import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
+import '../../core/extensions/extensions.dart';
 import '../../interactor/actions/profile_actions.dart';
 import '../../interactor/actions/schedule_actions.dart';
 import '../../interactor/atoms/schedule_atoms.dart';
@@ -41,7 +42,7 @@ class _TodaySchedulePageState extends State<TodaySchedulePage>
     } else {
       body = ListView.builder(
         padding: const EdgeInsets.symmetric(
-          horizontal: 24,
+          horizontal: 16,
           vertical: 8,
         ),
         itemCount: schedule.length,
@@ -52,6 +53,18 @@ class _TodaySchedulePageState extends State<TodaySchedulePage>
       );
     }
 
-    return body;
+    final today = DateTime.now();
+    final dayOfWeek = today.dayOfWeek.capitalFirst;
+    final date = today.simpleDate;
+
+    return NestedScrollView(
+      headerSliverBuilder: (context, _) => [
+        AppSliverAppbar(
+          title: dayOfWeek,
+          subtitle: date,
+        ),
+      ],
+      body: body,
+    );
   }
 }

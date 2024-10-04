@@ -40,6 +40,7 @@ List<Course> parseCourses(Document document) {
     courses.add(
       Course(
         classId: tds[0].text.trim(),
+        semester: tds[5].text.trim(),
         name: title,
         code: code,
         credits: int.tryParse(tds[2].text.trim()) ?? 0,

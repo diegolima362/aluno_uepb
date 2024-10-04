@@ -1,7 +1,7 @@
 import 'package:asp/asp.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
 import '../../core/extensions/extensions.dart';
@@ -40,7 +40,7 @@ class _HistoryPageState extends State<HistoryPage> with HookStateMixin {
     } else if (history.isEmpty) {
       body = const EmptyCollection(
         text: 'Histórico vazio',
-        icon: Icons.history,
+        icon: Symbols.history,
       );
     } else {
       final groups = history.groupListsBy((e) => e.semester);
@@ -92,17 +92,28 @@ class _HistoryPageState extends State<HistoryPage> with HookStateMixin {
           cellBuilder: _buildCell,
           columnCount: columnCount,
           columnBuilder: _buildColumnSpan,
-          rowCount: history.length + 1,
+          rowCount: history.length,
           rowBuilder: _buildRowSpan,
         ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Histórico'),
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              title: Text('Histórico'),
+              centerTitle: true,
+              snap: true,
+              pinned: true,
+              floating: true,
+            ),
+          ];
+        },
+        body: body,
       ),
-      body: body,
     );
   }
 
@@ -120,15 +131,8 @@ class _HistoryPageState extends State<HistoryPage> with HookStateMixin {
       ];
       return TableViewCell(
         child: Center(
-          child: GestureDetector(
-            onTap: () {
-              if (vicinity.column == 0) {
-              } else if (vicinity.column == 2) {}
-            },
-            child: Text(
-              labels[vicinity.column],
-              textAlign: TextAlign.center,
-            ),
+          child: Text(
+            labels[vicinity.column],
           ),
         ),
       );
@@ -174,20 +178,12 @@ class _HistoryPageState extends State<HistoryPage> with HookStateMixin {
         : index.isEven
             ? context.colors.surfaceContainerHighest
             : context.colors.surface;
-    final decoration = TableSpanDecoration(
-      color: color,
-    );
 
     return TableSpan(
-      backgroundDecoration: decoration,
+      backgroundDecoration: TableSpanDecoration(
+        color: color,
+      ),
       extent: const FixedTableSpanExtent(75),
-      recognizerFactories: <Type, GestureRecognizerFactory>{
-        TapGestureRecognizer:
-            GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-          () => TapGestureRecognizer(),
-          (TapGestureRecognizer t) => t.onTap = () => print('Tap row $index'),
-        ),
-      },
     );
   }
 }

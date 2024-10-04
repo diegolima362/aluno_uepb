@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:routefly/routefly.dart';
 
 import '../../../routes.g.dart';
+import 'components.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -17,30 +18,32 @@ class _AppDrawerState extends State<AppDrawer> with HookStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: NavigationDrawer(
-        onDestinationSelected: onDestinationSelected,
-        selectedIndex: selectedIndex,
-        children: const [
-          SizedBox(height: kToolbarHeight),
-          NavigationDrawerDestination(
-            icon: Icon(Symbols.today_sharp),
-            label: Text('Aulas'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Symbols.calendar_today_sharp),
-            label: Text('Horário'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Symbols.library_books_sharp),
-            label: Text('Histórico'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Symbols.settings_sharp),
-            label: Text('Configurações'),
-          ),
-        ],
-      ),
+    return NavigationDrawer(
+      onDestinationSelected: onDestinationSelected,
+      selectedIndex: selectedIndex,
+      children: [
+        Container(
+          height: kToolbarHeight,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: MyAppIcon(),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Symbols.today_sharp),
+          label: Text('Aulas'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Symbols.calendar_today_sharp),
+          label: Text('Horário'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Symbols.library_books_sharp),
+          label: Text('Histórico'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Symbols.settings_sharp),
+          label: Text('Configurações'),
+        ),
+      ],
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +39,7 @@ class _HomePageState extends State<HomePage> with HookStateMixin {
     final medium = size.width >= 600 && size.width < 840;
     final expanded = size.width >= 840;
 
-    final profile = useAtomState(profileState);
+
 
     final controller = usePageController();
 
@@ -51,6 +53,8 @@ class _HomePageState extends State<HomePage> with HookStateMixin {
         controller.jumpToPage(0);
       }
     }
+
+
 
     return PopScope(
       canPop: selectedIndex == 0,
@@ -66,78 +70,36 @@ class _HomePageState extends State<HomePage> with HookStateMixin {
         }
       },
       child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            fit: StackFit.expand,
-            children: [
-              Row(
-                children: [
-                  if (!compact)
-                    AppNavigationRail(
-                      selectedIndex: selectedIndex,
-                      onDestinationSelected: onDestinationSelected,
-                    ),
-                  Expanded(
-                    child: NestedScrollView(
-                      headerSliverBuilder: (context, _) => [
-                        SliverAppBar.large(
-                          title: const MyAppIcon.small(),
-                          flexibleSpace: FlexibleSpaceBar(
-                            background: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: selectedIndex == 0
-                                  ? const TodayHeader()
-                                  : Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Text(
-                                        'Cursos',
-                                        textAlign: TextAlign.start,
-                                        style: context.textTheme.headlineMedium,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          centerTitle: true,
-                          actions: [
-                            if (profile != null)
-                              ProfileAvatar(
-                                profile: profile,
-                              ),
-                          ],
-                        ),
-                      ],
-                      body: PageView.builder(
-                        controller: controller,
-                        onPageChanged: (index) =>
-                            setState(() => selectedIndex = index),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return const TodaySchedulePage();
-                          } else if (index == 1) {
-                            return const CoursesPage();
-                          } else {
-                            return const CoursesPage();
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+        body: Row(
+          children: [
+            if (!compact)
+              AppNavigationRail(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: onDestinationSelected,
               ),
-              if (compact)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: AppNavBar(
-                    selectedIndex: selectedIndex,
-                    onDestinationSelected: onDestinationSelected,
-                  ),
-                ),
-            ],
-          ),
+            Expanded(
+              child: PageView.builder(
+                 controller: controller,
+                 onPageChanged: (index) =>
+                     setState(() => selectedIndex = index),
+                 itemCount: 2,
+                 itemBuilder: (context, index) {
+                   if (index == 0) {
+                     return const TodaySchedulePage();
+                   } else if (index == 1) {
+                     return const CoursesPage();
+                   } else {
+                     return const CoursesPage();
+                   }
+                 },
+               ),
+            ),
+          ],
+        ),
+        extendBody: true,
+        bottomNavigationBar: AppNavBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: onDestinationSelected,
         ),
         drawer: compact ? const AppDrawer() : null,
       ),

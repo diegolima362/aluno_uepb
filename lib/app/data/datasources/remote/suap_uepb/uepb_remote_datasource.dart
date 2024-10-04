@@ -148,7 +148,9 @@ class UepbRemoteDatasource implements AppRemoteDataSource {
     final infoResponse = await client.getResponse(urlCoursesInfo);
     final scheduleResponse = await client.getResponse(urlSchedule);
 
-    final courses = parseCourses(parse(infoResponse.body));
+    final infoResponseBody = parse(infoResponse.body);
+    final courses = parseCourses(infoResponseBody);
+    final semester = parseSemester(infoResponseBody);
     final scheduleDoc = parseScheduleAndProfessor(parse(scheduleResponse.body));
 
     final formated = <Course>[];
@@ -158,6 +160,7 @@ class UepbRemoteDatasource implements AppRemoteDataSource {
         formated.add(course.copyWith(
           professors: data.$1,
           schedule: data.$2,
+          semester: semester,
         ));
       }
     }

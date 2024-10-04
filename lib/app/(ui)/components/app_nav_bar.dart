@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../core/extensions/extensions.dart';
+
 class AppNavBar extends StatelessWidget {
   final int selectedIndex;
   final void Function(int) onDestinationSelected;
@@ -17,10 +19,10 @@ class AppNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: NavigationBar(
           selectedIndex: selectedIndex,
-          backgroundColor: Colors.transparent,
+          backgroundColor: context.colors.surface.withOpacity(0.002),
           onDestinationSelected: onDestinationSelected,
           destinations: const [
             NavigationDestination(

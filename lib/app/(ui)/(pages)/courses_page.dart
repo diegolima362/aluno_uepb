@@ -35,25 +35,25 @@ class _CoursesPageState extends State<CoursesPage> with HookStateMixin {
     final isLoading = useAtomState(coursesLoadingState);
     final courses = useAtomState(coursesState);
 
+    Widget body;
+
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      body = Center(child: CircularProgressIndicator.adaptive());
     } else if (courses.isEmpty) {
-      return const EmptyCollection(
+      body = const EmptyCollection(
         text: 'Sem Cursos Registrados',
         icon: Icons.library_books_rounded,
       );
     } else {
-      return RefreshIndicator(
+      body = RefreshIndicator(
         onRefresh: () async {
           refreshCourses();
           refreshProfile();
         },
         child: compact
             ? ListView.builder(
+                padding: EdgeInsets.zero,
                 itemCount: courses.length,
-                padding: const EdgeInsets.only(
-                  bottom: 150,
-                ),
                 itemBuilder: (_, index) => CourseCard(
                   course: courses[index],
                 ),
@@ -69,5 +69,17 @@ class _CoursesPageState extends State<CoursesPage> with HookStateMixin {
               ),
       );
     }
+
+    final semester = courses.firstOrNull?.semester ?? '';
+
+    return NestedScrollView(
+      headerSliverBuilder: (context, _) => [
+        AppSliverAppbar(
+          title: 'Cursos',
+          subtitle: semester,
+        )
+      ],
+      body: body,
+    );
   }
 }

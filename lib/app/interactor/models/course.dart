@@ -3,6 +3,7 @@ import 'schedule.dart';
 class Course {
   final String code;
   final String name;
+  final String semester ;
   final List<String> professors;
   final String classId;
   final List<Lesson> schedule;
@@ -15,6 +16,7 @@ class Course {
   Course({
     required this.code,
     required this.name,
+    required this.semester,
     required this.professors,
     required this.classId,
     required this.absences,
@@ -28,6 +30,7 @@ class Course {
   Course copyWith({
     String? code,
     String? name,
+    String? semester,
     String? classId,
     List<String>? professors,
     List<Lesson>? schedule,
@@ -40,6 +43,7 @@ class Course {
     return Course(
       code: code ?? this.code,
       name: name ?? this.name,
+      semester: semester ?? this.semester,
       professors: professors ?? this.professors,
       classId: classId ?? this.classId,
       schedule: schedule ?? this.schedule,
@@ -55,6 +59,7 @@ class Course {
     return {
       'code': code,
       'name': name,
+      'semester': semester,
       'professors': professors,
       'classId': classId,
       'schedule': schedule.map((x) => x.toMap()).toList(),
@@ -70,6 +75,7 @@ class Course {
     return Course(
       code: map['code'] ?? '',
       name: map['name'] ?? '',
+      semester: map['semester'] ?? '',
       professors: List<String>.from(map['professors'] ?? const []),
       classId: map['classId'] ?? '',
       schedule: List<Lesson>.from(
@@ -83,9 +89,11 @@ class Course {
     );
   }
 
+
+
   @override
   String toString() {
-    return 'Code: $code, name: $name, professors: $professors, classId: $classId, schedule: $schedule, grades: $grades, absences: $absences, absenceLimit: $absenceLimit, totalHours: $totalHours, credits: $credits}';
+    return 'Code: $code, name: $name, semester: $semester, professors: $professors, classId: $classId, schedule: $schedule, grades: $grades, absences: $absences, absenceLimit: $absenceLimit, totalHours: $totalHours, credits: $credits}';
   }
 }
 
